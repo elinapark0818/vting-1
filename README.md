@@ -31,6 +31,8 @@
 
 <img src="https://img.shields.io/badge/React Router-CA4245?style=for-the-badge&logo=React Router&logoColor=white">
 
+<img src="https://img.shields.io/badge/Axios-854195?style=for-the-badge&logo=Axios&logoColor=white">
+
 <img src="https://img.shields.io/badge/styled-components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white">
 
 ## Back-end
@@ -48,6 +50,8 @@
 <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white">
 
 ## Deploy
+
+<img src="https://img.shields.io/badge/DEPLOY-AWS-%23232F3E?style=for-the-badge&logo=Amazon%20AWS" />
 
 ## Etc
 
