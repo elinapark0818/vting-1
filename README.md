@@ -43,7 +43,7 @@
 
 <img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=black">
 
-<img src="https://img.shields.io/badge/MongoDB-4DB33D?style=for-the-badge&logo=MongoDB&logoColor=black">
+<img src="https://img.shields.io/badge/MongoDB-4DB33D?style=for-the-badge&logo=MongoDB&logoColor=white">
 
 <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white">
 
