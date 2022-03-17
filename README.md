@@ -49,6 +49,8 @@
 
 <img src="https://img.shields.io/badge/MongoDB-4DB33D?style=for-the-badge&logo=MongoDB&logoColor=white">
 
+<img src="https://img.shields.io/badge/Sequelize-2f406a?style=for-the-badge&logo=Sequelize&logoColor=white">
+
 <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white">
 
 ## Deploy
