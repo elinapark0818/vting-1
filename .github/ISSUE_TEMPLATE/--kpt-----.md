@@ -1,6 +1,6 @@
 ---
 name: "[ KPT ] 회고"
-about: Describe this issue template's purpo[ KTP ] 회고se here.
+about: KPT 회고
 title: "[ KPT ] ---"
 labels: ''
 assignees: ''
