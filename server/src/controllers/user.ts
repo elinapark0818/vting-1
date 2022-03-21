@@ -1,5 +1,10 @@
 import { db } from "..";
-import { RequestHandler } from "express";
+import express, {
+  ErrorRequestHandler,
+  Request,
+  Response,
+  NextFunction,
+} from "express";
 const jwt = require("jsonwebtoken");
 
 interface UserType {
