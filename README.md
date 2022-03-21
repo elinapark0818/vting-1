@@ -1,7 +1,10 @@
-# Vting
+# 👩‍👩‍👧‍👦  Welcome to the Vting
+
+![vting_logo](https://user-images.githubusercontent.com/74189121/158925857-b2730467-7b9f-4365-98f1-8f6d6646cff5.png)
 
 ## [Vting 바로가기](https://github.com/codestates/vting)
 
+## ABOUT
 <br/>
 
 " 모두가 참여하는 실시간 설문조사 <br/>
