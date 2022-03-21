@@ -2,7 +2,7 @@
 
 ![vting_logo](https://user-images.githubusercontent.com/74189121/158925857-b2730467-7b9f-4365-98f1-8f6d6646cff5.png)
 
-## [Vting 바로가기](https://github.com/codestates/vting)
+## [Vting 바로가기](v-ting.net)
 
 ## ABOUT
 <br/>
