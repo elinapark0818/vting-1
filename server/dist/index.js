@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const user_1 = __importDefault(require("./routes/user"));
+const session_1 = __importDefault(require("./routes/session"));
+const auth_1 = __importDefault(require("./routes/auth"));
 // import voteRoutes from "./routes/vote";
 // import voterRoutes from "./routes/voter";
 dotenv_1.default.config();
@@ -32,6 +34,8 @@ app.use(cors({
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use("/user", user_1.default);
+app.use("/session", session_1.default);
+app.use("/auth", auth_1.default);
 // app.use("/vting", voteRoutes);
 // app.use("/voter", voterRoutes);
 //db 연결 -> 되면 포트 열기

@@ -6,6 +6,8 @@ import express, {
 } from "express";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user";
+import sessionRoutes from "./routes/session";
+import authRoutes from "./routes/auth";
 // import voteRoutes from "./routes/vote";
 // import voterRoutes from "./routes/voter";
 dotenv.config();
@@ -39,6 +41,8 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/user", userRoutes);
+app.use("/session", sessionRoutes);
+app.use("/auth", authRoutes);
 // app.use("/vting", voteRoutes);
 // app.use("/voter", voterRoutes);
 
