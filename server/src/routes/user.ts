@@ -1,11 +1,15 @@
 import { Router } from "express";
-import controller from "../controllers/user";
+import { UserController } from "../controllers/user";
 
 const router = Router();
 
-router.post("/", controller.post);
+// router.post("/", controller.post);
 
-// router.post("/user", controller.signup.post);
-// router.get("/auth", controller.userInfo.get);
+router.post("/check", UserController.signupCheck.post);
+router.post("/", UserController.signup.post);
+// router.post("/oauth", controller.oauth.post);
+// router.delete("/", UserController.resign.delete);
+
+console.log(UserController);
 
 export default router;
