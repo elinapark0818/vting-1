@@ -1,0 +1,105 @@
+@import "../index.scss";
+
+.newVoteCon {
+  min-height: 500px;
+  padding: 100px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.voteFormatsCon {
+  flex: 1 1;
+  li {
+    list-style: none;
+    margin-bottom: 20px;
+  }
+  .voteFormatIcon {
+    background-color: $vting-blue;
+    width: 60px;
+    height: 60px;
+    border-radius: 30%;
+    text-align: center;
+    line-height: 75px;
+    color: $vting-gray;
+    filter: drop-shadow(3px 3px 0 $vting-gray);
+    cursor: pointer;
+    font-size: 40px;
+    svg {
+      pointer-events: none;
+    }
+  }
+  #barVer > svg {
+    -ms-transform: rotate(-90deg); /* IE 9 */
+    -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+    transform: rotate(-90deg);
+  }
+}
+
+.voteMakerCon {
+  flex: 2 1 0;
+  text-align: center;
+  label.disabledLabel {
+    color: $vting-gray;
+  }
+  div {
+    justify-content: center;
+  }
+}
+
+.votePreviewCon {
+  flex: 2 1 0;
+  text-align: center;
+  div {
+    justify-content: center;
+  }
+  .votePreviewBack {
+    margin-left: 10%;
+    width: 250px;
+    height: 250px;
+    padding: 20px;
+    background-color: $vting-gray;
+
+    .votePreview-barVer-con {
+      width: 250px;
+      height: 250px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+    #votePreview-barVer-bar {
+      flex: 1 1 auto;
+      margin: 0 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      .barVer-itemName {
+        width: 100%;
+      }
+      .barVer-itemBar {
+        width: 100%;
+        background-color: $vting-blue;
+      }
+    }
+
+    .votePreview-barHor-con {
+      width: 250px;
+      height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+    #votePreview-barHor-bar {
+      flex: 1 1 auto;
+      margin: 10px 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .barHor-itemName {
+        // width: 100%;
+      }
+      .barHor-itemBar {
+        background-color: $vting-blue;
+      }
+    }
+  }
+}

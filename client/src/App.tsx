@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Dashboard from "./Dashboard/Dashboard";
 import Home from "./Home/Home";
@@ -7,13 +6,13 @@ import Edit from "./MyPage/Edit/Edit";
 import MyPage from "./MyPage/MyPage";
 import Navbar from "./Navbar/Navbar";
 import V from "./v/V";
+import NewVote from "./new/new";
+import { Provider } from "react-redux";
+import store from "./store/index";
 
 import React, { useEffect } from "react";
 // import NewVote from "./new/new";
-// import { Provider } from "react-redux";
-// import store from "./store/index";
 import axios from "axios";
-
 
 // import axios from 'axios';
 
@@ -50,26 +49,28 @@ function App() {
   // 	console.log(res.data);
   // });
   return (
+    <Provider store={store}>
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
 
-    <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
+          <Route path="dashboard" element={<Dashboard />} />
 
-        <Route path="dashboard" element={<Dashboard />} />
+          <Route path="v">
+            <Route index element={<V />} />
+            <Route path=":number" element={<V />} />
+          </Route>
 
-        <Route path="v">
-          <Route index element={<V />} />
-          <Route path=":number" element={<V />} />
-        </Route>
+          <Route path="new" element={<NewVote />} />
 
-        <Route path="myPage" element={<MyPage />}>
-          <Route path="edit" element={<Edit />} />
-          <Route path="delete" element={<Delete />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-
+          <Route path="myPage" element={<MyPage />}>
+            <Route path="edit" element={<Edit />} />
+            <Route path="delete" element={<Delete />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </Provider>
   );
 }
 
