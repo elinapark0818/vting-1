@@ -6,6 +6,8 @@ import express, {
 } from "express";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user";
+// import voteRoutes from "./routes/vote";
+// import voterRoutes from "./routes/voter";
 dotenv.config();
 
 const PORT = process.env.PORT;
@@ -36,19 +38,21 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use("/", userRoutes);
+app.use("/user", userRoutes);
+// app.use("/vting", voteRoutes);
+// app.use("/voter", voterRoutes);
 
 //db 연결 -> 되면 포트 열기
 export const MongoClient = require("mongodb").MongoClient;
-export const db: any = {};
+export var db: any;
 
 MongoClient.connect(
   process.env.DATABASE_URL,
   { useUnifiedTopology: true },
-  function (err: any, client: any) {
+  function (err: Error, database: any) {
     if (err) console.log(err);
 
-    db.db = client.db("vting");
+    db = database.db("vting_dev");
     console.log("db connected");
     app.listen(PORT, () => console.log(`${PORT} port opened`));
   }
