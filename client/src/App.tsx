@@ -1,4 +1,13 @@
 import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Dashboard from "./Dashboard/Dashboard";
+import Home from "./Home/Home";
+import Delete from "./MyPage/Delete/Delete";
+import Edit from "./MyPage/Edit/Edit";
+import MyPage from "./MyPage/MyPage";
+import Navbar from "./Navbar/Navbar";
+import V from "./v/V";
+
 // import axios from 'axios';
 
 // interface User {
@@ -13,11 +22,24 @@ function App() {
   // 	console.log(res.data);
   // });
   return (
-    <>
-      <div>
-        <h1>아ㅏ 되고있구나 ㅠㅠ</h1>
-      </div>
-    </>
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+
+        <Route path="dashboard" element={<Dashboard />} />
+
+        <Route path="v">
+          <Route index element={<V />} />
+          <Route path=":number" element={<V />} />
+        </Route>
+
+        <Route path="myPage" element={<MyPage />}>
+          <Route path="edit" element={<Edit />} />
+          <Route path="delete" element={<Delete />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
