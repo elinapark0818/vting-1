@@ -3,13 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.db = exports.MongoClient = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const user_1 = __importDefault(require("./routes/user"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
-const app = (0, express_1.default)();
+const app = express_1.default();
 const cors = require("cors");
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.send("Hello world");

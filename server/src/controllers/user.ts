@@ -7,7 +7,12 @@ import express, {
 } from "express";
 const jwt = require("jsonwebtoken");
 
-export default {
+interface controller {
+  post: any;
+  get: any;
+}
+
+export let controller = {
   post: async (req: Request, res: Response) => {
     const { email } = req.body;
 
@@ -30,6 +35,10 @@ export default {
     } catch {
       return res.status(400).send("NOT OK");
     }
+  },
+
+  get: async (req: Request, res: Response) => {
+    return res.status(200).json({ message: "Vting" });
   },
 };
 

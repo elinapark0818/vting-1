@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jwt = require("jsonwebtoken");
-exports.default = {
+exports.controller = {
     post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email } = req.body;
         try {
@@ -29,6 +29,9 @@ exports.default = {
         catch (_a) {
             return res.status(400).send("NOT OK");
         }
+    }),
+    get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        return res.status(200).json({ message: "Vting" });
     }),
 };
 // interface UserType {
