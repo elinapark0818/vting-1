@@ -11,30 +11,65 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const clientID = process.env.GITHUB_CLIENT_ID;
+const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+const axios = require("axios");
 exports.UserController = {
-    signupCheck: {
+    //회원가입과 탈퇴시 모두 사용가능한 체크
+    userCheck: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                // user_id 받아오기
                 const user_id = yield req.body;
-                // user_id data 있는지 확인하기
                 const findUser = yield __1.db
                     .collection("user")
-                    .findOne({ user_id: user_id });
+                    .findOne({ user_id: req.body.user_id });
                 if (!findUser) {
                     return res.status(200).json({
-                        data: user_id,
-                        message: "No match exists. you can make a new ID",
+                        message: "It doesn't match",
                     });
                 }
                 else {
-                    return res.status(204).json({
-                        data: null,
-                        message: "Request denied. the same email exists",
+                    return res.status(200).json({
+                        message: "Success verified",
                     });
                 }
             }
             catch (_a) {
+                return res.status(400).json({ message: "Bad Request" });
+            }
+        }),
+    },
+    //회원정보 수정시 사용가능한 체크
+    passwordCheck: {
+        post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            function getCookie(name) {
+                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
+                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+                    "=([^;]*)"));
+                console.log(req.headers);
+                return matches ? decodeURIComponent(matches[1]) : undefined;
+            }
+            const accessToken = getCookie("accessToken");
+            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            try {
+                const password = yield req.body;
+                const findUser = yield __1.db
+                    .collection("user")
+                    .findOne({ user_id: user_id, password: password });
+                if (!findUser) {
+                    return res.status(200).json({
+                        message: "It doesn't match",
+                    });
+                }
+                else {
+                    return res.status(200).json({
+                        message: "Success verified",
+                    });
+                }
+            }
+            catch (err) {
+                console.log(err);
                 return res.status(400).json({ message: "Bad Request" });
             }
         }),
@@ -47,11 +82,8 @@ exports.UserController = {
             // "image" : null,
             // "vote" : null,
             const { user_id, nickname, password, image, vote } = req.body;
-            console.log(__1.db);
             try {
-                // default로 필요한 데이터 받아왔는지 확인 하여 데이터 DB에 넣어주기
                 if (user_id && password && nickname) {
-                    // 새로운 유저에 대한 데이터 추가 in db
                     __1.db.collection("user").insertOne({
                         user_id,
                         nickname,
@@ -60,17 +92,25 @@ exports.UserController = {
                         vote,
                     });
                     // user_id을 playload에 담아 토큰 생성
-                    const accessToken = jwt.sign({ user_id }, process.env.ACCESS_SECRET, {
-                        expiresIn: "10h",
-                    });
+                    const accessToken = jwt.sign({ name: user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 });
                     console.log("1", accessToken);
                     // user_id을 playload에 담은 토큰을 쿠키로 전달
                     res.cookie("accessToken", accessToken, {
                         sameSite: "none",
                     });
-                    return res
-                        .status(201)
-                        .json({ data: req.body, message: "Successfully created" });
+                    let findUserId = yield __1.db
+                        .collection("user")
+                        .findOne({ user_id: req.body.user_id });
+                    console.log(findUserId);
+                    return res.status(201).json({
+                        user_data: {
+                            _id: findUserId._id,
+                            user_id: req.body.user_id,
+                            nickname: req.body.nickname,
+                            image: req.body.image,
+                            vote: req.body.vote,
+                        },
+                    });
                 }
                 else {
                     return res.status(203).json({
@@ -80,8 +120,123 @@ exports.UserController = {
                 }
             }
             catch (err) {
-                console.log("11111111111111111111111111111", err);
+                console.log(err);
                 res.status(400).json({ message: "Sign up failed" });
+            }
+        }),
+    },
+    // oauth.post,
+    oauth: {
+        post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            // req의 body로 authorization code가 들어옵니다. console.log를 통해 서버의 터미널창에서 확인
+            console.log("1", req.body);
+            // authorization code를 이용해 access token을 발급받기 위한 post 요청을 보냅니다.
+            axios({
+                method: "post",
+                url: `https://github.com/login/oauth/access_token`,
+                headers: {
+                    accept: "application/json",
+                },
+                data: {
+                    client_id: clientID,
+                    client_secret: clientSecret,
+                    code: req.body.authorizationCode,
+                },
+            })
+                .then((response) => {
+                let accessToken = response.data.access_token;
+                res.status(200).json({ accessToken: accessToken });
+            })
+                .catch((err) => {
+                res.status(404);
+            });
+        }),
+    },
+    resign: {
+        delete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            // FIXME: 만약토큰으로 작업하면 이 부분으로 작업하기
+            function getCookie(name) {
+                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
+                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+                    "=([^;]*)"));
+                return matches ? decodeURIComponent(matches[1]) : undefined;
+            }
+            const accessToken = getCookie("accessToken");
+            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            try {
+                // 유저 정보 삭제하기
+                yield __1.db.collection("user").deleteOne({ user_id: user_id });
+                // 쿠키에 토큰 삭제하기
+                yield res.clearCookie("accessToken", {
+                    sameSite: "none",
+                });
+                return res
+                    .status(200)
+                    .json({ message: "Successfully account deleted" });
+            }
+            catch (err) {
+                console.log(err);
+                return res.status(400).json({ message: "Bad request" });
+            }
+        }),
+    },
+    userInfo: {
+        get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            function getCookie(name) {
+                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
+                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+                    "=([^;]*)"));
+                console.log(req.headers);
+                return matches ? decodeURIComponent(matches[1]) : undefined;
+            }
+            const accessToken = getCookie("accessToken");
+            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            try {
+                const findUser = yield __1.db
+                    .collection("user")
+                    .findOne({ user_id: user_id });
+                if (findUser) {
+                    return res.status(200).json({
+                        user_data: {
+                            _id: findUser._id,
+                            nickname: findUser.nickname,
+                            user_id: findUser.user_id,
+                            image: findUser.image,
+                            vote: findUser.vote,
+                        },
+                    });
+                }
+                else {
+                    return res.status(400).json({ message: "Bad request" });
+                }
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }),
+        patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            const { nickname, password, image } = req.body;
+            function getCookie(name) {
+                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
+                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+                    "=([^;]*)"));
+                console.log(req.headers);
+                return matches ? decodeURIComponent(matches[1]) : undefined;
+            }
+            const accessToken = getCookie("accessToken");
+            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            try {
+                const findUser = yield __1.db.collection("user").updateOne({ user_id: user_id }, {
+                    $set: {
+                        nickname: req.body.nickname,
+                        image: req.body.image,
+                        vote: req.body.vote,
+                    },
+                });
+                return res.status(200).json({ message: "Successfully updated" });
+            }
+            catch (_b) {
+                return res.status(400).json({ message: "Bad request" });
             }
         }),
     },
