@@ -1,11 +1,11 @@
 import { Router } from "express";
-
-const { controller } = require("../controllers/user");
+import controller from "../controllers/user";
 
 const router = Router();
 
-router.post("/user", controller.signup.post);
-console.log(controller);
+router.post("/", controller.post);
+
+// router.post("/user", controller.signup.post);
 // router.get("/auth", controller.userInfo.get);
 
 export default router;
