@@ -1,20 +1,59 @@
-import express, { ErrorRequestHandler, Request, Response, NextFunction } from 'express';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: __dirname + '/.env' });
+import express, {
+  ErrorRequestHandler,
+  Request,
+  Response,
+  NextFunction,
+} from "express";
+import dotenv from "dotenv";
+import userRoutes from "./routes/user";
+// import voteRoutes from "./routes/vote";
+// import voterRoutes from "./routes/voter";
+dotenv.config();
 
 const PORT = process.env.PORT;
-
 const app: express.Application = express();
+const cors = require("cors");
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-	res.render('Hello world');
-});
+// app.use("/", (req: Request, res: Response, next: NextFunction) => {
+//   res.send("Hello world");
+// });
 
-app.use(((err, req, res, next) => {
-	res.status(500).send(err.message);
+app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
+  res.status(500).send(err.message);
 }) as ErrorRequestHandler);
 
-app.listen(PORT, () => console.log('Running on TS-Express Server')).on('error', (err) => {
-	throw new Error(`${err.name}: ${err.message}`);
-});
+app.use(
+  cors({
+    origin: true,
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+    credentials: true,
+    cookie: {
+      maxAge: 24 * 6 * 60 * 10000,
+      httpOnly: false,
+      secure: true,
+      sameSite: "none",
+    },
+  })
+);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use("/user", userRoutes);
+// app.use("/vting", voteRoutes);
+// app.use("/voter", voterRoutes);
+
+//db 연결 -> 되면 포트 열기
+export const MongoClient = require("mongodb").MongoClient;
+export var db: any;
+
+MongoClient.connect(
+  process.env.DATABASE_URL,
+  { useUnifiedTopology: true },
+  function (err: Error, database: any) {
+    if (err) console.log(err);
+
+    db = database.db("vting_dev");
+    console.log("db connected");
+    app.listen(PORT, () => console.log(`${PORT} port opened`));
+  }
+);
