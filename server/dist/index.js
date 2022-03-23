@@ -1,3 +1,6 @@
 const Index = () => {
-  return <div>hello world!</div>;
+  console.log("hello");
+  return "hello world!";
 };
+
+Index();
