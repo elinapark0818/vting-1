@@ -36,6 +36,7 @@ export let SessionController = {
             { expiresIn: 60 * 60 }
           );
 
+          res.header("Access-Control-Allow-Origin", "http://localhost:3000");
           // user_id을 playload에 담은 토큰을 쿠키로 전달
           res.cookie("accessToken", accessToken, {
             sameSite: "none",

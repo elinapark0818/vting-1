@@ -1,4 +1,24 @@
 import { createSlice, configureStore, PayloadAction } from "@reduxjs/toolkit";
+import { boolean } from "yargs";
+
+// 로그인, 로그아웃 관련 state입니다.
+export interface IsLogin {
+  login: boolean;
+}
+
+const initialIsLoginState: IsLogin = {
+  login: false,
+};
+
+const isLogInSlice = createSlice({
+  name: "isLogin",
+  initialState: initialIsLoginState,
+  reducers: {
+    setIsLogin(state, action: PayloadAction<boolean>) {
+      state.login = action.payload;
+    },
+  },
+});
 
 // 생성할 vote format 관련 state입니다.
 export interface VoteItems {
@@ -70,12 +90,15 @@ const newVoteSlice = createSlice({
 
 const store = configureStore({
   reducer: {
+    isLogin: isLogInSlice.reducer,
     makeNewVote: newVoteSlice.reducer,
     makeNewVoteItem: newVoteItemSlice.reducer,
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
+
+export const { setIsLogin } = isLogInSlice.actions;
 
 export const {
   setFormat,
