@@ -39,14 +39,19 @@ exports.SessionController = {
     // logout, clear cookie
     signOut: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            function getCookie(name) {
-                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
-                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                    "=([^;]*)"));
-                return matches ? decodeURIComponent(matches[1]) : undefined;
-            }
-            const accessToken = getCookie("accessToken");
-            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            // function getCookie(name: string) {
+            //   let matches = String(req.headers.cookie).match(
+            //     new RegExp(
+            //       "(?:^|; )" +
+            //         name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+            //         "=([^;]*)"
+            //     )
+            //   );
+            //   return matches ? decodeURIComponent(matches[1]) : undefined;
+            // }
+            // const accessToken = getCookie("accessToken");
+            // const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            // console.log("logged out", accessToken);
             try {
                 res.clearCookie("accessToken", { sameSite: "none" });
                 return res.status(200).json({ message: "Successfully logged out" });

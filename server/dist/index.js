@@ -8,29 +8,39 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const user_1 = __importDefault(require("./routes/user"));
 const session_1 = __importDefault(require("./routes/session"));
 const auth_1 = __importDefault(require("./routes/auth"));
+const cors_1 = __importDefault(require("cors"));
 // import voteRoutes from "./routes/vote";
 // import voterRoutes from "./routes/voter";
 dotenv_1.default.config();
 const PORT = process.env.PORT;
 const app = express_1.default();
-const cors = require("cors");
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.send("Hello world");
 // });
 app.use(((err, req, res, next) => {
     res.status(500).send(err.message);
 }));
-app.use(cors({
-    origin: true,
+const allowedOrigins = ["http://localhost:3000", "localhost:3000"];
+const options = {
+    origin: allowedOrigins,
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
     credentials: true,
-    cookie: {
-        maxAge: 24 * 6 * 60 * 10000,
-        httpOnly: false,
-        secure: true,
-        sameSite: "none",
-    },
-}));
+    maxAge: 24 * 6 * 60 * 10000,
+};
+app.use(cors_1.default(options));
+// app.use(
+//   cors({
+//     origin: true,
+//     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+//     credentials: true,
+//     cookie: {
+//       maxAge: 24 * 6 * 60 * 10000,
+//       httpOnly: false,
+//       secure: true,
+//       sameSite: "none",
+//     },
+//   })
+// );
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use("/user", user_1.default);

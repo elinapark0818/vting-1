@@ -8,7 +8,7 @@ const router = Router();
 router.post("/check", UserController.userCheck.post);
 router.post("/check", UserController.passwordCheck.post);
 router.post("/", UserController.signup.post);
-router.post("/oauth", UserController.oauth.post);
+// router.post("/oauth", UserController.oauth.post);
 router.delete("/", UserController.resign.delete);
 router.get("/:id", UserController.userInfo.get);
 router.patch("/:id", UserController.userInfo.patch);

@@ -6,6 +6,7 @@ import express, {
   NextFunction,
 } from "express";
 import { request } from "http";
+import { AnyMxRecord } from "dns";
 const jwt = require("jsonwebtoken");
 
 interface UserType {
@@ -36,7 +37,6 @@ export let SessionController = {
             { expiresIn: 60 * 60 }
           );
 
-          res.header("Access-Control-Allow-Origin", "http://localhost:3000");
           // user_id을 playload에 담은 토큰을 쿠키로 전달
           res.cookie("accessToken", accessToken, {
             sameSite: "none",
@@ -54,18 +54,21 @@ export let SessionController = {
   // logout, clear cookie
   signOut: {
     get: async (req: Request, res: Response) => {
-      function getCookie(name: string) {
-        let matches = String(req.headers.cookie).match(
-          new RegExp(
-            "(?:^|; )" +
-              name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-              "=([^;]*)"
-          )
-        );
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-      }
-      const accessToken = getCookie("accessToken");
-      const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+      // function getCookie(name: string) {
+      //   let matches = String(req.headers.cookie).match(
+      //     new RegExp(
+      //       "(?:^|; )" +
+      //         name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+      //         "=([^;]*)"
+      //     )
+      //   );
+      //   return matches ? decodeURIComponent(matches[1]) : undefined;
+      // }
+      // const accessToken = getCookie("accessToken");
+      // const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+
+      // console.log("logged out", accessToken);
+
       try {
         res.clearCookie("accessToken", { sameSite: "none" });
         return res.status(200).json({ message: "Successfully logged out" });
