@@ -7,6 +7,11 @@
   justify-content: space-around;
 }
 
+.vote-body {
+  display: flex;
+  flex-direction: column;
+}
+
 .voteFormatsCon {
   flex: 1 1;
   li {

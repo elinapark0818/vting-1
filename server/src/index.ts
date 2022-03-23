@@ -8,13 +8,13 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/user";
 import sessionRoutes from "./routes/session";
 import authRoutes from "./routes/auth";
+import cors from "cors";
 // import voteRoutes from "./routes/vote";
 // import voterRoutes from "./routes/voter";
 dotenv.config();
 
 const PORT = process.env.PORT;
 const app: express.Application = express();
-const cors = require("cors");
 
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.send("Hello world");
@@ -24,19 +24,27 @@ app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send(err.message);
 }) as ErrorRequestHandler);
 
-app.use(
-  cors({
-    origin: true,
-    methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
-    credentials: true,
-    cookie: {
-      maxAge: 24 * 6 * 60 * 10000,
-      httpOnly: false,
-      secure: true,
-      sameSite: "none",
-    },
-  })
-);
+const allowedOrigins = ["http://localhost:3000", "localhost:3000"];
+const options: cors.CorsOptions = {
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+  credentials: true,
+  maxAge: 24 * 6 * 60 * 10000,
+};
+app.use(cors(options));
+// app.use(
+//   cors({
+//     origin: true,
+//     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+//     credentials: true,
+//     cookie: {
+//       maxAge: 24 * 6 * 60 * 10000,
+//       httpOnly: false,
+//       secure: true,
+//       sameSite: "none",
+//     },
+//   })
+// );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

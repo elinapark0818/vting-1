@@ -10,9 +10,9 @@ import NewVote from "./new/new";
 import { Provider } from "react-redux";
 import store from "./store/index";
 
-import React, { useEffect } from "react";
+import React from "react";
 // import NewVote from "./new/new";
-import axios from "axios";
+// import axios from "axios";
 
 // import axios from 'axios';
 
@@ -26,24 +26,24 @@ import axios from "axios";
 function App() {
   // 서버통신 및 파이프라인 체크를 위한 임시 기능입니다.
   // 성공 후 삭제하셔도 됩니다.
-  useEffect(() => {
-    const getAccessToken = async () => {
-      try {
-        const response = await axios({
-          method: "post",
-          url: "/",
-          data: { email: "test@yof.com" },
-        });
-        if (response.status === 200) {
-          console.log("Hello World from client");
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
+  // useEffect(() => {
+  //   const getAccessToken = async () => {
+  //     try {
+  //       const response = await axios({
+  //         method: "post",
+  //         url: "/",
+  //         data: { email: "test@yof.com" },
+  //       });
+  //       if (response.status === 200) {
+  //         console.log("Hello World from client");
+  //       }
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
 
-    getAccessToken();
-  }, []);
+  //   getAccessToken();
+  // }, []);
 
   // axios.get<User[]>('http://localhost:4000').then((res) => {
   // 	console.log(res.data);
