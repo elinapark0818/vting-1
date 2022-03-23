@@ -16,7 +16,7 @@ export let AuthController = {
   navBar: {
     get: async (req: Request, res: Response) => {
       function getCookie(name: string) {
-        let matches = String(req.headers.cookie).match(
+        let matches = (req.headers.cookie as string).match(
           new RegExp(
             "(?:^|; )" +
               name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
@@ -27,6 +27,8 @@ export let AuthController = {
       }
       const accessToken = getCookie("accessToken");
       const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+
+      console.log("user_id", user_id);
 
       try {
         const findUser = await db
