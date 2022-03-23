@@ -56,11 +56,8 @@ function Home({ text }: Props) {
   return (
     <div>
       {text}
-      {isLogin ? (
-        <button onClick={() => logOut()}>logout</button>
-      ) : (
-        <button onClick={() => getAccessToken()}>login</button>
-      )}
+      <button onClick={() => getAccessToken()}>login</button>
+      <button onClick={() => logOut()}>logout</button>
     </div>
   );
 }
