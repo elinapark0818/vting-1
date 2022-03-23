@@ -1,3 +1,3 @@
 const Index = () => {
-  return <>hello world!</>;
+  return <div>hello world!</div>;
 };
