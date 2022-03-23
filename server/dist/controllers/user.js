@@ -126,32 +126,6 @@ exports.UserController = {
         }),
     },
     // oauth.post,
-    oauth: {
-        post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            // req의 body로 authorization code가 들어옵니다. console.log를 통해 서버의 터미널창에서 확인
-            console.log("1", req.body);
-            // authorization code를 이용해 access token을 발급받기 위한 post 요청을 보냅니다.
-            axios({
-                method: "post",
-                url: `https://github.com/login/oauth/access_token`,
-                headers: {
-                    accept: "application/json",
-                },
-                data: {
-                    client_id: clientID,
-                    client_secret: clientSecret,
-                    code: req.body.authorizationCode,
-                },
-            })
-                .then((response) => {
-                let accessToken = response.data.access_token;
-                res.status(200).json({ accessToken: accessToken });
-            })
-                .catch((err) => {
-                res.status(404);
-            });
-        }),
-    },
     resign: {
         delete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             // FIXME: 만약토큰으로 작업하면 이 부분으로 작업하기

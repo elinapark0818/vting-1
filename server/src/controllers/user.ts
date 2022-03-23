@@ -52,7 +52,7 @@ interface UserController {
   userCheck: { post: any };
   passwordCheck: { post: any };
   signup: { post: any };
-  oauth: { post: any };
+  // oauth: { post: any };
   userInfo: { get: any; patch: any };
 }
 
@@ -180,33 +180,6 @@ export let UserController = {
   },
 
   // oauth.post,
-  oauth: {
-    post: async (req: Request, res: Response) => {
-      // req의 body로 authorization code가 들어옵니다. console.log를 통해 서버의 터미널창에서 확인
-      console.log("1", req.body);
-
-      // authorization code를 이용해 access token을 발급받기 위한 post 요청을 보냅니다.
-      axios({
-        method: "post",
-        url: `https://github.com/login/oauth/access_token`,
-        headers: {
-          accept: "application/json",
-        },
-        data: {
-          client_id: clientID,
-          client_secret: clientSecret,
-          code: req.body.authorizationCode,
-        },
-      })
-        .then((response: any) => {
-          let accessToken: String = response.data.access_token;
-          res.status(200).json({ accessToken: accessToken });
-        })
-        .catch((err: ErrorEvent) => {
-          res.status(404);
-        });
-    },
-  },
 
   resign: {
     delete: async (req: Request, res: Response) => {
