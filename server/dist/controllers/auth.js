@@ -15,13 +15,14 @@ exports.AuthController = {
     navBar: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             function getCookie(name) {
-                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
+                let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
                     name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
                     "=([^;]*)"));
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
             const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            console.log("user_id", user_id);
             try {
                 const findUser = yield __1.db
                     .collection("user")

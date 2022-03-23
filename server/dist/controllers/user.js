@@ -12,9 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const clientID = process.env.GITHUB_CLIENT_ID;
-const clientSecret = process.env.GITHUB_CLIENT_SECRET;
-const axios = require("axios");
 exports.UserController = {
     //회원가입과 탈퇴시 모두 사용가능한 체크
     userCheck: {
@@ -44,14 +41,14 @@ exports.UserController = {
     passwordCheck: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             function getCookie(name) {
-                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
+                let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
                     name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
                     "=([^;]*)"));
-                console.log(req.headers);
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
             const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            console.log("user_id", user_id);
             try {
                 const password = yield req.body;
                 const findUser = yield __1.db
@@ -97,6 +94,7 @@ exports.UserController = {
                     // user_id을 playload에 담은 토큰을 쿠키로 전달
                     res.cookie("accessToken", accessToken, {
                         sameSite: "none",
+                        secure: true,
                     });
                     let findUserId = yield __1.db
                         .collection("user")
@@ -130,19 +128,21 @@ exports.UserController = {
         delete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             // FIXME: 만약토큰으로 작업하면 이 부분으로 작업하기
             function getCookie(name) {
-                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
+                let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
                     name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
                     "=([^;]*)"));
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
             const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            console.log("user_id", user_id);
             try {
                 // 유저 정보 삭제하기
                 yield __1.db.collection("user").deleteOne({ user_id: user_id });
                 // 쿠키에 토큰 삭제하기
                 yield res.clearCookie("accessToken", {
                     sameSite: "none",
+                    secure: true,
                 });
                 return res
                     .status(200)
@@ -165,10 +165,11 @@ exports.UserController = {
             }
             const accessToken = getCookie("accessToken");
             const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            console.log("user_id", user_id);
             try {
                 const findUser = yield __1.db
                     .collection("user")
-                    .findOne({ user_id: user_id });
+                    .findOne({ user_id: user_id } && { _id: req.params.id });
                 if (findUser) {
                     return res.status(200).json({
                         user_data: {
@@ -199,8 +200,11 @@ exports.UserController = {
             }
             const accessToken = getCookie("accessToken");
             const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            console.log("user_id", user_id);
             try {
-                const findUser = yield __1.db.collection("user").updateOne({ user_id: user_id }, {
+                const findUser = yield __1.db
+                    .collection("user")
+                    .updateOne({ user_id: user_id } && { _id: req.params.id }, {
                     $set: {
                         nickname: req.body.nickname,
                         image: req.body.image,

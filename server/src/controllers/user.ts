@@ -6,13 +6,14 @@ import express, {
   NextFunction,
 } from "express";
 import { request } from "http";
+import { read } from "fs";
 const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
-const clientID = process.env.GITHUB_CLIENT_ID;
-const clientSecret = process.env.GITHUB_CLIENT_SECRET;
-const axios = require("axios");
+// const clientID = process.env.GITHUB_CLIENT_ID;
+// const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+// const axios = require("axios");
 
 // export default {
 //   post: async (req: Request, res: Response) => {
@@ -90,18 +91,20 @@ export let UserController = {
       res: Response
     ) => {
       function getCookie(name: string) {
-        let matches = String(req.headers.cookie).match(
+        let matches = (req.headers.cookie as string).match(
           new RegExp(
             "(?:^|; )" +
               name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
               "=([^;]*)"
           )
         );
-        console.log(req.headers);
         return matches ? decodeURIComponent(matches[1]) : undefined;
       }
       const accessToken = getCookie("accessToken");
       const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+
+      console.log("user_id", user_id);
+
       try {
         const password = await req.body;
         const findUser = await db
@@ -152,6 +155,7 @@ export let UserController = {
           // user_id을 playload에 담은 토큰을 쿠키로 전달
           res.cookie("accessToken", accessToken, {
             sameSite: "none",
+            secure: true,
           });
           let findUserId = await db
             .collection("user")
@@ -185,7 +189,7 @@ export let UserController = {
     delete: async (req: Request, res: Response) => {
       // FIXME: 만약토큰으로 작업하면 이 부분으로 작업하기
       function getCookie(name: string) {
-        let matches = String(req.headers.cookie).match(
+        let matches = (req.headers.cookie as string).match(
           new RegExp(
             "(?:^|; )" +
               name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
@@ -198,12 +202,15 @@ export let UserController = {
       const accessToken = getCookie("accessToken");
       const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
 
+      console.log("user_id", user_id);
+
       try {
         // 유저 정보 삭제하기
         await db.collection("user").deleteOne({ user_id: user_id });
         // 쿠키에 토큰 삭제하기
         await res.clearCookie("accessToken", {
           sameSite: "none",
+          secure: true,
         });
         return res
           .status(200)
@@ -231,10 +238,12 @@ export let UserController = {
       const accessToken = getCookie("accessToken");
       const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
 
+      console.log("user_id", user_id);
+
       try {
         const findUser = await db
           .collection("user")
-          .findOne({ user_id: user_id });
+          .findOne({ user_id: user_id } && { _id: req.params.id });
         if (findUser) {
           return res.status(200).json({
             user_data: {
@@ -275,17 +284,18 @@ export let UserController = {
       const accessToken = getCookie("accessToken");
       const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
 
+      console.log("user_id", user_id);
+
       try {
-        const findUser = await db.collection("user").updateOne(
-          { user_id: user_id },
-          {
+        const findUser = await db
+          .collection("user")
+          .updateOne({ user_id: user_id } && { _id: req.params.id }, {
             $set: {
               nickname: req.body.nickname,
               image: req.body.image,
               vote: req.body.vote,
             },
-          }
-        );
+          });
         return res.status(200).json({ message: "Successfully updated" });
       } catch {
         return res.status(400).json({ message: "Bad request" });
