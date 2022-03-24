@@ -53,11 +53,16 @@ export interface NewVote {
   type?: string;
   items: VoteItems[];
   multiple?: boolean;
-  manytines?: boolean;
+  manytimes?: boolean;
+}
+
+export interface VersusPayload {
+  idx: number;
+  content: string;
 }
 
 const initialVoteItemState = {
-  idx: 1,
+  idx: 0,
   content: "",
 };
 
@@ -67,7 +72,7 @@ const initialVoteState: NewVote = {
   type: "",
   items: [],
   multiple: false,
-  manytines: false,
+  manytimes: false,
 };
 
 const newVoteItemSlice = createSlice({
@@ -78,7 +83,7 @@ const newVoteItemSlice = createSlice({
       state.content = action.payload;
     },
     setIndex(state, action: PayloadAction<number>) {
-      state.idx = action.payload;
+      state.idx = action.payload + 1;
     },
   },
 });
@@ -99,11 +104,16 @@ const newVoteSlice = createSlice({
     setItems(state, action: PayloadAction<VoteItems>) {
       state.items = [...state.items, action.payload];
     },
+    setVersusItem(state, action: PayloadAction<VersusPayload>) {
+      if (action.payload.idx === 0) state.items = [action.payload];
+      else if (action.payload.idx === 1)
+        state.items = [state.items[0], action.payload];
+    },
     setMultiple(state, action: PayloadAction<boolean>) {
       state.multiple = action.payload;
     },
     setManyTimes(state, action: PayloadAction<boolean>) {
-      state.manytines = action.payload;
+      state.manytimes = action.payload;
     },
   },
 });
@@ -130,6 +140,7 @@ export const {
   setItems,
   setMultiple,
   setManyTimes,
+  setVersusItem,
 } = newVoteSlice.actions;
 
 export const { setItem, setIndex } = newVoteItemSlice.actions;

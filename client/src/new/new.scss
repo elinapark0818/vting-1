@@ -2,18 +2,31 @@
 
 .newVoteCon {
   min-height: 500px;
-  padding: 100px;
+  padding: 50px 100px;
   display: flex;
   justify-content: space-around;
 }
 
 .vote-body {
   display: flex;
+  flex: 5 1 auto;
   flex-direction: column;
+  .vote-making {
+    min-height: 400px;
+    display: flex;
+    flex-direction: row;
+  }
+  .vote-button {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .voteFormatsCon {
   flex: 1 1;
+  ul {
+    margin-top: 0;
+  }
   li {
     list-style: none;
     margin-bottom: 20px;
@@ -33,6 +46,19 @@
       pointer-events: none;
     }
   }
+  .active {
+    animation-name: btnColor;
+    animation-duration: 0.3s;
+    background-color: $vting-orange;
+  }
+  @keyframes btnColor {
+    0% {
+      background-color: $vting-blue;
+    }
+    100% {
+      background-color: $vting-orange;
+    }
+  }
   #barVer > svg {
     -ms-transform: rotate(-90deg); /* IE 9 */
     -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
@@ -46,6 +72,10 @@
   label.disabledLabel {
     color: $vting-gray;
   }
+  img.vting-logo {
+    width: 40%;
+    opacity: 0.3;
+  }
   div {
     justify-content: center;
   }
@@ -54,11 +84,22 @@
 .votePreviewCon {
   flex: 2 1 0;
   text-align: center;
+  img.vting-logo {
+    width: 40%;
+    opacity: 0.3;
+  }
   div {
     justify-content: center;
   }
+  .votePreviewTitle {
+    margin-top: 20px;
+    padding: 10px;
+    min-height: 24px;
+    font-size: 20px;
+    background-color: $vting-orange;
+    color: white;
+  }
   .votePreviewBack {
-    margin-left: 10%;
     width: 250px;
     height: 250px;
     padding: 20px;
@@ -82,7 +123,14 @@
       }
       .barVer-itemBar {
         width: 100%;
+        animation-name: barVerAnimation;
+        animation-duration: 1s;
         background-color: $vting-blue;
+      }
+      @keyframes barVerAnimation {
+        0% {
+          height: 0;
+        }
       }
     }
 
@@ -103,7 +151,15 @@
         // width: 100%;
       }
       .barHor-itemBar {
+        height: 100%;
+        animation-name: barAnimation;
+        animation-duration: 1s;
         background-color: $vting-blue;
+      }
+      @keyframes barAnimation {
+        0% {
+          width: 0;
+        }
       }
     }
   }
