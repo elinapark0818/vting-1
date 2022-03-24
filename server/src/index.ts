@@ -12,10 +12,6 @@ const PORT = process.env.PORT;
 const app: express.Application = express();
 const cors = require("cors");
 
-// app.use("/", (req: Request, res: Response, next: NextFunction) => {
-//   res.send("Hello world");
-// });
-
 app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send(err.message);
 }) as ErrorRequestHandler);
