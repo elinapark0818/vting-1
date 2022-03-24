@@ -24,7 +24,8 @@ app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send(err.message);
 }) as ErrorRequestHandler);
 
-const allowedOrigins = ["http://localhost:3000", "localhost:3000"];
+const allowedOrigins = ["http://localhost:3000", "v-ting.net"];
+
 const options: cors.CorsOptions = {
   origin: allowedOrigins,
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
@@ -32,6 +33,7 @@ const options: cors.CorsOptions = {
   maxAge: 24 * 6 * 60 * 10000,
 };
 app.use(cors(options));
+
 // app.use(
 //   cors({
 //     origin: true,
