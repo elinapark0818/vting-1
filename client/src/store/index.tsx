@@ -1,5 +1,6 @@
 import { createSlice, configureStore, PayloadAction } from "@reduxjs/toolkit";
 import { boolean } from "yargs";
+import { string } from "yup";
 
 // 로그인, 로그아웃 관련 state입니다.
 export interface IsLogin {
@@ -16,6 +17,25 @@ const isLogInSlice = createSlice({
   reducers: {
     setIsLogin(state, action: PayloadAction<boolean>) {
       state.login = action.payload;
+    },
+  },
+});
+
+//  회원가입 관련 state 입니다
+export interface IsSignUp {
+  signUp: boolean;
+}
+
+const initialSignUpState: IsSignUp = {
+  signUp: false,
+};
+
+const isSignUpSlice = createSlice({
+  name: "signUp",
+  initialState: initialSignUpState,
+  reducers: {
+    setIsSignUp(state, action: PayloadAction<boolean>) {
+      state.signUp = action.payload;
     },
   },
 });
@@ -90,6 +110,7 @@ const newVoteSlice = createSlice({
 
 const store = configureStore({
   reducer: {
+    isSignUp: isSignUpSlice.reducer,
     isLogin: isLogInSlice.reducer,
     makeNewVote: newVoteSlice.reducer,
     makeNewVoteItem: newVoteItemSlice.reducer,
@@ -99,6 +120,8 @@ const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>;
 
 export const { setIsLogin } = isLogInSlice.actions;
+
+export const { setIsSignUp } = isSignUpSlice.actions;
 
 export const {
   setFormat,
