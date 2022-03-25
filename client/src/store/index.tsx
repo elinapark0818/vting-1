@@ -54,6 +54,7 @@ export interface NewVote {
   items: VoteItems[];
   multiple?: boolean;
   manytimes?: boolean;
+  password?: string;
 }
 
 export interface VersusPayload {
@@ -73,6 +74,7 @@ const initialVoteState: NewVote = {
   items: [],
   multiple: false,
   manytimes: false,
+  password: "",
 };
 
 const newVoteItemSlice = createSlice({
@@ -115,6 +117,9 @@ const newVoteSlice = createSlice({
     setManyTimes(state, action: PayloadAction<boolean>) {
       state.manytimes = action.payload;
     },
+    setPassword(state, action: PayloadAction<string>) {
+      state.password = action.payload;
+    },
   },
 });
 
@@ -141,6 +146,7 @@ export const {
   setMultiple,
   setManyTimes,
   setVersusItem,
+  setPassword,
 } = newVoteSlice.actions;
 
 export const { setItem, setIndex } = newVoteItemSlice.actions;
