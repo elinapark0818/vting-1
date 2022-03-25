@@ -51,14 +51,16 @@ app.use("/auth", auth_1.default);
 // app.use("/vting", voteRoutes);
 // app.use("/voter", voterRoutes);
 //db 연결 -> 되면 포트 열기
-exports.MongoClient = require("mongodb").MongoClient;
-exports.MongoClient.connect(
-  "mongodb+srv://admin:dudqls12@cluster0.pldtu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-  { useUnifiedTopology: true },
-  function (err, database) {
-    if (err) console.log(err);
-    exports.db = database.db("vting_dev");
-    console.log("db connected");
-    app.listen(PORT, () => console.log(`${PORT} port opened`));
-  }
-);
+// exports.MongoClient = require("mongodb").MongoClient;
+// exports.MongoClient.connect(
+//   "mongodb+srv://admin:dudqls12@cluster0.pldtu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+//   { useUnifiedTopology: true },
+//   function (err, database) {
+//     if (err) console.log(err);
+//     exports.db = database.db("vting_dev");
+//     console.log("db connected");
+//     app.listen(PORT, () => console.log(`${PORT} port opened`));
+//   }
+// );
+
+app.listen(PORT, () => console.log(`${PORT} port opened`));
