@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ReactWordcloud from "react-wordcloud";
+import ReactWordcloud, { MinMaxPair } from "react-wordcloud";
 import "tippy.js/dist/tippy.css";
 import "tippy.js/animations/scale.css";
 import { useSelector } from "react-redux";
@@ -36,11 +36,10 @@ function Bar() {
 
   const [randomNums, setRandomNums] = useState<number[]>([90]);
 
+  const rand_0_99 = Math.floor(Math.random() * 100);
   useEffect(() => {
     setRandomNums([...randomNums, rand_0_99]);
   }, [voteItems]);
-
-  const rand_0_99 = Math.floor(Math.random() * 100);
   const makeRandomHeight = (idx: number): React.CSSProperties => {
     let heightProprety = { height: randomNums[idx] + "%" };
     return heightProprety;
@@ -54,7 +53,6 @@ function Bar() {
     case "vertical":
       return (
         <div className="votePreviewCon">
-          세로 바 그래프(미리보기)
           <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
           <div className="votePreviewBack">
             <div className="votePreview-barVer-con">
@@ -75,7 +73,6 @@ function Bar() {
     case "horizontal":
       return (
         <div className="votePreviewCon">
-          가로 바 그래프(미리보기)
           <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
           <div className="votePreviewBack">
             <div className="votePreview-barHor-con">
@@ -103,7 +100,6 @@ function OpenEnded() {
 
   return (
     <div className="votePreviewCon">
-      말풍선(미리보기)
       <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
       <div className="votePreviewBack"></div>
     </div>
@@ -115,7 +111,6 @@ function Versus() {
 
   return (
     <div className="votePreviewCon">
-      대결(미리보기)
       <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
       <div className="votePreviewBack">
         <div className="versusItem">
@@ -136,28 +131,33 @@ function WordCloud() {
   const words = [
     {
       text: "이것은",
-      value: 30,
+      value: 300,
     },
     {
       text: "예시",
-      value: 32,
+      value: 320,
     },
     {
       text: "화면",
-      value: 28,
+      value: 295,
     },
     {
       text: "입니다",
-      value: 27,
+      value: 280,
     },
   ];
 
+  const fontSizes = [20, 50] as MinMaxPair;
+
+  const options = {
+    fontSizes: fontSizes,
+  };
+
   return (
     <div className="votePreviewCon">
-      워드클라우드(미리보기)
       <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
       <div className="votePreviewBack">
-        <ReactWordcloud words={words} />
+        <ReactWordcloud words={words} options={options} />
       </div>
     </div>
   );
