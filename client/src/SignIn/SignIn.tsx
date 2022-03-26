@@ -84,6 +84,7 @@ function SignIn() {
           user_id: newUser.email,
           nickname: newUser.name,
           password: newUser.password,
+          passwordConfirm: newUser.passwordConfirm,
           // image: newUser.image,
         },
         { withCredentials: true }
@@ -138,12 +139,54 @@ function SignIn() {
   const [nameValid, setNameValid] = useState(false);
   const [isBlur, setIsBlur] = useState(false);
 
-  const blurHandler = (e: React.FocusEvent<HTMLInputElement>) => {
+  const nameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsBlur(true);
     if (newUser.name.match(/^[ㄱ-ㅣ가-힣]*$/i)) {
       setNameValid(true);
     } else {
       setNameValid(false);
+    }
+  };
+
+  // * 이메일 유효성검사
+  const [emailValid, setEmailValid] = useState(false);
+  const [isEmailBlur, setIsEmailBlur] = useState(false);
+
+  const emailBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    setIsEmailBlur(true);
+    if (newUser.email.match(/^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/i)) {
+      setEmailValid(true);
+    } else if (
+      user.email.match(/^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/i)
+    ) {
+      setEmailValid(true);
+    } else {
+      setEmailValid(false);
+    }
+  };
+
+  // * 비밀번호 유효성검사
+  const [passwordValid, setPasswordValid] = useState(false);
+  const [isPasswordBlur, setIsPasswordBlur] = useState(false);
+
+  const passwordBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    setIsPasswordBlur(true);
+    if (newUser.password.match(/^[A-Za-z]\w{7,14}$/)) {
+      setPasswordValid(true);
+    } else if (user.password.match(/^[A-Za-z]\w{7,14}$/)) {
+      setPasswordValid(true);
+    } else {
+      setPasswordValid(false);
+    }
+  };
+
+  // * 비밀번호 일치 확인용
+  const [samePassword, setSamePassword] = useState(false);
+  const passwordConfirm = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (newUser.password.match(e.target.value)) {
+      setSamePassword(true);
+    } else {
+      setSamePassword(false);
     }
   };
 
@@ -158,24 +201,41 @@ function SignIn() {
 
             <div className="email_wrap">
               <input
+                onBlur={emailBlur}
+                value={user.email}
                 placeholder="아이디(이메일)를 입력하세요."
                 name="email"
                 type="email"
                 onChange={lonIn_onChangeEmail}
               />
-              <div className="email Error">! 이메일을 정확히 입력해주세요.</div>
+              {isEmailBlur && !emailValid && (
+                <div className="email Error">
+                  ! 이메일을 정확히 입력해주세요.
+                </div>
+              )}
+              {isEmailBlur && emailValid && (
+                <div className="email Success"></div>
+              )}
             </div>
 
             <div className="password_wrap">
               <input
+                onBlur={passwordBlur}
+                value={user.password}
                 placeholder="비밀번호를 입력하세요."
                 name="password"
                 type="password"
                 onChange={lonIn_onChangePassword}
               />
-              <div className="password Error">
-                ! 비밀번호를 다시 확인해주세요
-              </div>
+
+              {isPasswordBlur && !passwordValid && (
+                <div className="password Error">
+                  ! 비밀번호를 다시 확인해주세요
+                </div>
+              )}
+              {isPasswordBlur && passwordValid && (
+                <div className="password Success"></div>
+              )}
             </div>
 
             <div className="btn_wrap">
@@ -198,7 +258,7 @@ function SignIn() {
 
             <input
               placeholder="닉네임"
-              onBlur={blurHandler}
+              onBlur={nameBlur}
               id="name"
               value={newUser.name}
               name="name"
@@ -206,39 +266,55 @@ function SignIn() {
               onChange={signUp_onChangeName}
             />
             {isBlur && !nameValid && (
-              <div className="nickname Error">! 이름을 입력해주세요.</div>
+              <div className="nickname Error">! 한글 입력만 가능합니다.</div>
             )}
             {isBlur && nameValid && <div className="nickname Success"></div>}
 
             <input
               placeholder="아이디(이메일)"
+              onBlur={emailBlur}
+              value={newUser.email}
               id="email"
               name="email"
               type="email"
               onChange={signUp_onChangeEmail}
             />
-            <div className="email Error">! 이메일을 정확히 입력해주세요.</div>
+            {isEmailBlur && !emailValid && (
+              <div className="email Error">! 이메일을 정확히 입력해주세요.</div>
+            )}
+            {isEmailBlur && emailValid && <div className="email Success"></div>}
 
             <input
+              onBlur={passwordBlur}
+              value={newUser.password}
               placeholder="비밀번호"
               type="password"
               name="password"
               id="password"
               onChange={signUp_onChangePassword}
             />
-            <div className="password Error">
-              ! 비밀번호 형식이 올바르지 않습니다.
-            </div>
+            {isPasswordBlur && !passwordValid && (
+              <div className="password Error">
+                ! 최소 7글자 최대 14글자까지 입력가능합니다.
+              </div>
+            )}
+            {isPasswordBlur && passwordValid && (
+              <div className="password Success"></div>
+            )}
 
             <input
+              onBlur={passwordConfirm}
               placeholder="비밀번호 확인"
               type="password"
-              id="password_confirm"
+              id="passwordConfirm"
               onChange={signUp_onChangePasswordConfirm}
             />
-            <div className="password Error">
-              ! 비밀번호가 일치하지 않습니다.
-            </div>
+
+            {!samePassword && (
+              <div className="password Error">
+                ! 비밀번호가 일치하지 않습니다.
+              </div>
+            )}
 
             <div className="signUp_wrap">
               <button onClick={() => SignInUser()}>이메일로 가입하기</button>
