@@ -1,6 +1,4 @@
 import { createSlice, configureStore, PayloadAction } from "@reduxjs/toolkit";
-import { boolean } from "yargs";
-import { string } from "yup";
 
 // 로그인, 로그아웃 관련 state입니다.
 export interface IsLogin {
@@ -21,24 +19,26 @@ const isLogInSlice = createSlice({
   },
 });
 
-//  회원가입 관련 state 입니다
-export interface IsSignUp {
-  signUp: boolean;
-}
+// Modal 관련 상태
+// export interface IsModal {
+//   isOpenModal: boolean;
+// }
 
-const initialSignUpState: IsSignUp = {
-  signUp: false,
-};
+// const initialModalState: IsModal = {
+//   isOpenModal: false,
+// };
 
-const isSignUpSlice = createSlice({
-  name: "signUp",
-  initialState: initialSignUpState,
-  reducers: {
-    setIsSignUp(state, action: PayloadAction<boolean>) {
-      state.signUp = action.payload;
-    },
-  },
-});
+// export const isModalSlice = createSlice({
+//   name: "isOpenModal",
+//   initialState: initialModalState,
+//   reducers: {
+//     setIsOpenModal(state, action: PayloadAction<boolean>) {
+//       // console.log("바꿈");
+//       // console.log(action.payload);
+//       state.isOpenModal = action.payload;
+//     },
+//   },
+// });
 
 // 생성할 vote format 관련 state입니다.
 export interface VoteItems {
@@ -110,7 +110,7 @@ const newVoteSlice = createSlice({
 
 const store = configureStore({
   reducer: {
-    isSignUp: isSignUpSlice.reducer,
+    // isOpenModal: isModalSlice.reducer,
     isLogin: isLogInSlice.reducer,
     makeNewVote: newVoteSlice.reducer,
     makeNewVoteItem: newVoteItemSlice.reducer,
@@ -121,7 +121,7 @@ export type RootState = ReturnType<typeof store.getState>;
 
 export const { setIsLogin } = isLogInSlice.actions;
 
-export const { setIsSignUp } = isSignUpSlice.actions;
+// export const { setIsOpenModal } = isModalSlice.actions;
 
 export const {
   setFormat,

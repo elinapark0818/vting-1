@@ -9,7 +9,7 @@ function MyPage({ text }: Props) {
   return (
     <div>
       <p>{text}</p>
-      <Link to="edit">회원정보 수정</Link>
+      <Link to="">회원정보 수정</Link>
       <Link to="delete">회원탈퇴</Link>
       <div>
         <Outlet />
