@@ -14,7 +14,7 @@ const cors_1 = __importDefault(require("cors"));
 // import voteRoutes from "./routes/vote";
 // import voterRoutes from "./routes/voter";
 dotenv_1.default.config();
-const PORT = 8000;
+const PORT = process.env.PORT;
 const app = express_1.default();
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.send("Hello world");
