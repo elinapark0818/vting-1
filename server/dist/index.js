@@ -16,9 +16,9 @@ const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const PORT = 8080;
 const app = express_1.default();
-// app.use("/", (req: Request, res: Response, next: NextFunction) => {
-//   res.send("Hello world");
-// });
+app.get("/", (req, res, next) => {
+  res.send("Hello world");
+});
 app.use((err, req, res, next) => {
   res.status(500).send(err.message);
 });
