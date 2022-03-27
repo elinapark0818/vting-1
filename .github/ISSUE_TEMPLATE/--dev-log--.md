@@ -2,7 +2,7 @@
 name: "[ dev log ]"
 about: "[ dev log ]"
 title: "[ Dev Log ] OverFlowBIN 0328"
-labels: ''
+labels: dev_log
 assignees: ''
 
 ---
