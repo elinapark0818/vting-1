@@ -14,6 +14,15 @@ const __1 = require("..");
 const mongodb_1 = require("mongodb");
 const jwt = require("jsonwebtoken");
 const QRCode = require("qrcode");
+// interface VoteType2 {
+//   title: string;
+//   format: string;
+//   manytimes: string;
+//   multiple?: string;
+//   type?: string[];
+//   items?: { idx: number; content: string; count: number }[];
+//   undergoing: true;
+// }
 exports.VoteController = {
     test: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -27,33 +36,55 @@ exports.VoteController = {
     },
     create: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log("start post");
+            // req.body
             const { title, format, manytimes, multiple, type, items } = req.body;
+            // access code(6-digits) 만들기
+            let randomNum = Math.random();
+            let url = (randomNum.toFixed(6) * 1000000).toString();
+            // user_id 가져오기 (from accessToken)
+            const token = req.headers.cookie.accessToken;
+            const user_id = jwt.verify(token, process.env.ACCESS_SECRET);
             try {
-                // vote 데이터 DB 저장하기
-                __1.db.collection("vote").insertOne({ title, format, manytimes, multiple, type, items }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
-                    // random url(6digit) 만들어 주기
-                    let objectId = data.insertedId.toString();
-                    let randomNum = Math.random();
-                    let url = (randomNum.toFixed(6) * 1000000).toString();
-                    // QRCode 만들어 주기
-                    // 응답 보내기
-                    return res.status(201).json({
-                        vote_data: {
-                            _id: new mongodb_1.ObjectId(objectId),
-                            url,
-                            QRcode: "string",
-                            createdAt: new Date(),
-                        },
-                        vote_details: {
-                            title: "점심메뉴를 골라주세요",
-                            items: [
-                                { idx: 1, content: "짜장면", count: 3 },
-                                { idx: 2, content: "짬뽕", count: 4 },
-                            ],
-                        },
+                // format에 따라 vote 데이터 DB 저장하기
+                // BAR formet
+                if (format === "bar") {
+                    __1.db.collection("vote").insertOne({
+                        user_id,
+                        title,
+                        format,
+                        type,
+                        items,
+                        multiple,
+                        manytimes,
+                        undergoing: true,
+                        create_at: new Date(),
+                    }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+                        // random url(6digit) 만들어 주기
+                        let objectId = data.insertedId.toString();
+                        // 응답 보내기
+                        return res.status(201).json({
+                            data: {
+                                _id: new mongodb_1.ObjectId(objectId),
+                                url: url,
+                                createdAt: new Date(),
+                                title,
+                                items,
+                            },
+                        });
+                    }));
+                }
+                else if (format === "open ended") {
+                    __1.db.collection("vote").insertOne({
+                        user_id,
+                        url: "string",
+                        title: "코딩 왜 배우나요 길게 써주세요 제발",
+                        format: "open ended",
+                        manytimes: true,
+                        responses: [{ idx: 1, content: "ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ" }],
+                        undergoing: true,
+                        createdAt: new Date(),
                     });
-                }));
+                }
             }
             catch (_a) {
                 return res.status(400);

@@ -15,7 +15,6 @@ const vote_1 = __importDefault(require("./routes/vote"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
 const app = (0, express_1.default)();
-
 app.use(((err, req, res, next) => {
     res.status(500).send(err.message);
 }));
