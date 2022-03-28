@@ -1,9 +1,7 @@
 "use strict";
-var __importDefault =
-  (this && this.__importDefault) ||
-  function (mod) {
-    return mod && mod.__esModule ? mod : { default: mod };
-  };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.db = exports.MongoClient = void 0;
 const express_1 = __importDefault(require("express"));
@@ -35,7 +33,6 @@ const options = {
     methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
     origin: "https://v-ting.net",
     preflightContinue: false,
-
 };
 app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());
@@ -45,16 +42,12 @@ app.use("/session", session_1.default);
 app.use("/auth", auth_1.default);
 // app.use("/vting", voteRoutes);
 // app.use("/voter", voterRoutes);
+//db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
-exports.MongoClient.connect(
-  "mongodb+srv://admin:dudqls12@cluster0.pldtu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-  { useUnifiedTopology: true },
-  function (err, database) {
-    if (err) console.log(err);
+exports.MongoClient.connect(process.env.DATABASE_URL, { useUnifiedTopology: true }, function (err, database) {
+    if (err)
+        console.log(err);
     exports.db = database.db("vting_dev");
     console.log("db connected");
     app.listen(PORT, () => console.log(`${PORT} port opened`));
-  }
-);
-
-// app.listen(PORT, () => console.log(`${PORT} port opened`));
+});
