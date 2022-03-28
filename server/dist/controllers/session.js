@@ -26,13 +26,13 @@ exports.SessionController = {
                     .collection("user")
                     .findOne({ user_id: req.body.user_id, password: req.body.password });
                 if (findUser) {
-                    const accessToken = jsonwebtoken_1.default.sign({ name: user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 });
+                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 });
                     // user_id을 playload에 담은 토큰을 쿠키로 전달
                     res.cookie("accessToken", accessToken, {
                         sameSite: "none",
                         secure: true,
                     });
-                    console.log("logged in", accessToken);
+
                     return res.status(200).json({
                         data: {
                             _id: findUser._id,
