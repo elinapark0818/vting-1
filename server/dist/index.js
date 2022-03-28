@@ -17,9 +17,9 @@ const app = express_1.default();
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.send("Hello world");
 // });
-app.use(((err, req, res, next) => {
-    res.status(500).send(err.message);
-}));
+// app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
+//   res.status(500).send(err.message);
+// }) as ErrorRequestHandler);
 const allowedOrigins = ["http://localhost:3000", "localhost:3000"];
 const options = {
     origin: allowedOrigins,

@@ -26,7 +26,7 @@ exports.AuthController = {
             try {
                 const findUser = yield __1.db
                     .collection("user")
-                    .findOne({ user_id: user_id });
+                    .findOne({ user_id: user_id.user_id });
                 return res.status(200).json({
                     data: {
                         _id: findUser._id,

@@ -32,7 +32,7 @@ exports.SessionController = {
                         sameSite: "none",
                         secure: true,
                     });
-                    console.log("logged in", accessToken);
+                    console.log("logged in", req.headers);
                     return res.status(200).json({
                         data: {
                             _id: findUser._id,
@@ -55,6 +55,7 @@ exports.SessionController = {
     signOut: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             function getCookie(name) {
+                console.log("!!!!!!!!!!!!!!!!!!!!", req.headers);
                 let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
                     name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
                     "=([^;]*)"));
@@ -62,6 +63,7 @@ exports.SessionController = {
             }
             const accessToken = getCookie("accessToken");
             const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+            console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!", user_id);
             try {
                 if (user_id) {
                     res.clearCookie("accessToken", { sameSite: "none", secure: true });
