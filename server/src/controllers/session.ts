@@ -46,8 +46,6 @@ export let SessionController = {
             secure: true,
           });
 
-          console.log("logged in", req.headers);
-
           return res.status(200).json({
             data: {
               _id: findUser._id,
@@ -70,7 +68,6 @@ export let SessionController = {
   signOut: {
     get: async (req: Request, res: Response) => {
       function getCookie(name: any) {
-        console.log("!!!!!!!!!!!!!!!!!!!!", req.headers);
         let matches = req.headers.cookie.match(
           new RegExp(
             "(?:^|; )" +
@@ -87,7 +84,7 @@ export let SessionController = {
         accessToken as string,
         process.env.ACCESS_SECRET as jwt.Secret
       );
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!", user_id);
+
       try {
         if (user_id) {
           res.clearCookie("accessToken", { sameSite: "none", secure: true });

@@ -28,8 +28,6 @@ export let AuthController = {
       const accessToken = getCookie("accessToken");
       const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
 
-      console.log("user_id", user_id);
-
       try {
         const findUser = await db
           .collection("user")
