@@ -8,10 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 exports.UserController = {
     //회원가입과 탈퇴시 모두 사용가능한 체크
     userCheck: {
@@ -47,7 +51,7 @@ exports.UserController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             console.log("user_id", user_id);
             try {
                 const password = yield req.body;
@@ -81,6 +85,15 @@ exports.UserController = {
             const { user_id, nickname, password, image, vote } = req.body;
             try {
                 if (user_id && password && nickname) {
+                    // bcrypt.genSalt(saltRounds, function (err: Error, salt: any) {
+                    //   bcrypt.hash(
+                    //     myPlaintextPassword,
+                    //     salt,
+                    //     function (err: Error, hash: any) {
+                    //       //store hash in your password DB
+                    //     }
+                    //   );
+                    // });
                     __1.db.collection("user").insertOne({
                         user_id,
                         nickname,
@@ -89,7 +102,9 @@ exports.UserController = {
                         vote,
                     });
                     // user_id을 playload에 담아 토큰 생성
-                    const accessToken = jwt.sign({ name: user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 });
+                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, {
+                        expiresIn: 60 * 60,
+                    });
                     console.log("1", accessToken);
                     // user_id을 playload에 담은 토큰을 쿠키로 전달
                     res.cookie("accessToken", accessToken, {
@@ -101,7 +116,7 @@ exports.UserController = {
                         .findOne({ user_id: req.body.user_id });
                     console.log(findUserId);
                     return res.status(201).json({
-                        user_data: {
+                        data: {
                             _id: findUserId._id,
                             user_id: req.body.user_id,
                             nickname: req.body.nickname,
@@ -134,7 +149,7 @@ exports.UserController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             console.log("user_id", user_id);
             try {
                 // 유저 정보 삭제하기
@@ -157,14 +172,17 @@ exports.UserController = {
     userInfo: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             function getCookie(name) {
-                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
+                let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
                     name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
                     "=([^;]*)"));
-                console.log(req.headers);
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
             console.log("user_id", user_id);
             try {
                 const findUser = yield __1.db
@@ -172,7 +190,7 @@ exports.UserController = {
                     .findOne({ user_id: user_id } && { _id: req.params.id });
                 if (findUser) {
                     return res.status(200).json({
-                        user_data: {
+                        data: {
                             _id: findUser._id,
                             nickname: findUser.nickname,
                             user_id: findUser.user_id,
@@ -199,7 +217,7 @@ exports.UserController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             console.log("user_id", user_id);
             try {
                 const findUser = yield __1.db
