@@ -44,10 +44,22 @@ app.use("/auth", auth_1.default);
 // app.use("/voter", voterRoutes);
 //db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
+console.log(process.env.DATABASE_PORT);
 exports.MongoClient.connect(process.env.DATABASE_URL, { useUnifiedTopology: true }, function (err, database) {
     if (err)
         console.log(err);
     exports.db = database.db("vting_dev");
     console.log("db connected");
-    app.listen(PORT, () => console.log(`${PORT} port opened`));
+});
+app
+    .listen(PORT, () => {
+    console.log(`
+    ################################################
+    🛡️  Server listening on port: 5000 🛡️
+    ################################################
+  `);
+})
+    .on("error", (err) => {
+    console.error(err);
+    process.exit(1);
 });
