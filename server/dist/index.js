@@ -13,14 +13,14 @@ const cors_1 = __importDefault(require("cors"));
 // import voteRoutes from "./routes/vote";
 // import voterRoutes from "./routes/voter";
 dotenv_1.default.config();
-const PORT = process.env.PORT;
+const PORT = 8080;
 const app = (0, express_1.default)();
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.send("Hello world");
 // });
-app.use(((err, req, res, next) => {
-    res.status(500).send(err.message);
-}));
+// app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
+//   res.status(500).send(err.message);
+// }) as ErrorRequestHandler);
 const options = {
     allowedHeaders: [
         "Origin",
