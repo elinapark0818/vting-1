@@ -68,7 +68,7 @@ function SignIn() {
       if (res.status === 200) {
         dispatch(setIsLogin(true));
         console.log("로그인 성공===", res.data);
-        navigate("/dashboard");
+        // todo: 모달 끄는 함수를 넣어주기
       }
     } catch (err) {
       console.log(err);
