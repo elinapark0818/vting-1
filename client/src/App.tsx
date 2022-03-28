@@ -11,10 +11,11 @@ import { Provider } from "react-redux";
 import store from "./store/index";
 
 import React from "react";
+import SignIn from "./SignIn/SignIn";
+// import Modal from "./Modal/Modal";
+
 // import NewVote from "./new/new";
 // import axios from "axios";
-
-// import axios from 'axios';
 
 // interface User {
 // 	id: number;
@@ -45,9 +46,10 @@ function App() {
   //   getAccessToken();
   // }, []);
 
-  // axios.get<User[]>('http://localhost:4000').then((res) => {
-  // 	console.log(res.data);
-  // });
+  // type SignInProps = {
+  //   styles: React.CSSProperties;
+  // };
+
   return (
     <Provider store={store}>
       <BrowserRouter>
@@ -65,10 +67,13 @@ function App() {
           <Route path="new" element={<NewVote />} />
 
           <Route path="myPage" element={<MyPage />}>
-            <Route path="edit" element={<Edit />} />
+            <Route path="" element={<Edit />} />
             <Route path="delete" element={<Delete />} />
           </Route>
+
+          <Route path="signIn" element={<SignIn />} />
         </Routes>
+        {/* <Modal /> */}
       </BrowserRouter>
     </Provider>
   );

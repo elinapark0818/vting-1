@@ -48,6 +48,37 @@ dotenv.config();
 //   },
 // };
 
+
+// const clientID = process.env.GITHUB_CLIENT_ID;
+// const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+// const axios = require("axios");
+
+// export default {
+//   post: async (req: Request, res: Response) => {
+//     const { email } = req.body;
+
+//     try {
+//       if (email) {
+//         const accessToken = jwt.sign({ email }, process.env.ACCESS_SECRET, {
+//           expiresIn: "10h",
+//         });
+
+//         console.log("1", accessToken);
+
+//         // email을 playload에 담은 토큰을 쿠키로 전달
+
+//         res.cookie("accessToken", accessToken, {
+//           sameSite: "none",
+//         });
+
+//         return res.status(200).send("OK");
+//       }
+//     } catch {
+//       return res.status(400).send("NOT OK");
+//     }
+//   },
+// };
+
 interface UserType {
   user_id: string;
   nickname: string;
@@ -245,6 +276,7 @@ export let UserController = {
       }
     },
   },
+
 
   userInfo: {
     get: async (req: Request, res: Response) => {

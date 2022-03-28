@@ -32,6 +32,7 @@ exports.SessionController = {
                         sameSite: "none",
                         secure: true,
                     });
+
                     return res.status(200).json({
                         data: {
                             _id: findUser._id,
