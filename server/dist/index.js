@@ -22,7 +22,11 @@ app.get("/", (req, res, next) => {
 app.use((err, req, res, next) => {
   res.status(500).send(err.message);
 });
-const allowedOrigins = ["http://localhost:3000", "localhost:3000"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://v-ting.net",
+  "https://v-ting.net",
+];
 const options = {
   origin: allowedOrigins,
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
