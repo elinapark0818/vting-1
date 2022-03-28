@@ -19,6 +19,38 @@ const isLogInSlice = createSlice({
   },
 });
 
+//  * 회원정보 상태
+export interface UserInfo {
+  nickname?: string;
+  email?: string;
+  image?: string;
+}
+
+const initialUserInfo: UserInfo = {
+  nickname: "",
+  email: "",
+  image: "",
+};
+
+const UserInfoSlice = createSlice({
+  name: "userInfo",
+  initialState: initialUserInfo,
+  reducers: {
+    setUserInfo(
+      state,
+      action: PayloadAction<{
+        nickname?: string;
+        email?: string;
+        image?: string;
+      }>
+    ) {
+      state.nickname = action.payload.nickname || state.nickname;
+      state.email = action.payload.email || state.email;
+      state.image = action.payload.image || state.image;
+    },
+  },
+});
+
 // Modal 관련 상태
 // export interface IsModal {
 //   isOpenModal: boolean;
@@ -129,12 +161,16 @@ const store = configureStore({
     isLogin: isLogInSlice.reducer,
     makeNewVote: newVoteSlice.reducer,
     makeNewVoteItem: newVoteItemSlice.reducer,
+
+    userInfo: UserInfoSlice.reducer,
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 
 export const { setIsLogin } = isLogInSlice.actions;
+
+export const { setUserInfo } = UserInfoSlice.actions;
 
 // export const { setIsOpenModal } = isModalSlice.actions;
 
