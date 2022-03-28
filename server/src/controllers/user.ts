@@ -162,7 +162,7 @@ export let UserController = {
             .findOne({ user_id: req.body.user_id });
           console.log(findUserId);
           return res.status(201).json({
-            user_data: {
+            data: {
               _id: findUserId._id,
               user_id: req.body.user_id,
               nickname: req.body.nickname,
@@ -246,7 +246,7 @@ export let UserController = {
           .findOne({ user_id: user_id } && { _id: req.params.id });
         if (findUser) {
           return res.status(200).json({
-            user_data: {
+            data: {
               _id: findUser._id,
               nickname: findUser.nickname,
               user_id: findUser.user_id,
