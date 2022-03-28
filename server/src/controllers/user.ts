@@ -9,18 +9,7 @@ import { request } from "http";
 import { read } from "fs";
 const jwt = require("jsonwebtoken");
 
-<<<<<<< HEAD
-interface controller {
-  post: any;
-  get: any;
-}
-
-export let controller = {
-  post: async (req: Request, res: Response) => {
-    const { email } = req.body;
-=======
 require("dotenv").config();
->>>>>>> 6f1ca17a8da061c763774ed0efcbde3b5af2efbf
 
 // const clientID = process.env.GITHUB_CLIENT_ID;
 // const clientSecret = process.env.GITHUB_CLIENT_SECRET;
@@ -232,14 +221,6 @@ export let UserController = {
       }
     },
   },
-<<<<<<< HEAD
-
-  get: async (req: Request, res: Response) => {
-    return res.status(200).json({ message: "Vting" });
-  },
-};
-=======
->>>>>>> 6f1ca17a8da061c763774ed0efcbde3b5af2efbf
 
   userInfo: {
     get: async (req: Request, res: Response) => {
