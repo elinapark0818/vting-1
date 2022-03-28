@@ -49,7 +49,7 @@ export let SessionController = {
           console.log("logged in", accessToken);
 
           return res.status(200).json({
-            user_data: {
+            data: {
               _id: findUser._id,
               user_id: findUser.user_id,
               nickname: findUser.nickname,
