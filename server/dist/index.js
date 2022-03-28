@@ -21,6 +21,12 @@ app.get("/", (req, res, next) => {
 // app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
 //   res.status(500).send(err.message);
 // }) as ErrorRequestHandler);
+const allowedOrigins = [
+    "http://localhost:3000",
+    "http://v-ting.net",
+    "https://v-ting.net",
+    "https://*.v-ting.net",
+];
 const options = {
     allowedHeaders: [
         "Origin",
@@ -31,7 +37,7 @@ const options = {
     ],
     credentials: true,
     methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
-    origin: "https://v-ting.net",
+    origin: allowedOrigins,
     preflightContinue: false,
 };
 app.use((0, cors_1.default)(options));
