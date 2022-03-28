@@ -12,6 +12,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const __1 = require("..");
 const jwt = require("jsonwebtoken");
+<<<<<<< HEAD
+exports.controller = {
+    post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { email } = req.body;
+        try {
+            if (email) {
+                const accessToken = jwt.sign({ email }, process.env.ACCESS_SECRET, {
+                    expiresIn: "10h",
+                });
+                console.log("1", accessToken);
+                // email을 playload에 담은 토큰을 쿠키로 전달
+                res.cookie("accessToken", accessToken, {
+=======
 require("dotenv").config();
 exports.UserController = {
     //회원가입과 탈퇴시 모두 사용가능한 체크
@@ -142,6 +155,7 @@ exports.UserController = {
                 yield __1.db.collection("user").deleteOne({ user_id: user_id });
                 // 쿠키에 토큰 삭제하기
                 yield res.clearCookie("accessToken", {
+>>>>>>> 6f1ca17a8da061c763774ed0efcbde3b5af2efbf
                     sameSite: "none",
                     secure: true,
                 });
@@ -217,6 +231,17 @@ exports.UserController = {
             catch (_b) {
                 return res.status(400).json({ message: "Bad request" });
             }
+<<<<<<< HEAD
+        }
+        catch (_a) {
+            return res.status(400).send("NOT OK");
+        }
+    }),
+    get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        return res.status(200).json({ message: "Vting" });
+    }),
+=======
         }),
     },
+>>>>>>> 6f1ca17a8da061c763774ed0efcbde3b5af2efbf
 };
