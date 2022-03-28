@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+
 exports.UserController = void 0;
 const __1 = require("..");
 const jwt = require("jsonwebtoken");
@@ -142,6 +143,7 @@ exports.UserController = {
                 yield __1.db.collection("user").deleteOne({ user_id: user_id });
                 // 쿠키에 토큰 삭제하기
                 yield res.clearCookie("accessToken", {
+
                     sameSite: "none",
                     secure: true,
                 });
@@ -217,6 +219,8 @@ exports.UserController = {
             catch (_b) {
                 return res.status(400).json({ message: "Bad request" });
             }
+
         }),
     },
+
 };
