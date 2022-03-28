@@ -51,7 +51,7 @@ app.use("/auth", authRoutes);
 export const MongoClient = require("mongodb").MongoClient;
 export var db: any;
 
-console.log(process.env.DATABASE_PORT);
+// console.log(process.env.DATABASE_PORT);
 
 MongoClient.connect(
   process.env.DATABASE_URL,
@@ -68,7 +68,7 @@ app
   .listen(PORT, () => {
     console.log(`
     ################################################
-    🛡️  Server listening on port: 5000 🛡️
+    🛡️  Server listening on port: 8000 🛡️
     ################################################
   `);
   })
