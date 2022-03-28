@@ -1,6 +1,69 @@
-const Index = () => {
-  console.log("hello");
-  return "hello world!";
+"use strict";
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const user_1 = __importDefault(require("./routes/user"));
+const session_1 = __importDefault(require("./routes/session"));
+const auth_1 = __importDefault(require("./routes/auth"));
+const cors_1 = __importDefault(require("cors"));
+// import voteRoutes from "./routes/vote";
+// import voterRoutes from "./routes/voter";
+dotenv_1.default.config();
+const PORT = 8080;
+const app = express_1.default();
+app.get("/", (req, res, next) => {
+  res.send("Hello world");
+});
+app.use((err, req, res, next) => {
+  res.status(500).send(err.message);
+});
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://v-ting.net",
+  "https://v-ting.net",
+];
+const options = {
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+  credentials: true,
+  maxAge: 24 * 6 * 60 * 10000,
 };
+app.use(cors_1.default(options));
+// app.use(
+//   cors({
+//     origin: true,
+//     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+//     credentials: true,
+//     cookie: {
+//       maxAge: 24 * 6 * 60 * 10000,
+//       httpOnly: false,
+//       secure: true,
+//       sameSite: "none",
+//     },
+//   })
+// );
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: false }));
+app.use("/user", user_1.default);
+app.use("/session", session_1.default);
+app.use("/auth", auth_1.default);
+// app.use("/vting", voteRoutes);
+// app.use("/voter", voterRoutes);
+exports.MongoClient = require("mongodb").MongoClient;
+exports.MongoClient.connect(
+  "mongodb+srv://admin:dudqls12@cluster0.pldtu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+  { useUnifiedTopology: true },
+  function (err, database) {
+    if (err) console.log(err);
+    exports.db = database.db("vting_dev");
+    console.log("db connected");
+    app.listen(PORT, () => console.log(`${PORT} port opened`));
+  }
+);
 
-Index();
+// app.listen(PORT, () => console.log(`${PORT} port opened`));
