@@ -27,6 +27,7 @@ export let SessionController = {
     post: async (req: Request, res: Response) => {
       // 로그인을 위한 이메일, 패스워드 받기
       const { user_id, password }: UserType = await req.body;
+      console.log("잘 들어오고 있는지 확인 ===>", user_id);
 
       try {
         const findUser = await db
@@ -48,7 +49,7 @@ export let SessionController = {
             httpOnly: false,
           });
 
-          console.log("logged in", accessToken);
+          console.log("엑세스 토큰은 잘 생성되는지 확인 =====>", accessToken);
 
           return res.status(200).json({ message: "Successfully logged in" });
         }

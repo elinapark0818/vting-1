@@ -22,6 +22,7 @@ exports.SessionController = {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             // 로그인을 위한 이메일, 패스워드 받기
             const { user_id, password } = yield req.body;
+            console.log("잘 들어오고 있는지 확인 ===>", user_id);
             try {
                 const findUser = yield __1.db
                     .collection("user")
@@ -35,7 +36,7 @@ exports.SessionController = {
                         maxAge: 10000 * 24 * 6 * 60,
                         httpOnly: false,
                     });
-                    console.log("logged in", accessToken);
+                    console.log("엑세스 토큰은 잘 생성되는지 확인 =====>", accessToken);
                     return res.status(200).json({ message: "Successfully logged in" });
                 }
             }
