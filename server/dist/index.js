@@ -10,9 +10,6 @@ dotenv_1.default.config();
 const PORT = process.env.PORT;
 const app = express_1.default();
 const cors = require("cors");
-// app.use("/", (req: Request, res: Response, next: NextFunction) => {
-//   res.send("Hello world");
-// });
 app.use(((err, req, res, next) => {
     res.status(500).send(err.message);
 }));
