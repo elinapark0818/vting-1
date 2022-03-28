@@ -37,8 +37,11 @@ export let AuthController = {
 
         return res.status(200).json({
           user_data: {
+            _id: findUser._id,
+            user_id: findUser.user_id,
             nickname: findUser.nickname,
             image: findUser.image,
+            vote: findUser.vote,
           },
         });
       } catch (err) {
