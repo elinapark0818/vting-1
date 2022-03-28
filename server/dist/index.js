@@ -1,8 +1,11 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.db = exports.MongoClient = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const user_1 = __importDefault(require("./routes/user"));
@@ -12,35 +15,29 @@ const cors_1 = __importDefault(require("cors"));
 // import voteRoutes from "./routes/vote";
 // import voterRoutes from "./routes/voter";
 dotenv_1.default.config();
-const PORT = process.env.PORT;
-const app = express_1.default();
+const PORT = 8080;
+const app = (0, express_1.default)();
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.send("Hello world");
 // });
-app.use(((err, req, res, next) => {
-    res.status(500).send(err.message);
-}));
-const allowedOrigins = ["http://localhost:3000", "localhost:3000"];
+// app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
+//   res.status(500).send(err.message);
+// }) as ErrorRequestHandler);
 const options = {
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+        "Origin",
+        "X-Requested-With",
+        "Content-Type",
+        "Accept",
+        "X-Access-Token",
+    ],
     credentials: true,
-    maxAge: 24 * 6 * 60 * 10000,
+    methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+    origin: "https://v-ting.net",
+    preflightContinue: false,
+
 };
-app.use(cors_1.default(options));
-// app.use(
-//   cors({
-//     origin: true,
-//     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
-//     credentials: true,
-//     cookie: {
-//       maxAge: 24 * 6 * 60 * 10000,
-//       httpOnly: false,
-//       secure: true,
-//       sameSite: "none",
-//     },
-//   })
-// );
+app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use("/user", user_1.default);
@@ -48,12 +45,16 @@ app.use("/session", session_1.default);
 app.use("/auth", auth_1.default);
 // app.use("/vting", voteRoutes);
 // app.use("/voter", voterRoutes);
-//db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
-exports.MongoClient.connect(process.env.DATABASE_URL, { useUnifiedTopology: true }, function (err, database) {
-    if (err)
-        console.log(err);
+exports.MongoClient.connect(
+  "mongodb+srv://admin:dudqls12@cluster0.pldtu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+  { useUnifiedTopology: true },
+  function (err, database) {
+    if (err) console.log(err);
     exports.db = database.db("vting_dev");
     console.log("db connected");
     app.listen(PORT, () => console.log(`${PORT} port opened`));
-});
+  }
+);
+
+// app.listen(PORT, () => console.log(`${PORT} port opened`));
