@@ -13,7 +13,7 @@ const cors_1 = __importDefault(require("cors"));
 // import voteRoutes from "./routes/vote";
 // import voterRoutes from "./routes/voter";
 dotenv_1.default.config();
-const PORT = 8090;
+const PORT = 8080;
 const app = (0, express_1.default)();
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.send("Hello world");

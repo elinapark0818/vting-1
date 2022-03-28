@@ -13,7 +13,7 @@ import cors from "cors";
 // import voterRoutes from "./routes/voter";
 dotenv.config();
 
-const PORT = 8090;
+const PORT = 8080;
 const app: express.Application = express();
 
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
