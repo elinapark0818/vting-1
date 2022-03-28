@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState, setIsLogin } from "../store/index";
+import "./Home.scss";
 
 axios.defaults.withCredentials = true;
 
@@ -11,58 +12,25 @@ interface Props {
 
 function Home({ text }: Props) {
   const isLogin = useSelector((state: RootState) => state.isLogin);
-  const dispatch = useDispatch();
-
-  const getAccessToken = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/session",
-        {
-          user_id: "test@yof.com",
-          password: "1234",
-        },
-        { withCredentials: true }
-      );
-      if (response.status === 200) {
-        dispatch(setIsLogin(true));
-        console.log("로그인에 성공하셨습니다.");
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const logOut = () => {
-    dispatch(setIsLogin(false));
-    console.log("로그아웃 되었습니다", isLogin);
-  };
-
-  // const logOut = async () => {
-  //   try {
-  //     const response = await axios({
-  //       headers: {
-  //         Accept: "application/json",
-  //         "Content-Type": "application/json",
-  //         Cache: "no-cache",
-  //       },
-  //       withCredentials: true,
-  //       method: "get",
-  //       url: "http://localhost:8000/session",
-  //     });
-  //     if (response.status === 200) {
-  //       dispatch(setIsLogin(false));
-  //       console.log("로그아웃에 성공하셨습니다.");
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
 
   return (
-    <div>
-      {text}
-      <button onClick={() => getAccessToken()}>login</button>
-      <button onClick={() => logOut()}>logout</button>
+    <div className="homeCon">
+      <div className="hotVotes">
+        <div className="hotVotesTitle">
+          {isLogin
+            ? "😂 user님, 요즘 ENFP는 이런 설문 한대요! 😂"
+            : "😂 요즘 ENFP는 이런 설문 한대요! 😂"}
+        </div>
+        <div className="hotVotesContents">
+          <div className="hotVoteCard">
+            <div className="hotVoteCardTitle">엄마가 좋아 아빠가 좋아?</div>
+            <div className="hotVoteCardFormat">대결형</div>
+            <div className="hotVoteCardCount">79명 참여 중</div>
+          </div>
+        </div>
+      </div>
+      <div className="newVoteBtn vtingButton">설문 생성하기</div>
+      <div className="services">서비스 소개 영역입니다. (추후 제작 예정)</div>
     </div>
   );
 }
