@@ -15,9 +15,11 @@ const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
 const app = (0, express_1.default)();
+
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.send("Hello world");
 // });
+
 app.use(((err, req, res, next) => {
     res.status(500).send(err.message);
 }));
