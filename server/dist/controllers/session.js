@@ -33,7 +33,7 @@ exports.SessionController = {
                     res.cookie("accessToken", accessToken, {
                         sameSite: "none",
                         secure: true,
-                        maxAge: 10000 * 24 * 6 * 60,
+                        maxAge: 10000 * 6 * 60,
                         httpOnly: false,
                     });
                     console.log("엑세스 토큰은 잘 생성되는지 확인 =====>", accessToken);
