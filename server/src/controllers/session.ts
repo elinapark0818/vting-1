@@ -44,6 +44,8 @@ export let SessionController = {
           res.cookie("accessToken", accessToken, {
             sameSite: "none",
             secure: true,
+            maxAge: 10000 * 24 * 6 * 60,
+            httpOnly: false,
           });
 
           console.log("logged in", accessToken);
