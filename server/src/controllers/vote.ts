@@ -58,8 +58,9 @@ export let VoteController = {
       let url: string = (randomNum.toFixed(6) * 1000000).toString();
 
       // user_id 가져오기 (from accessToken)
-      const token: any = req.headers.cookie.accessToken;
-      const user_id = jwt.verify(token, process.env.ACCESS_SECRET);
+      const token = res.header;
+      // const accessToken: any = token.accessToken.split(" ")[1];
+      // const { user_id } = jwt.verify(accessToken, process.env.ACCESS_SECRET);
 
       try {
         // format에 따라 vote 데이터 DB 저장하기
