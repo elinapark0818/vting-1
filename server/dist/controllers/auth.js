@@ -29,9 +29,12 @@ exports.AuthController = {
                     .collection("user")
                     .findOne({ user_id: user_id });
                 return res.status(200).json({
-                    user_data: {
+                    data: {
+                        _id: findUser._id,
+                        user_id: findUser.user_id,
                         nickname: findUser.nickname,
                         image: findUser.image,
+                        vote: findUser.vote,
                     },
                 });
             }

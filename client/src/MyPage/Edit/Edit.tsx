@@ -15,20 +15,8 @@ function Edit({ text }: Props) {
         <h1>회원정보 관리</h1>
       </header>
 
-      <div className="edit_passwordCheck">
-        <input
-          className="edit_input"
-          type="password"
-          // onChange={(e) => {
-          //   setPassword(e.target.value);
-          // }}
-        />
-        <div className="passwordCheck">! 비밀번호가 틀렸습니다.</div>
-        <button className="edit_checkBtn">비밀번호 확인</button>
-      </div>
-
       <div className="edit_container">
-        <h3>프로필 변경</h3>
+        <h3>프로필</h3>
         <img alt="profile_img" />
         <label htmlFor="file">업로드</label>
         <input
@@ -37,13 +25,15 @@ function Edit({ text }: Props) {
           accept="image/*"
           style={{ display: "none" }}
         />
+        <div>
+          <h3>닉네임</h3>
+          <input type="text" />
+        </div>
 
-        <h3>닉네임 변경</h3>
-        <input type="text" />
-
-        <h3>비밀번호 변경</h3>
-        <input type="password" />
-        <input type="password" />
+        <div>
+          <h3>비밀번호</h3>
+          <input type="password" />
+        </div>
         <button>수정하기</button>
       </div>
     </div>

@@ -11,9 +11,9 @@ import { Provider } from "react-redux";
 import store from "./store/index";
 
 import React from "react";
-// import SignUp from "./SignUp/SignUp";
 import SignIn from "./SignIn/SignIn";
-import SignUp from "./SignUp/SignUp";
+// import Modal from "./Modal/Modal";
+
 // import NewVote from "./new/new";
 // import axios from "axios";
 
@@ -67,13 +67,13 @@ function App() {
           <Route path="new" element={<NewVote />} />
 
           <Route path="myPage" element={<MyPage />}>
-            <Route path="edit" element={<Edit />} />
+            <Route path="" element={<Edit />} />
             <Route path="delete" element={<Delete />} />
           </Route>
 
           <Route path="signIn" element={<SignIn />} />
-          <Route path="signUp" element={<SignUp />} />
         </Routes>
+        {/* <Modal /> */}
       </BrowserRouter>
     </Provider>
   );

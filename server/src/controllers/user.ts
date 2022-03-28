@@ -9,7 +9,18 @@ import { request } from "http";
 import { read } from "fs";
 const jwt = require("jsonwebtoken");
 
+<<<<<<< HEAD
+interface controller {
+  post: any;
+  get: any;
+}
+
+export let controller = {
+  post: async (req: Request, res: Response) => {
+    const { email } = req.body;
+=======
 require("dotenv").config();
+>>>>>>> d4a5ad5481d9863327e1b9fc06e172b3da6b873f
 
 // const clientID = process.env.GITHUB_CLIENT_ID;
 // const clientSecret = process.env.GITHUB_CLIENT_SECRET;
@@ -162,7 +173,7 @@ export let UserController = {
             .findOne({ user_id: req.body.user_id });
           console.log(findUserId);
           return res.status(201).json({
-            user_data: {
+            data: {
               _id: findUserId._id,
               user_id: req.body.user_id,
               nickname: req.body.nickname,
@@ -221,6 +232,14 @@ export let UserController = {
       }
     },
   },
+<<<<<<< HEAD
+
+  get: async (req: Request, res: Response) => {
+    return res.status(200).json({ message: "Vting" });
+  },
+};
+=======
+>>>>>>> d4a5ad5481d9863327e1b9fc06e172b3da6b873f
 
   userInfo: {
     get: async (req: Request, res: Response) => {
@@ -246,7 +265,7 @@ export let UserController = {
           .findOne({ user_id: user_id } && { _id: req.params.id });
         if (findUser) {
           return res.status(200).json({
-            user_data: {
+            data: {
               _id: findUser._id,
               nickname: findUser.nickname,
               user_id: findUser.user_id,
