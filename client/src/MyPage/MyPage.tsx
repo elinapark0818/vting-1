@@ -17,7 +17,7 @@ function MyPage() {
   };
 
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  console.log(userInfo);
+  console.log("리덕스유저인포", userInfo);
 
   const dispatch = useDispatch();
 
@@ -33,7 +33,9 @@ function MyPage() {
 
   // const getUserInfo = async () => {
   //   try{
-  //     const res = await axios.get
+  //     const res = await axios.get()
+  //   } catch {
+
   //   }
   // }
 

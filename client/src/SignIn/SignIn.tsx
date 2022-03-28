@@ -66,8 +66,9 @@ function SignIn() {
         { withCredentials: true }
       );
       if (res.status === 200) {
+        const userInfo = res.data.data;
         dispatch(setIsLogin(true));
-        console.log("로그인 성공===", res.data);
+        console.log("res.data.data.data===", userInfo);
         // todo: 모달 끄는 함수를 넣어주기
       }
     } catch (err) {
