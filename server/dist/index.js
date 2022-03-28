@@ -1,9 +1,7 @@
 "use strict";
-var __importDefault =
-  (this && this.__importDefault) ||
-  function (mod) {
-    return mod && mod.__esModule ? mod : { default: mod };
-  };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.db = exports.MongoClient = void 0;
 const express_1 = __importDefault(require("express"));
@@ -20,17 +18,15 @@ const app = (0, express_1.default)();
 // app.use("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.send("Hello world");
 // });
-
-app.use((err, req, res, next) => {
-  res.status(500).send(err.message);
-});
+app.use(((err, req, res, next) => {
+    res.status(500).send(err.message);
+}));
 const allowedOrigins = ["http://localhost:3000", "v-ting.net"];
-
 const options = {
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
-  credentials: true,
-  maxAge: 24 * 6 * 60 * 10000,
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+    credentials: true,
+    maxAge: 24 * 6 * 60 * 10000,
 };
 app.use((0, cors_1.default)(options));
 // app.use(
@@ -55,13 +51,10 @@ app.use("/auth", auth_1.default);
 // app.use("/voter", voterRoutes);
 //db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
-exports.MongoClient.connect(
-  process.env.DATABASE_URL,
-  { useUnifiedTopology: true },
-  function (err, database) {
-    if (err) console.log(err);
+exports.MongoClient.connect(process.env.DATABASE_URL, { useUnifiedTopology: true }, function (err, database) {
+    if (err)
+        console.log(err);
     exports.db = database.db("vting_dev");
     console.log("db connected");
     app.listen(PORT, () => console.log(`${PORT} port opened`));
-  }
-);
+});
