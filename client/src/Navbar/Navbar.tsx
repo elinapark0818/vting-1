@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, setIsLogin } from "../store/index";
 import axios from "axios";
 
-const serverURL: string = "http://localhost:8000";
+const serverURL: string = "https://test.v-ting.net";
 
 function Navbar() {
   // * 로그인상태

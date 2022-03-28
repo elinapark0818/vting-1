@@ -16,7 +16,7 @@ function Home({ text }: Props) {
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/session",
+        "https://test.v-ting.net/session",
         {
           user_id: "test@yof.com",
           password: "1234",

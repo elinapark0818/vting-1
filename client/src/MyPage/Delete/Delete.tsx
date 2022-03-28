@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setIsLogin, RootState } from "../../store/index";
 import { useNavigate } from "react-router-dom";
 
-const serverURL: string = "http://localhost:8000";
+const serverURL: string = "https://test.v-ting.net";
 
 function Delete() {
   const dispatch = useDispatch();

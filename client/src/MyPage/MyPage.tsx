@@ -5,7 +5,7 @@ import { Link, Outlet } from "react-router-dom";
 import { RootState, setUserInfo } from "../store";
 import { useDispatch, useSelector } from "react-redux";
 
-const serverURL: string = "http://localhost:8000";
+const serverURL: string = "https://test.v-ting.net";
 
 function MyPage() {
   const [myPagePwd, setMyPagePwd] = useState<string>("");
