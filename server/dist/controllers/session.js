@@ -33,7 +33,16 @@ exports.SessionController = {
                         secure: true,
                     });
                     console.log("logged in", accessToken);
-                    return res.status(200).json({ message: "Successfully logged in" });
+                    return res.status(200).json({
+                        data: {
+                            _id: findUser._id,
+                            user_id: findUser.user_id,
+                            nickname: findUser.nickname,
+                            image: findUser.image,
+                            vote: findUser.vote,
+                        },
+                        message: "Successfully logged in",
+                    });
                 }
             }
             catch (err) {

@@ -17,25 +17,20 @@ function MyPage() {
   };
 
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  console.log(userInfo);
+  console.log("리덕스유저인포", userInfo);
 
   const dispatch = useDispatch();
 
-  const btnTrigger = () => {
-    dispatch(
-      setUserInfo({
-        nickname: "윤정",
-        email: "test33@yof.com",
-      })
-    );
-    console.log(userInfo);
+  const getUserInfo = async () => {
+    try {
+      const res = await axios.get(serverURL + "/user/" + userInfo._id);
+      console.log("서버데이터 가져오랏!", res.data.data);
+      if (res.status === 200) {
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
-
-  // const getUserInfo = async () => {
-  //   try{
-  //     const res = await axios.get
-  //   }
-  // }
 
   return (
     <div>
@@ -50,7 +45,7 @@ function MyPage() {
           name="password"
           onChange={myPage_onChangePassword}
         />
-        <button onClick={() => btnTrigger()}>비밀번호 확인</button>
+        <button onClick={() => getUserInfo()}>비밀번호 확인</button>
       </div>
 
       {checkPwd ? <Outlet /> : <div></div>}

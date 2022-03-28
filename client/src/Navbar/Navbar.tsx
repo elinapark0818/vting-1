@@ -44,6 +44,11 @@ function Navbar() {
     }
   };
 
+  // ? 모달 끄기 핸들링
+  // const isCloseModal = () => {
+  //   navigate(-1);
+  // };
+
   return (
     <div className="container">
       <div className="NavLeft">

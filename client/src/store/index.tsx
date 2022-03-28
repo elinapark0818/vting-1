@@ -21,12 +21,14 @@ const isLogInSlice = createSlice({
 
 //  * 회원정보 상태
 export interface UserInfo {
+  _id?: string;
   nickname?: string;
   email?: string;
   image?: string;
 }
 
 const initialUserInfo: UserInfo = {
+  _id: "",
   nickname: "",
   email: "",
   image: "",
@@ -39,11 +41,13 @@ const UserInfoSlice = createSlice({
     setUserInfo(
       state,
       action: PayloadAction<{
+        _id: string;
         nickname?: string;
         email?: string;
         image?: string;
       }>
     ) {
+      state._id = action.payload._id || state._id;
       state.nickname = action.payload.nickname || state.nickname;
       state.email = action.payload.email || state.email;
       state.image = action.payload.image || state.image;
@@ -52,25 +56,25 @@ const UserInfoSlice = createSlice({
 });
 
 // Modal 관련 상태
-// export interface IsModal {
-//   isOpenModal: boolean;
-// }
+export interface IsModal {
+  isOpenModal: boolean;
+}
 
-// const initialModalState: IsModal = {
-//   isOpenModal: false,
-// };
+const initialModalState: IsModal = {
+  isOpenModal: false,
+};
 
-// export const isModalSlice = createSlice({
-//   name: "isOpenModal",
-//   initialState: initialModalState,
-//   reducers: {
-//     setIsOpenModal(state, action: PayloadAction<boolean>) {
-//       // console.log("바꿈");
-//       // console.log(action.payload);
-//       state.isOpenModal = action.payload;
-//     },
-//   },
-// });
+export const isModalSlice = createSlice({
+  name: "isOpenModal",
+  initialState: initialModalState,
+  reducers: {
+    setIsOpenModal(state, action: PayloadAction<boolean>) {
+      // console.log("바꿈");
+      // console.log(action.payload);
+      state.isOpenModal = action.payload;
+    },
+  },
+});
 
 // 생성할 vote format 관련 state입니다.
 export interface VoteItems {
@@ -157,7 +161,7 @@ const newVoteSlice = createSlice({
 
 const store = configureStore({
   reducer: {
-    // isOpenModal: isModalSlice.reducer,
+    isOpenModal: isModalSlice.reducer,
     isLogin: isLogInSlice.reducer,
     makeNewVote: newVoteSlice.reducer,
     makeNewVoteItem: newVoteItemSlice.reducer,
@@ -172,7 +176,7 @@ export const { setIsLogin } = isLogInSlice.actions;
 
 export const { setUserInfo } = UserInfoSlice.actions;
 
-// export const { setIsOpenModal } = isModalSlice.actions;
+export const { setIsOpenModal } = isModalSlice.actions;
 
 export const {
   setFormat,
