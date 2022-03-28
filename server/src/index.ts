@@ -13,12 +13,12 @@ import cors from "cors";
 // import voterRoutes from "./routes/voter";
 dotenv.config();
 
-const PORT = 8080;
+const PORT = 8070;
 const app: express.Application = express();
 
-// app.use("/", (req: Request, res: Response, next: NextFunction) => {
-//   res.send("Hello world");
-// });
+app.get("/", (req: Request, res: Response, next: NextFunction) => {
+  res.send("Hello Vting!");
+});
 
 // app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
 //   res.status(500).send(err.message);
@@ -68,7 +68,7 @@ app
   .listen(PORT, () => {
     console.log(`
     ################################################
-    🛡️  Server listening on port: 8000 🛡️
+    🛡️  Server listening on port: ${PORT} 🛡️
     ################################################
   `);
   })

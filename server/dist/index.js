@@ -13,11 +13,11 @@ const cors_1 = __importDefault(require("cors"));
 // import voteRoutes from "./routes/vote";
 // import voterRoutes from "./routes/voter";
 dotenv_1.default.config();
-const PORT = 8080;
+const PORT = 8070;
 const app = (0, express_1.default)();
-// app.use("/", (req: Request, res: Response, next: NextFunction) => {
-//   res.send("Hello world");
-// });
+app.get("/", (req, res, next) => {
+    res.send("Hello Vting!");
+});
 // app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
 //   res.status(500).send(err.message);
 // }) as ErrorRequestHandler);
@@ -55,7 +55,7 @@ app
     .listen(PORT, () => {
     console.log(`
     ################################################
-    🛡️  Server listening on port: 8000 🛡️
+    🛡️  Server listening on port: ${PORT} 🛡️
     ################################################
   `);
 })
