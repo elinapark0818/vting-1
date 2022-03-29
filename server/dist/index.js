@@ -21,20 +21,25 @@ app.get("/", (req, res, next) => {
 // app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
 //   res.status(500).send(err.message);
 // }) as ErrorRequestHandler);
-// const allowedOrigins = [
-//   "http://localhost:3000",
-//   "http://v-ting.net",
-//   "https://v-ting.net",
-// ];
-// const options: cors.CorsOptions = {
-//   origin: "https://v-ting.net",
-//   methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
-//   credentials: true,
-// };
-app.use((req, resp, next) => {
-    next();
-}, (0, cors_1.default)({ origin: "https://v-ting.net", methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"], credentials: true }));
-// app.use(cors(options));
+const allowedOrigins = [
+    "http://localhost:3000",
+    "http://v-ting.net",
+    "https://v-ting.net",
+];
+const options = {
+    allowedHeaders: [
+        "Origin",
+        "X-Requested-With",
+        "Content-Type",
+        "Accept",
+        "X-Access-Token",
+    ],
+    credentials: true,
+    methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+    origin: allowedOrigins,
+    preflightContinue: false,
+};
+app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use("/user", user_1.default);

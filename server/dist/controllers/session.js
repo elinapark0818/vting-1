@@ -49,8 +49,6 @@ exports.SessionController = {
                     res.cookie("accessToken", accessToken, {
                         sameSite: "none",
                         secure: true,
-                        maxAge: 10000 * 6 * 60,
-                        httpOnly: false,
                     });
                     return res.status(200).json({
                         data: {
