@@ -46,11 +46,26 @@ function Edit() {
         dispatch(
           setUserInfo({
             _id: String(userInfo._id),
-            nickname: userInfo.nickname,
+            nickname: patchUserInfo.name || userInfo.nickname,
             email: userInfo.email,
-            image: userInfo.image,
+            image: patchUserInfo.image || userInfo.image,
           })
         );
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const EditUserPassword = async () => {
+    try {
+      const res = await axios.patch(`${serverURL}/user/${userInfo._id}`, {
+        password: patchUserInfo.password,
+      });
+      console.log("패스워드변경 ===", res);
+
+      if (res.status === 200) {
+        console.log("이러면 바뀜?");
       }
     } catch (err) {
       console.log(err);
@@ -67,7 +82,7 @@ function Edit() {
         <div className="edit_profile">
           <h3>프로필</h3>
 
-          <img alt="profile_img" src={userInfo.image} />
+          <img alt="profile_img" src={patchUserInfo.image} />
           <label htmlFor="file">업로드</label>
           <input
             id="file"
@@ -97,11 +112,14 @@ function Edit() {
             onChange={edit_onChangePassword}
           />
         </div>
+        {patchUserInfo.password}
       </main>
       <div className="edit_btnWrap">
         <button className="edit_btn" onClick={() => EditUserInfo()}>
           수정하기
         </button>
+
+        <button onClick={() => EditUserPassword()}>비밀번호 수정하기</button>
       </div>
     </div>
   );
