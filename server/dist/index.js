@@ -25,30 +25,12 @@ const allowedOrigins = [
     "http://localhost:3000",
     "http://v-ting.net",
     "https://v-ting.net",
-    "https://*.v-ting.net",
 ];
 const options = {
-    allowedHeaders: [
-        "Origin",
-        "X-Requested-With",
-        "Content-Type",
-        "Accept",
-        "X-Access-Token",
-
-        "withCredentials",
-        "Credentials",
-        "Cookie",
-
-    ],
     credentials: true,
-    methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+    methods: ["GET", "POST", "DELETE", "PATCH", "PUT"],
     origin: allowedOrigins,
 };
-app.use(function (req, res, next) {
-    // Website you wish to allow to connect
-    res.setHeader("Access-Control-Allow-Origin", "https://v-ting.net");
-    next();
-});
 app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
