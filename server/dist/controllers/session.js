@@ -33,11 +33,21 @@ exports.SessionController = {
                     res.cookie("accessToken", accessToken, {
                         sameSite: "none",
                         secure: true,
-                        maxAge: 10000 * 24 * 6 * 60,
+                        maxAge: 10000 * 6 * 60,
                         httpOnly: false,
                     });
-                    console.log("엑세스 토큰은 잘 생성되는지 확인 =====>", accessToken);
-                    return res.status(200).json({ message: "Successfully logged in" });
+
+                    return res.status(200).json({
+                        data: {
+                            _id: findUser._id,
+                            user_id: findUser.user_id,
+                            nickname: findUser.nickname,
+                            image: findUser.image,
+                            vote: findUser.vote,
+                        },
+                        message: "Successfully logged in",
+                    });
+
                 }
             }
             catch (err) {

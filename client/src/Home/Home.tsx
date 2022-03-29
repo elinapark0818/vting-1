@@ -3,7 +3,9 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState, setIsLogin } from "../store/index";
 import "./Home.scss";
+
 import { Link } from "react-router-dom";
+
 
 axios.defaults.withCredentials = true;
 
@@ -16,6 +18,7 @@ function Home({ text }: Props) {
 
   return (
     <div className="homeCon">
+
       <div className="hotVotesTitle">
         {isLogin ? (
           <div>
@@ -40,12 +43,14 @@ function Home({ text }: Props) {
         )}
       </div>
       <div className="hotVotes">
+
         <div className="hotVotesContents">
           <div className="hotVoteCard">
             <div className="hotVoteCardTitle">엄마가 좋아 아빠가 좋아?</div>
             <div className="hotVoteCardFormat">대결형</div>
             <div className="hotVoteCardCount">79명 참여 중</div>
           </div>
+
           <div className="hotVoteCard">
             <div className="hotVoteCardTitle">오늘 점심 메뉴</div>
             <div className="hotVoteCardFormat">바 그래프</div>
@@ -66,6 +71,7 @@ function Home({ text }: Props) {
       <Link to="/new">
         <div className="newVoteBtn vtingButton">설문 생성하기</div>
       </Link>
+
       <div className="services">서비스 소개 영역입니다. (추후 제작 예정)</div>
     </div>
   );

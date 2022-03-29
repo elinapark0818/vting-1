@@ -34,9 +34,11 @@ const options = {
         "Content-Type",
         "Accept",
         "X-Access-Token",
+
         "withCredentials",
         "Credentials",
         "Cookie",
+
     ],
     credentials: true,
     methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
