@@ -76,9 +76,9 @@ exports.SessionController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+            const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             try {
-                if (user_id) {
+                if (decoded) {
                     res.clearCookie("accessToken", { sameSite: "none", secure: true });
                     return res.status(200).json({ message: "Successfully logged out" });
                 }

@@ -16,24 +16,51 @@ const __1 = require("..");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
+const SALT_ROUNDS = 6;
+const bcrypt = require("bcrypt");
 exports.UserController = {
     //회원가입과 탈퇴시 모두 사용가능한 체크
     userCheck: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                const user_id = yield req.body;
-                const findUser = yield __1.db
-                    .collection("user")
-                    .findOne({ user_id: req.body.user_id });
-                if (!findUser) {
-                    return res.status(200).json({
-                        message: "It doesn't match",
-                    });
+                const { user_id, password } = req.body;
+                if (user_id) {
+                    const findUserWithId = yield __1.db
+                        .collection("user")
+                        .findOne({ user_id: user_id });
+                    if (!findUserWithId) {
+                        return res.status(200).json({
+                            message: "It doesn't match",
+                        });
+                    }
+                    else {
+                        return res.status(200).json({
+                            message: "Success verified",
+                        });
+                    }
                 }
-                else {
-                    return res.status(200).json({
-                        message: "Success verified",
-                    });
+                else if (password) {
+                    function getCookie(name) {
+                        let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
+                            name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+                            "=([^;]*)"));
+                        return matches ? decodeURIComponent(matches[1]) : undefined;
+                    }
+                    const accessToken = getCookie("accessToken");
+                    const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+                    const findUserWithPw = yield __1.db
+                        .collection("user")
+                        .findOne({ user_id: decoded.user_id } && { password: password });
+                    if (!findUserWithPw) {
+                        return res.status(200).json({
+                            message: "It doesn't match",
+                        });
+                    }
+                    else {
+                        return res.status(200).json({
+                            message: "Success verified",
+                        });
+                    }
                 }
             }
             catch (_a) {
@@ -41,59 +68,26 @@ exports.UserController = {
             }
         }),
     },
-    //회원정보 수정시 사용가능한 체크
-    passwordCheck: {
-        post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            function getCookie(name) {
-                let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
-                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                    "=([^;]*)"));
-                return matches ? decodeURIComponent(matches[1]) : undefined;
-            }
-            const accessToken = getCookie("accessToken");
-            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-            console.log("user_id", user_id);
-            try {
-                const password = yield req.body;
-                const findUser = yield __1.db
-                    .collection("user")
-                    .findOne({ user_id: user_id, password: password });
-                if (!findUser) {
-                    return res.status(200).json({
-                        message: "It doesn't match",
-                    });
-                }
-                else {
-                    return res.status(200).json({
-                        message: "Success verified",
-                    });
-                }
-            }
-            catch (err) {
-                console.log(err);
-                return res.status(400).json({ message: "Bad Request" });
-            }
-        }),
-    },
     signup: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            // "user_id" : "test@yof.com",
-            // "nickname" : "test",
-            // "password" : "1234",
-            // "image" : null,
-            // "vote" : null,
             const { user_id, nickname, password, image, vote } = req.body;
+            // await bcrypt.genSalt(SALT_ROUNDS, function (err:Error, salt:string) {
+            //   if (err) {
+            //     console.log("genSalt Error: " + err);
+            //   } else {
+            //     console.log("salt", salt)
+            //     //genearte hash on separate function calls):
+            //     bcrypt.hash(password, salt, function (err:Error, hash:string) {
+            //       if (err) {
+            //         console.log("bycrpt hash method error : ", err.message);
+            //       } else {
+            //        console.log("hash", hash);
+            //       }
+            //     });
+            //   }
+            // }
             try {
                 if (user_id && password && nickname) {
-                    // bcrypt.genSalt(saltRounds, function (err: Error, salt: any) {
-                    //   bcrypt.hash(
-                    //     myPlaintextPassword,
-                    //     salt,
-                    //     function (err: Error, hash: any) {
-                    //       //store hash in your password DB
-                    //     }
-                    //   );
-                    // });
                     __1.db.collection("user").insertOne({
                         user_id,
                         nickname,
@@ -149,11 +143,10 @@ exports.UserController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-            console.log("user_id", user_id);
+            const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             try {
                 // 유저 정보 삭제하기
-                yield __1.db.collection("user").deleteOne({ user_id: user_id });
+                yield __1.db.collection("user").deleteOne({ user_id: decoded.user_id });
                 // 쿠키에 토큰 삭제하기
                 yield res.clearCookie("accessToken", {
                     sameSite: "none",
@@ -178,16 +171,11 @@ exports.UserController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET, function (err) {
-                if (err) {
-                    console.log(err);
-                }
-            });
-            console.log("user_id", user_id);
+            const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             try {
                 const findUser = yield __1.db
                     .collection("user")
-                    .findOne({ user_id: user_id } && { _id: req.params.id });
+                    .findOne({ user_id: decoded.user_id });
                 if (findUser) {
                     return res.status(200).json({
                         data: {
@@ -213,16 +201,12 @@ exports.UserController = {
                 let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
                     name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
                     "=([^;]*)"));
-                console.log(req.headers);
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-            console.log("user_id", user_id);
+            const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             try {
-                const findUser = yield __1.db
-                    .collection("user")
-                    .updateOne({ user_id: user_id } && { _id: req.params.id }, {
+                const findUser = yield __1.db.collection("user").updateOne({ user_id: decoded.user_id }, {
                     $set: {
                         nickname: req.body.nickname,
                         image: req.body.image,
