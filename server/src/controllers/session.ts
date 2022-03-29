@@ -11,6 +11,8 @@ import { AnyMxRecord } from "dns";
 import dotenv from "dotenv";
 import { isRegExp } from "util/types";
 dotenv.config();
+const SALT_ROUNDS = 6;
+const bcrypt = require("bcrypt");
 
 interface UserType {
   user_id: string;
@@ -48,9 +50,14 @@ export let SessionController = {
       try {
         const findUser = await db
           .collection("user")
-          .findOne({ user_id: req.body.user_id, password: req.body.password });
+          .findOne({ user_id: user_id });
 
-        if (findUser) {
+        console.log(findUser);
+
+        var check = await bcrypt.compare(password, findUser.password);
+
+        console.log(check);
+        if (check) {
           const accessToken = jwt.sign(
             { user_id },
             process.env.ACCESS_SECRET as jwt.Secret,
@@ -73,6 +80,8 @@ export let SessionController = {
             },
             message: "Successfully logged in",
           });
+        } else {
+          return res.status(400).json({ message: "Wrong password" });
         }
       } catch (err) {
         console.log(err);
@@ -97,13 +106,13 @@ export let SessionController = {
 
       const accessToken = getCookie("accessToken");
 
-      const decoded = jwt.verify(
+      const user_id = jwt.verify(
         accessToken as string,
         process.env.ACCESS_SECRET as jwt.Secret
       );
 
       try {
-        if (decoded) {
+        if (user_id) {
           res.clearCookie("accessToken", { sameSite: "none", secure: true });
           return res.status(200).json({ message: "Successfully logged out" });
         }

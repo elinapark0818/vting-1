@@ -99,19 +99,24 @@ export let UserController = {
 
             return matches ? decodeURIComponent(matches[1]) : undefined;
           }
-
           const accessToken = getCookie("accessToken");
 
-          const decoded = jwt.verify(
+          const decoded = await jwt.verify(
             accessToken as string,
             process.env.ACCESS_SECRET as jwt.Secret
           );
 
           const findUserWithPw = await db
             .collection("user")
-            .findOne({ user_id: decoded.user_id } && { password: password });
+            .findOne({ user_id: decoded.user_id });
 
-          if (!findUserWithPw) {
+          console.log("findUserWithPw", findUserWithPw);
+
+          var check = await bcrypt.compare(password, findUserWithPw.password);
+
+          console.log("check", check);
+
+          if (!check) {
             return res.status(200).json({
               message: "It doesn't match",
             });
@@ -177,7 +182,9 @@ export let UserController = {
           let findUserId = await db
             .collection("user")
             .findOne({ user_id: req.body.user_id });
+
           console.log(findUserId);
+
           return res.status(201).json({
             data: {
               _id: findUserId._id,

@@ -47,11 +47,14 @@ exports.UserController = {
                         return matches ? decodeURIComponent(matches[1]) : undefined;
                     }
                     const accessToken = getCookie("accessToken");
-                    const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+                    const decoded = yield jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
                     const findUserWithPw = yield __1.db
                         .collection("user")
-                        .findOne({ user_id: decoded.user_id } && { password: password });
-                    if (!findUserWithPw) {
+                        .findOne({ user_id: decoded.user_id });
+                    console.log("findUserWithPw", findUserWithPw);
+                    var check = yield bcrypt.compare(password, findUserWithPw.password);
+                    console.log("check", check);
+                    if (!check) {
                         return res.status(200).json({
                             message: "It doesn't match",
                         });

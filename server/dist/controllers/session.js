@@ -16,6 +16,8 @@ const __1 = require("..");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
+const SALT_ROUNDS = 6;
+const bcrypt = require("bcrypt");
 //평문과 hash 된 password 비교  -> 로그인 기능에 사용하기 좋음.
 // bcrypt.compare(
 //   plaintextPassword,
@@ -40,8 +42,11 @@ exports.SessionController = {
             try {
                 const findUser = yield __1.db
                     .collection("user")
-                    .findOne({ user_id: req.body.user_id, password: req.body.password });
-                if (findUser) {
+                    .findOne({ user_id: user_id });
+                console.log(findUser);
+                var check = yield bcrypt.compare(password, findUser.password);
+                console.log(check);
+                if (check) {
                     const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 });
                     // user_id을 playload에 담은 토큰을 쿠키로 전달
                     res.cookie("accessToken", accessToken, {
@@ -58,6 +63,9 @@ exports.SessionController = {
                         },
                         message: "Successfully logged in",
                     });
+                }
+                else {
+                    return res.status(400).json({ message: "Wrong password" });
                 }
             }
             catch (err) {
@@ -76,9 +84,9 @@ exports.SessionController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             try {
-                if (decoded) {
+                if (user_id) {
                     res.clearCookie("accessToken", { sameSite: "none", secure: true });
                     return res.status(200).json({ message: "Successfully logged out" });
                 }
