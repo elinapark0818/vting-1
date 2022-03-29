@@ -71,35 +71,36 @@ exports.UserController = {
     signup: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const { user_id, nickname, password, image, vote } = req.body;
-            // await bcrypt.genSalt(SALT_ROUNDS, function (err:Error, salt:string) {
-            //   if (err) {
-            //     console.log("genSalt Error: " + err);
-            //   } else {
-            //     console.log("salt", salt)
-            //     //genearte hash on separate function calls):
-            //     bcrypt.hash(password, salt, function (err:Error, hash:string) {
-            //       if (err) {
-            //         console.log("bycrpt hash method error : ", err.message);
-            //       } else {
-            //        console.log("hash", hash);
-            //       }
-            //     });
-            //   }
-            // }
             try {
                 if (user_id && password && nickname) {
-                    __1.db.collection("user").insertOne({
-                        user_id,
-                        nickname,
-                        password,
-                        image,
-                        vote,
+                    bcrypt.genSalt(SALT_ROUNDS, function (err, salt) {
+                        if (err) {
+                            console.log("genSalt Error: " + err);
+                        }
+                        else {
+                            console.log("salt", salt);
+                            //genearte hash on separate function calls):
+                            var hashed = bcrypt.hash(password, salt, function (err, hash) {
+                                console.log("hash", hash);
+                                __1.db.collection("user").insertOne({
+                                    user_id: req.body.user_id,
+                                    nickname: req.body.nickname,
+                                    password: hash,
+                                    image: req.body.image,
+                                    vote: req.body.vote,
+                                });
+                                if (err) {
+                                    console.log("bycrpt hash method error : ", err.message);
+                                }
+                                else {
+                                }
+                            });
+                        }
                     });
                     // user_id을 playload에 담아 토큰 생성
                     const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, {
                         expiresIn: 60 * 60,
                     });
-                    console.log("1", accessToken);
                     // user_id을 playload에 담은 토큰을 쿠키로 전달
                     res.cookie("accessToken", accessToken, {
                         sameSite: "none",

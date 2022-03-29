@@ -10,6 +10,7 @@ import { IncomingHttpHeaders, request } from "http";
 import { AnyMxRecord } from "dns";
 import dotenv from "dotenv";
 import { isRegExp } from "util/types";
+import { hash } from "bcryptjs";
 dotenv.config();
 
 const SALT_ROUNDS = 6;
@@ -130,30 +131,33 @@ export let UserController = {
     post: async (req: Request & { body: UserType }, res: Response) => {
       const { user_id, nickname, password, image, vote } = req.body;
 
-      // await bcrypt.genSalt(SALT_ROUNDS, function (err:Error, salt:string) {
-      //   if (err) {
-      //     console.log("genSalt Error: " + err);
-      //   } else {
-      //     console.log("salt", salt)
-      //     //genearte hash on separate function calls):
-      //     bcrypt.hash(password, salt, function (err:Error, hash:string) {
-      //       if (err) {
-      //         console.log("bycrpt hash method error : ", err.message);
-      //       } else {
-      //        console.log("hash", hash);
-      //       }
-      //     });
-      //   }
-      // }
-
       try {
         if (user_id && password && nickname) {
-          db.collection("user").insertOne({
-            user_id,
-            nickname,
-            password,
-            image,
-            vote,
+          bcrypt.genSalt(SALT_ROUNDS, function (err: Error, salt: string) {
+            if (err) {
+              console.log("genSalt Error: " + err);
+            } else {
+              console.log("salt", salt);
+              //genearte hash on separate function calls):
+              var hashed = bcrypt.hash(
+                password,
+                salt,
+                function (err: Error, hash: string) {
+                  console.log("hash", hash);
+                  db.collection("user").insertOne({
+                    user_id: req.body.user_id,
+                    nickname: req.body.nickname,
+                    password: hash,
+                    image: req.body.image,
+                    vote: req.body.vote,
+                  });
+                  if (err) {
+                    console.log("bycrpt hash method error : ", err.message);
+                  } else {
+                  }
+                }
+              );
+            }
           });
           // user_id을 playload에 담아 토큰 생성
           const accessToken = jwt.sign(
@@ -163,12 +167,13 @@ export let UserController = {
               expiresIn: 60 * 60,
             }
           );
-          console.log("1", accessToken);
+
           // user_id을 playload에 담은 토큰을 쿠키로 전달
           res.cookie("accessToken", accessToken, {
             sameSite: "none",
             secure: true,
           });
+
           let findUserId = await db
             .collection("user")
             .findOne({ user_id: req.body.user_id });
