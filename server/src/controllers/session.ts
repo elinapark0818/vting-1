@@ -48,6 +48,7 @@ export let SessionController = {
       console.log("db들어오는지 확인====>", db);
 
       try {
+        console.log("여기까지는");
         const findUser = await db
           .collection("user")
           .findOne({ user_id: req.body.user_id, password: req.body.password });

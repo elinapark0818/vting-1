@@ -9,6 +9,7 @@ import userRoutes from "./routes/user";
 import sessionRoutes from "./routes/session";
 import authRoutes from "./routes/auth";
 import cors from "cors";
+import jwt from "jsonwebtoken";
 // import voteRoutes from "./routes/vote";
 // import voterRoutes from "./routes/voter";
 dotenv.config();
@@ -46,6 +47,35 @@ const options: cors.CorsOptions = {
 app.use(cors(options));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+interface UserType {
+  user_id: string;
+  password: string;
+}
+
+app.post("/", async (req: Request, res: Response, next: NextFunction) => {
+  const { user_id, password }: UserType = await req.body;
+  try {
+    const accessToken = jwt.sign(
+      { name: user_id },
+      process.env.ACCESS_SECRET as jwt.Secret,
+      { expiresIn: "24h" }
+    );
+
+    console.log("token====>", accessToken);
+
+    // user_id을 playload에 담은 토큰을 쿠키로 전달
+    res.cookie("accessToken", accessToken, {
+      sameSite: "none",
+      secure: true,
+    });
+    res.status(200).json({ message: "good!" });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ message: "Bad request" });
+  }
+  res.send("Hello Vting!");
+});
 app.use("/user", userRoutes);
 app.use("/session", sessionRoutes);
 app.use("/auth", authRoutes);

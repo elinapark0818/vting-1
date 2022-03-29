@@ -41,6 +41,7 @@ exports.SessionController = {
             console.log("잘 들어오고 있는지 확인 ===>", user_id);
             console.log("db들어오는지 확인====>", __1.db);
             try {
+                console.log("여기까지는");
                 const findUser = yield __1.db
                     .collection("user")
                     .findOne({ user_id: req.body.user_id, password: req.body.password });
