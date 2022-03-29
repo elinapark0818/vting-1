@@ -303,16 +303,22 @@ export let UserController = {
       );
 
       try {
-        const findUser = await db.collection("user").updateOne(
+        const findUser = await db
+          .collection("user")
+          .findOne({ user_id: decoded.user_id });
+        await db.collection("user").updateOne(
           { user_id: decoded.user_id },
+
+          //바디가 들어온것만 바꿈
           {
             $set: {
-              nickname: req.body.nickname,
-              image: req.body.image,
-              vote: req.body.vote,
+              nickname: req.body.nickname || findUser.nickname,
+              image: req.body.image || findUser.image,
+              password: req.body.password || findUser.password,
             },
           }
         );
+
         return res.status(200).json({ message: "Successfully updated" });
       } catch {
         return res.status(400).json({ message: "Bad request" });
