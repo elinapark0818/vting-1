@@ -6,49 +6,16 @@ import express, {
   Response,
   NextFunction,
 } from "express";
-
 import { IncomingHttpHeaders, request } from "http";
 import { AnyMxRecord } from "dns";
 import dotenv from "dotenv";
 import { isRegExp } from "util/types";
-import { strictEqual } from "assert";
 dotenv.config();
 
 // const bcrypt = require("bcrypt");
 // const saltRounds = 10;
 // const myPlaintextPassword = "sO//p4$$wOrD";
 // const someOtherPlaintextPassword = "not_bacon";
-
-// const clientID = process.env.GITHUB_CLIENT_ID;
-// const clientSecret = process.env.GITHUB_CLIENT_SECRET;
-// const axios = require("axios");
-
-// export default {
-//   post: async (req: Request, res: Response) => {
-//     const { email } = req.body;
-
-//     try {
-//       if (email) {
-//         const accessToken = jwt.sign({ email }, process.env.ACCESS_SECRET, {
-//           expiresIn: "10h",
-//         });
-
-//         console.log("1", accessToken);
-
-//         // email을 playload에 담은 토큰을 쿠키로 전달
-
-//         res.cookie("accessToken", accessToken, {
-//           sameSite: "none",
-//         });
-
-//         return res.status(200).send("OK");
-//       }
-//     } catch {
-//       return res.status(400).send("NOT OK");
-//     }
-//   },
-// };
-
 
 // const clientID = process.env.GITHUB_CLIENT_ID;
 // const clientSecret = process.env.GITHUB_CLIENT_SECRET;
@@ -130,7 +97,7 @@ export let UserController = {
       res: Response
     ) => {
       function getCookie(name: string) {
-        let matches = (req.headers.cookie as string).match(
+        let matches = req.headers.cookie.match(
           new RegExp(
             "(?:^|; )" +
               name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
@@ -140,18 +107,16 @@ export let UserController = {
         return matches ? decodeURIComponent(matches[1]) : undefined;
       }
       const accessToken = getCookie("accessToken");
-      const user_id = jwt.verify(
+      const decoded = jwt.verify(
         accessToken as string,
         process.env.ACCESS_SECRET as jwt.Secret
       );
-
-      console.log("user_id", user_id);
 
       try {
         const password = await req.body;
         const findUser = await db
           .collection("user")
-          .findOne({ user_id: user_id.user_id, password: password });
+          .findOne({ user_id: decoded.user_id, password: password });
 
         if (!findUser) {
           return res.status(200).json({
@@ -242,7 +207,7 @@ export let UserController = {
     delete: async (req: Request, res: Response) => {
       // FIXME: 만약토큰으로 작업하면 이 부분으로 작업하기
       function getCookie(name: string) {
-        let matches = (req.headers.cookie as string).match(
+        let matches = req.headers.cookie.match(
           new RegExp(
             "(?:^|; )" +
               name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
@@ -253,16 +218,14 @@ export let UserController = {
         return matches ? decodeURIComponent(matches[1]) : undefined;
       }
       const accessToken = getCookie("accessToken");
-      const user_id = jwt.verify(
+      const decoded = jwt.verify(
         accessToken as string,
         process.env.ACCESS_SECRET as jwt.Secret
       );
 
-      console.log("user_id", user_id);
-
       try {
         // 유저 정보 삭제하기
-        await db.collection("user").deleteOne({ user_id: user_id.user_id });
+        await db.collection("user").deleteOne({ user_id: decoded.user_id });
         // 쿠키에 토큰 삭제하기
         await res.clearCookie("accessToken", {
           sameSite: "none",
@@ -278,36 +241,30 @@ export let UserController = {
     },
   },
 
-
   userInfo: {
     get: async (req: Request, res: Response) => {
       function getCookie(name: any) {
-        const cookie = req.headers.cookie;
-        if (cookie) {
-          let matches = req.headers.cookie.match(
-            new RegExp(
-              "(?:^|; )" +
-                name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                "=([^;]*)"
-            )
-          );
-          return matches ? decodeURIComponent(matches[1]) : undefined;
-        }
+        let matches = req.headers.cookie.match(
+          new RegExp(
+            "(?:^|; )" +
+              name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+              "=([^;]*)"
+          )
+        );
+        return matches ? decodeURIComponent(matches[1]) : undefined;
       }
 
       const accessToken = getCookie("accessToken");
 
-      const user_id: jwt.JwtPayload = jwt.verify(
+      const decoded = jwt.verify(
         accessToken as string,
         process.env.ACCESS_SECRET as jwt.Secret
       );
 
-      console.log("user_id decoded", user_id);
-
       try {
         const findUser = await db
           .collection("user")
-          .findOne({ user_id: user_id.user_id });
+          .findOne({ user_id: decoded.user_id });
         if (findUser) {
           return res.status(200).json({
             data: {
@@ -342,20 +299,18 @@ export let UserController = {
               "=([^;]*)"
           )
         );
-        console.log(req.headers);
+
         return matches ? decodeURIComponent(matches[1]) : undefined;
       }
       const accessToken = getCookie("accessToken");
-      const user_id = jwt.verify(
+      const decoded = jwt.verify(
         accessToken as string,
         process.env.ACCESS_SECRET as jwt.Secret
       );
 
-      console.log("user_id", user_id);
-
       try {
         const findUser = await db.collection("user").updateOne(
-          { user_id: user_id.user_id },
+          { user_id: decoded.user_id },
           {
             $set: {
               nickname: req.body.nickname,

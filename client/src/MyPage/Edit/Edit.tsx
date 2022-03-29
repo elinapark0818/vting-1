@@ -1,9 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Edit.scss";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, setUserInfo } from "../../store/index";
+import axios from "axios";
+
+interface PatchUser {
+  image: string;
+  name: string;
+  password: string;
+}
+
+const serverURL: string = "http://localhost:8000";
 
 function Edit() {
-  // const [password, setPassword] = useState("");
-  // const [passwordCheck, setPasswordCheck] = useState("true");
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+
+  const [patchUserInfo, setPatchUserInfo] = useState<PatchUser>({
+    image: "",
+    name: "",
+    password: "",
+  });
+
+  const edit_onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPatchUserInfo({ ...patchUserInfo, [name]: value });
+  };
+
+  const edit_onChangeProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPatchUserInfo({ ...patchUserInfo, [name]: value });
+  };
+
+  const edit_onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPatchUserInfo({ ...patchUserInfo, [name]: value });
+  };
+
+  const EditUserInfo = async () => {
+    try {
+      const res = await axios.patch(`${serverURL}/user/${userInfo._id}`);
+      console.log("에딧유저인포===", res);
+
+      if (res.status === 200) {
+        dispatch(
+          setUserInfo({
+            _id: String(userInfo._id),
+            nickname: userInfo.nickname,
+            email: userInfo.email,
+            image: userInfo.image,
+          })
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="edit_container">
@@ -15,10 +67,12 @@ function Edit() {
         <div className="edit_profile">
           <h3>프로필</h3>
 
-          <img alt="profile_img" />
+          <img alt="profile_img" src={userInfo.image} />
           <label htmlFor="file">업로드</label>
           <input
             id="file"
+            name="profile"
+            onChange={edit_onChangeProfile}
             type="file"
             accept="image/*"
             style={{ display: "none" }}
@@ -27,16 +81,27 @@ function Edit() {
 
         <div className="edit_nickname">
           <h3>닉네임</h3>
-          <input type="text" />
+          <input
+            name="name"
+            onChange={edit_onChangeName}
+            type="text"
+            placeholder={userInfo.nickname}
+          />
         </div>
 
         <div className="edit_password">
           <h3>비밀번호</h3>
-          <input type="password" />
+          <input
+            type="password"
+            name="password"
+            onChange={edit_onChangePassword}
+          />
         </div>
       </main>
       <div className="edit_btnWrap">
-        <button className="edit_btn">수정하기</button>
+        <button className="edit_btn" onClick={() => EditUserInfo()}>
+          수정하기
+        </button>
       </div>
     </div>
   );

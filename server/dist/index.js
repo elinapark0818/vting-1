@@ -21,15 +21,16 @@ app.get("/", (req, res, next) => {
 // app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
 //   res.status(500).send(err.message);
 // }) as ErrorRequestHandler);
-const allowedOrigins = [
-    "http://localhost:3000",
-    "http://v-ting.net",
-    "https://v-ting.net",
-];
+// const allowedOrigins = [
+//   "http://localhost:3000",
+//   "http://v-ting.net",
+//   "https://v-ting.net",
+// ];
 const options = {
+    origin: "https://v-ting.net",
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
     credentials: true,
-    methods: ["GET", "POST", "DELETE", "PATCH", "PUT"],
-    origin: allowedOrigins,
+    maxAge: 24 * 6 * 60 * 10000,
 };
 app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());
@@ -41,7 +42,6 @@ app.use("/auth", auth_1.default);
 // app.use("/voter", voterRoutes);
 //db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
-// console.log(process.env.DATABASE_PORT);
 exports.MongoClient.connect(process.env.DATABASE_URL, { useUnifiedTopology: true }, function (err, database) {
     if (err)
         console.log(err);

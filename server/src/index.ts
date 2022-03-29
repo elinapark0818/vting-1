@@ -24,13 +24,15 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
 //   res.status(500).send(err.message);
 // }) as ErrorRequestHandler);
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://v-ting.net",
-  "https://v-ting.net",
-];
+// const allowedOrigins = [
+//   "http://localhost:3000",
+//   "http://v-ting.net",
+//   "https://v-ting.net",
+// ];
 
 const options: cors.CorsOptions = {
+  origin: "https://v-ting.net",
+  methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
   credentials: true,
   methods: ["GET", "POST", "DELETE", "PATCH", "PUT"],
   origin: allowedOrigins,

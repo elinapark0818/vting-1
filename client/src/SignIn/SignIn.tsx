@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setIsLogin, setUserInfo, setIsModalOpen } from "../store/index";
+import { setIsLogin, setUserInfo } from "../store/index";
 import "./SignIn.scss";
 
 import Logo from "../assets/v-ting_logo_circle.png";
@@ -85,6 +85,7 @@ function SignIn() {
             image: userInfo.image,
           })
         );
+        console.log("로그인하자마자회원정보저장", userInfo);
       }
     } catch (err) {
       console.log(err);
@@ -157,6 +158,7 @@ function SignIn() {
 
   const nameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsBlur(true);
+    // * 닉네임 한글만 넣을 수 있게 했어여
     if (newUser.name.match(/^[ㄱ-ㅣ가-힣]*$/i)) {
       setNameValid(true);
     } else {
@@ -187,6 +189,7 @@ function SignIn() {
 
   const passwordBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsPasswordBlur(true);
+    // * 비번 영문자  7글자이상으로 해놨습니다(임시)
     if (newUser.password.match(/^[A-Za-z]\w{7,14}$/)) {
       setPasswordValid(true);
     } else if (user.password.match(/^[A-Za-z]\w{7,14}$/)) {
