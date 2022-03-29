@@ -56,6 +56,8 @@
 
 <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white">
 
+<img src="https://img.shields.io/badge/bcrypt-1a1958?style=for-the-badge&logo=bcrypt&logoColor=white">
+
 ## Deploy
 
 <img src="https://img.shields.io/badge/DEPLOY-AWS-%23232F3E?style=for-the-badge&logo=Amazon%20AWS" />
