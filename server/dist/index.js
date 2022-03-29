@@ -34,6 +34,7 @@ const options = {
         "Content-Type",
         "Accept",
         "X-Access-Token",
+
         "withCredentials",
         "credentials",
         "Connection",
@@ -55,6 +56,7 @@ const options = {
         "Content-Length",
         "Cache-control",
         "Cookie",
+
     ],
     credentials: true,
     methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",

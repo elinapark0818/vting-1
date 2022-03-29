@@ -27,6 +27,7 @@ export let SessionController = {
     post: async (req: Request, res: Response) => {
       // 로그인을 위한 이메일, 패스워드 받기
       const { user_id, password }: UserType = await req.body;
+      console.log("잘 들어오고 있는지 확인 ===>", user_id);
 
       try {
         const findUser = await db
@@ -44,7 +45,10 @@ export let SessionController = {
           res.cookie("accessToken", accessToken, {
             sameSite: "none",
             secure: true,
+            maxAge: 10000 * 6 * 60,
+            httpOnly: false,
           });
+
 
           return res.status(200).json({
             data: {
@@ -56,6 +60,7 @@ export let SessionController = {
             },
             message: "Successfully logged in",
           });
+
         }
       } catch (err) {
         console.log(err);
