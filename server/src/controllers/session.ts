@@ -52,11 +52,15 @@ export let SessionController = {
           .findOne({ user_id: req.body.user_id, password: req.body.password });
 
         if (findUser) {
+          console.log("user====>", findUser);
+
           const accessToken = jwt.sign(
             { name: user_id },
             process.env.ACCESS_SECRET as jwt.Secret,
-            { expiresIn: 60 * 60 }
+            { expiresIn: "24h" }
           );
+
+          console.log("token====>", accessToken);
 
           // user_id을 playload에 담은 토큰을 쿠키로 전달
           res.cookie("accessToken", accessToken, {
