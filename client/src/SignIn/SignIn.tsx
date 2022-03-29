@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setIsLogin, setUserInfo, setIsOpenModal } from "../store/index";
+import { setIsLogin, setUserInfo, setIsModalOpen } from "../store/index";
 import "./SignIn.scss";
 
 import Logo from "../assets/v-ting_logo_circle.png";
@@ -75,7 +75,7 @@ function SignIn() {
         dispatch(setIsLogin(true));
         console.log("res.data.data.user_id 출력===", userInfo.user_id);
         // todo: 모달 끄는 함수를 넣어주기
-        dispatch(setIsOpenModal(false));
+        navigate("/");
         // todo: 리덕스 userInfo에 값 set 하기
         dispatch(
           setUserInfo({

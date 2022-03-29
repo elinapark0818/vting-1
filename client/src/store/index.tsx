@@ -68,7 +68,7 @@ export const isModalSlice = createSlice({
   name: "isOpenModal",
   initialState: initialModalState,
   reducers: {
-    setIsOpenModal(state, action: PayloadAction<boolean>) {
+    setIsModalOpen(state, action: PayloadAction<boolean>) {
       // console.log("바꿈");
       // console.log(action.payload);
       state.isOpenModal = action.payload;
@@ -176,7 +176,7 @@ export const { setIsLogin } = isLogInSlice.actions;
 
 export const { setUserInfo } = UserInfoSlice.actions;
 
-export const { setIsOpenModal } = isModalSlice.actions;
+export const { setIsModalOpen } = isModalSlice.actions;
 
 export const {
   setFormat,
