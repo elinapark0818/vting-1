@@ -26,12 +26,15 @@ app.get("/", (req, res, next) => {
 //   "http://v-ting.net",
 //   "https://v-ting.net",
 // ];
-const options = {
-    origin: "https://v-ting.net",
-    methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
-    credentials: true,
-};
-app.use((0, cors_1.default)(options));
+// const options: cors.CorsOptions = {
+//   origin: "https://v-ting.net",
+//   methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+//   credentials: true,
+// };
+app.use((req, resp, next) => {
+    next();
+}, (0, cors_1.default)({ origin: "https://v-ting.net", methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"], credentials: true }));
+// app.use(cors(options));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use("/user", user_1.default);
