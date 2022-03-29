@@ -30,7 +30,6 @@ const options = {
     origin: "https://v-ting.net",
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
     credentials: true,
-    maxAge: 24 * 6 * 60 * 10000,
 };
 app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());

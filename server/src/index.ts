@@ -34,7 +34,6 @@ const options: cors.CorsOptions = {
   origin: "https://v-ting.net",
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
   credentials: true,
-  maxAge: 24 * 6 * 60 * 10000,
 };
 app.use(cors(options));
 app.use(express.json());
