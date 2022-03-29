@@ -34,8 +34,10 @@ const options: cors.CorsOptions = {
   origin: "https://v-ting.net",
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
   credentials: true,
-  maxAge: 24 * 6 * 60 * 10000,
+  methods: ["GET", "POST", "DELETE", "PATCH", "PUT"],
+  origin: allowedOrigins,
 };
+
 app.use(cors(options));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -48,6 +50,8 @@ app.use("/auth", authRoutes);
 //db 연결 -> 되면 포트 열기
 export const MongoClient = require("mongodb").MongoClient;
 export var db: any;
+
+// console.log(process.env.DATABASE_PORT);
 
 MongoClient.connect(
   process.env.DATABASE_URL,

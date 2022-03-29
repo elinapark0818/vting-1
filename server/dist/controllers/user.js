@@ -53,6 +53,7 @@ exports.UserController = {
             }
             const accessToken = getCookie("accessToken");
             const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+
             try {
                 const password = yield req.body;
                 const findUser = yield __1.db
