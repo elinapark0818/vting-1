@@ -59,7 +59,7 @@ export var db: any;
 // console.log(process.env.DATABASE_PORT);
 
 MongoClient.connect(
-  process.env.DATABASE_URL,
+  "mongodb+srv://admin:dudqls12@cluster0.pldtu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
   { useUnifiedTopology: true },
   function (err: Error, database: any) {
     if (err) console.log(err);
