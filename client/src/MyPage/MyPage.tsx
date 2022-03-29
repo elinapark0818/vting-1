@@ -4,6 +4,7 @@ import { Link, Outlet } from "react-router-dom";
 
 import { RootState, setUserInfo } from "../store";
 import { useDispatch, useSelector } from "react-redux";
+import "./MyPage.scss";
 
 const serverURL: string = "http://localhost:8000";
 
@@ -33,22 +34,31 @@ function MyPage() {
   };
 
   return (
-    <div>
+    <div className="myPage_container">
       <div className="link_wrap">
-        <Link to="">회원정보 수정</Link>
-        <Link to="delete">회원탈퇴</Link>
+        <Link to="" className="link_btn">
+          회원정보 수정
+        </Link>
+        <Link to="delete" className="link_btn">
+          회원탈퇴
+        </Link>
       </div>
 
-      <div className="checkedPassword">
-        <input
-          type="password"
-          name="password"
-          onChange={myPage_onChangePassword}
-        />
-        <button onClick={() => getUserInfo()}>비밀번호 확인</button>
-      </div>
-
-      {checkPwd ? <Outlet /> : <div></div>}
+      {/* //? 일단 false 상태로 CSS 수정만해보자 */}
+      {!checkPwd ? (
+        <div className="outlet_wrap">
+          <Outlet />
+        </div>
+      ) : (
+        <div className="checkedPassword">
+          <input
+            type="password"
+            name="password"
+            onChange={myPage_onChangePassword}
+          />
+          <button onClick={() => getUserInfo()}>비밀번호 확인</button>
+        </div>
+      )}
     </div>
   );
 }

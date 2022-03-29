@@ -1,0 +1,32 @@
+@import "../index.scss";
+
+.myPage_container {
+  display: flex;
+  margin: 1em;
+  width: 100%;
+}
+
+.link_wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.link_btn {
+  text-decoration: none;
+  color: $vting-orange;
+  font-size: larger;
+  font-weight: bold;
+  background-color: transparent;
+  box-shadow: 3px 7px 7px -5px $vting-orange;
+  padding: 10px 10px;
+  width: 10em;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+.outlet_wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 9;
+}
