@@ -10,7 +10,7 @@ import sessionRoutes from "./routes/session";
 import authRoutes from "./routes/auth";
 import cors from "cors";
 import voteRoutes from "./routes/vote";
-// import voterRoutes from "./routes/voter";
+import voterRoutes from "./routes/voter";
 dotenv.config();
 
 const PORT = process.env.PORT;
@@ -50,7 +50,7 @@ app.use("/user", userRoutes);
 app.use("/session", sessionRoutes);
 app.use("/auth", authRoutes);
 app.use("/vting", voteRoutes);
-// app.use("/voter", voterRoutes);
+app.use("/voter", voterRoutes);
 
 //db 연결 -> 되면 포트 열기
 export const MongoClient = require("mongodb").MongoClient;
