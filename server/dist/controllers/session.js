@@ -39,6 +39,7 @@ exports.SessionController = {
             // 로그인을 위한 이메일, 패스워드 받기
             const { user_id, password } = yield req.body;
             console.log("잘 들어오고 있는지 확인 ===>", user_id);
+            console.log("db들어오는지 확인====>", __1.db);
             try {
                 const findUser = yield __1.db
                     .collection("user")

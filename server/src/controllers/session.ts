@@ -45,6 +45,7 @@ export let SessionController = {
       // 로그인을 위한 이메일, 패스워드 받기
       const { user_id, password }: UserType = await req.body;
       console.log("잘 들어오고 있는지 확인 ===>", user_id);
+      console.log("db들어오는지 확인====>", db);
 
       try {
         const findUser = await db
