@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthController = void 0;
 const __1 = require("..");
 const jwt = require("jsonwebtoken");
 exports.AuthController = {
@@ -21,11 +22,11 @@ exports.AuthController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+            const decoded = jwt.verify(accessToken, process.env.ACCESS_SECRET);
             try {
                 const findUser = yield __1.db
                     .collection("user")
-                    .findOne({ user_id: user_id.user_id });
+                    .findOne({ user_id: decoded.user_id });
                 return res.status(200).json({
                     data: {
                         _id: findUser._id,

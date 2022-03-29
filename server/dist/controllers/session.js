@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SessionController = void 0;
 const __1 = require("..");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -76,9 +77,9 @@ exports.SessionController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+            const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             try {
-                if (user_id) {
+                if (decoded) {
                     res.clearCookie("accessToken", { sameSite: "none", secure: true });
                     return res.status(200).json({ message: "Successfully logged out" });
                 }
