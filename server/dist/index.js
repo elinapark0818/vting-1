@@ -41,6 +41,7 @@ app.use("/auth", auth_1.default);
 // app.use("/voter", voterRoutes);
 //db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
+// console.log(process.env.DATABASE_PORT);
 exports.MongoClient.connect(process.env.DATABASE_URL, { useUnifiedTopology: true }, function (err, database) {
     if (err)
         console.log(err);

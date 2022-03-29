@@ -35,6 +35,7 @@ const options: cors.CorsOptions = {
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
   credentials: true,
 };
+
 app.use(cors(options));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -47,6 +48,8 @@ app.use("/auth", authRoutes);
 //db 연결 -> 되면 포트 열기
 export const MongoClient = require("mongodb").MongoClient;
 export var db: any;
+
+// console.log(process.env.DATABASE_PORT);
 
 MongoClient.connect(
   process.env.DATABASE_URL,
