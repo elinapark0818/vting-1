@@ -28,7 +28,7 @@ exports.SessionController = {
                     .collection("user")
                     .findOne({ user_id: req.body.user_id, password: req.body.password });
                 if (findUser) {
-                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 });
+                    const accessToken = jsonwebtoken_1.default.sign({ name: user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 });
                     // user_id을 playload에 담은 토큰을 쿠키로 전달
                     res.cookie("accessToken", accessToken, {
                         sameSite: "none",
@@ -59,6 +59,23 @@ exports.SessionController = {
     // logout, clear cookie
     signOut: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            // function getCookie(name: string) {
+            //   let matches = req.headers.cookie.match(
+            //     new RegExp(
+            //       "(?:^|; )" +
+            //         name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+            //         "=([^;]*)"
+            //     )
+            //   );
+            //   return matches ? decodeURIComponent(matches[1]) : undefined;
+            // }
+            // const accessToken = getCookie("accessToken");
+            // console.log("logged out", accessToken);
+            // // const accessToken = req.get("accessToken");
+            // const user_id = jwt.verify(
+            //   accessToken as string,
+            //   process.env.ACCESS_SECRET as jwt.Secret
+            // );
             function getCookie(name) {
                 let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
                     name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +

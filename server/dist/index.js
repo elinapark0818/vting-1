@@ -44,6 +44,11 @@ const options = {
     methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
     origin: allowedOrigins,
 };
+app.use(function (req, res, next) {
+    // Website you wish to allow to connect
+    res.setHeader("Access-Control-Allow-Origin", "https://v-ting.net");
+    next();
+});
 app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
