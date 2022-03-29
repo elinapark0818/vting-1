@@ -1,5 +1,4 @@
 import { db } from "..";
-import jwt from "jsonwebtoken";
 import express, {
   ErrorRequestHandler,
   Request,
@@ -8,6 +7,7 @@ import express, {
 } from "express";
 import { IncomingHttpHeaders, request } from "http";
 import { AnyMxRecord } from "dns";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { isRegExp } from "util/types";
 dotenv.config();
@@ -27,6 +27,7 @@ export let SessionController = {
     post: async (req: Request, res: Response) => {
       // 로그인을 위한 이메일, 패스워드 받기
       const { user_id, password }: UserType = await req.body;
+      console.log("잘 들어오고 있는지 확인 ===>", user_id);
 
       try {
         const findUser = await db
@@ -35,7 +36,7 @@ export let SessionController = {
 
         if (findUser) {
           const accessToken = jwt.sign(
-            { user_id },
+            { name: user_id },
             process.env.ACCESS_SECRET as jwt.Secret,
             { expiresIn: 60 * 60 }
           );
@@ -44,18 +45,13 @@ export let SessionController = {
           res.cookie("accessToken", accessToken, {
             sameSite: "none",
             secure: true,
+            maxAge: 10000 * 24 * 6 * 60,
+            httpOnly: false,
           });
 
-          return res.status(200).json({
-            data: {
-              _id: findUser._id,
-              user_id: findUser.user_id,
-              nickname: findUser.nickname,
-              image: findUser.image,
-              vote: findUser.vote,
-            },
-            message: "Successfully logged in",
-          });
+          console.log("엑세스 토큰은 잘 생성되는지 확인 =====>", accessToken);
+
+          return res.status(200).json({ message: "Successfully logged in" });
         }
       } catch (err) {
         console.log(err);
@@ -67,6 +63,24 @@ export let SessionController = {
   // logout, clear cookie
   signOut: {
     get: async (req: Request, res: Response) => {
+      // function getCookie(name: string) {
+      //   let matches = req.headers.cookie.match(
+      //     new RegExp(
+      //       "(?:^|; )" +
+      //         name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+      //         "=([^;]*)"
+      //     )
+      //   );
+      //   return matches ? decodeURIComponent(matches[1]) : undefined;
+      // }
+      // const accessToken = getCookie("accessToken");
+      // console.log("logged out", accessToken);
+      // // const accessToken = req.get("accessToken");
+      // const user_id = jwt.verify(
+      //   accessToken as string,
+      //   process.env.ACCESS_SECRET as jwt.Secret
+      // );
+
       function getCookie(name: any) {
         let matches = req.headers.cookie.match(
           new RegExp(

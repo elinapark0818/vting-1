@@ -46,8 +46,12 @@ const options: cors.CorsOptions = {
   methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
   origin: allowedOrigins,
 };
+app.use(function (req, res, next) {
+  // Website you wish to allow to connect
+  res.setHeader("Access-Control-Allow-Origin", "https://v-ting.net");
+  next();
+});
 app.use(cors(options));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/user", userRoutes);
