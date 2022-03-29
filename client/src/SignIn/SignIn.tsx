@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setIsLogin } from "../store/index";
+import { setIsLogin, setUserInfo, setIsModalOpen } from "../store/index";
 import "./SignIn.scss";
 
 import Logo from "../assets/v-ting_logo_circle.png";
@@ -54,6 +54,11 @@ function SignIn() {
     setInOrUp({ signIn: true });
   };
 
+  // ? 모달 끄기 핸들링 : 이전 화면 보여주는거니까 그냥 뒤로가기로..ㅎㅎ
+  const isCloseModal = () => {
+    navigate(-1);
+  };
+
   // ? 로그인 서버 연동 => [POST] session
   const LogInUser = async () => {
     try {
@@ -66,9 +71,20 @@ function SignIn() {
         { withCredentials: true }
       );
       if (res.status === 200) {
+        const userInfo = res.data.data;
         dispatch(setIsLogin(true));
-        console.log("로그인 성공===", res.data);
-        navigate("/dashboard");
+        console.log("res.data.data.user_id 출력===", userInfo.user_id);
+        // todo: 모달 끄는 함수를 넣어주기
+        navigate("/");
+        // todo: 리덕스 userInfo에 값 set 하기
+        dispatch(
+          setUserInfo({
+            _id: userInfo._id,
+            nickname: userInfo.nickname,
+            email: userInfo.user_id,
+            image: userInfo.image,
+          })
+        );
       }
     } catch (err) {
       console.log(err);
@@ -193,146 +209,164 @@ function SignIn() {
   return (
     <div>
       {inOrUp.signIn ? (
-        <div className="signIn_modal">
-          <div className="signIn_container">
-            <div className="img_wrap">
-              <img src={Logo} alt="Logo" style={{ width: "200px" }} />
-            </div>
-
-            <div className="email_wrap">
-              <input
-                onBlur={emailBlur}
-                value={user.email}
-                placeholder="아이디(이메일)를 입력하세요."
-                name="email"
-                type="email"
-                onChange={lonIn_onChangeEmail}
-              />
-              {isEmailBlur && !emailValid && (
-                <div className="email Error">
-                  ! 이메일을 정확히 입력해주세요.
-                </div>
-              )}
-              {isEmailBlur && emailValid && (
-                <div className="email Success"></div>
-              )}
-            </div>
-
-            <div className="password_wrap">
-              <input
-                onBlur={passwordBlur}
-                value={user.password}
-                placeholder="비밀번호를 입력하세요."
-                name="password"
-                type="password"
-                onChange={lonIn_onChangePassword}
-              />
-
-              {isPasswordBlur && !passwordValid && (
-                <div className="password Error">
-                  ! 비밀번호를 다시 확인해주세요
-                </div>
-              )}
-              {isPasswordBlur && passwordValid && (
-                <div className="password Success"></div>
-              )}
-            </div>
-
-            <div className="btn_wrap">
-              <button className="logInBtn" onClick={() => LogInUser()}>
-                로그인
+        <div className="signIn_container">
+          <div className="signIn_background">
+            <div className="signIn_modal">
+              <button onClick={() => isCloseModal()} className="closeBtn">
+                X
               </button>
+              <div className="img_wrap">
+                <img src={Logo} alt="Logo" style={{ width: "200px" }} />
+              </div>
 
-              <button className="signUpBtn" onClick={() => setSignUp()}>
-                아직 계정이 없으신가요?
-              </button>
+              <div className="email_wrap">
+                <input
+                  onBlur={emailBlur}
+                  value={user.email}
+                  placeholder="아이디(이메일)를 입력하세요."
+                  name="email"
+                  type="email"
+                  onChange={lonIn_onChangeEmail}
+                />
+                {isEmailBlur && !emailValid && (
+                  <div className="email Error">
+                    ! 이메일을 정확히 입력해주세요.
+                  </div>
+                )}
+                {isEmailBlur && emailValid && (
+                  <div className="email Success"></div>
+                )}
+              </div>
+
+              <div className="password_wrap">
+                <input
+                  onBlur={passwordBlur}
+                  value={user.password}
+                  placeholder="비밀번호를 입력하세요."
+                  name="password"
+                  type="password"
+                  onChange={lonIn_onChangePassword}
+                />
+
+                {isPasswordBlur && !passwordValid && (
+                  <div className="password Error">
+                    ! 비밀번호를 다시 확인해주세요
+                  </div>
+                )}
+                {isPasswordBlur && passwordValid && (
+                  <div className="password Success"></div>
+                )}
+              </div>
+
+              <div className="btn_wrap">
+                <button className="logInBtn" onClick={() => LogInUser()}>
+                  로그인
+                </button>
+
+                <button className="signUpBtn" onClick={() => setSignUp()}>
+                  아직 계정이 없으신가요?
+                </button>
+              </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className="signUp_modal">
-          <div className="signUp_container">
-            <div className="img_wrap">
-              <img src={Logo} alt="Logo" style={{ width: "200px" }} />
-            </div>
-
-            <input
-              placeholder="닉네임"
-              onBlur={nameBlur}
-              id="name"
-              value={newUser.name}
-              name="name"
-              type="text"
-              onChange={signUp_onChangeName}
-            />
-            {isBlur && !nameValid && (
-              <div className="nickname Error">! 한글 입력만 가능합니다.</div>
-            )}
-            {isBlur && nameValid && <div className="nickname Success"></div>}
-
-            <input
-              placeholder="아이디(이메일)"
-              onBlur={emailBlur}
-              value={newUser.email}
-              id="email"
-              name="email"
-              type="email"
-              onChange={signUp_onChangeEmail}
-            />
-            {isEmailBlur && !emailValid && (
-              <div className="email Error">! 이메일을 정확히 입력해주세요.</div>
-            )}
-            {isEmailBlur && emailValid && <div className="email Success"></div>}
-
-            <input
-              onBlur={passwordBlur}
-              value={newUser.password}
-              placeholder="비밀번호"
-              type="password"
-              name="password"
-              id="password"
-              onChange={signUp_onChangePassword}
-            />
-            {isPasswordBlur && !passwordValid && (
-              <div className="password Error">
-                ! 최소 7글자 최대 14글자까지 입력가능합니다.
+        <div className="signUp_container">
+          <div className="signUp_background">
+            <div className="signUp_modal">
+              <button onClick={() => isCloseModal()} className="closeBtn">
+                X
+              </button>
+              <div className="img_wrap">
+                <img src={Logo} alt="Logo" style={{ width: "200px" }} />
               </div>
-            )}
-            {isPasswordBlur && passwordValid && (
-              <div className="password Success"></div>
-            )}
 
-            <input
-              onBlur={passwordConfirm}
-              placeholder="비밀번호 확인"
-              type="password"
-              id="passwordConfirm"
-              onChange={signUp_onChangePasswordConfirm}
-            />
-
-            {!samePassword && (
-              <div className="password Error">
-                ! 비밀번호가 일치하지 않습니다.
-              </div>
-            )}
-
-            <div className="signUp_wrap">
-              <button onClick={() => SignInUser()}>이메일로 가입하기</button>
-            </div>
-
-            <div className="oauth_wrap">
-              <SiGithub
-                style={{
-                  fontSize: "50px",
-                  color: "black",
-                  marginRight: "10px",
-                }}
+              <input
+                placeholder="닉네임"
+                onBlur={nameBlur}
+                id="name"
+                value={newUser.name}
+                name="name"
+                type="text"
+                onChange={signUp_onChangeName}
               />
-              <img src={Google} alt="Google" style={{ width: "50px" }} />
+              {isBlur && !nameValid && (
+                <div className="nickname Error">! 한글 입력만 가능합니다.</div>
+              )}
+              {isBlur && nameValid && <div className="nickname Success"></div>}
+
+              <div className="email_wrap">
+                <input
+                  placeholder="아이디(이메일)"
+                  onBlur={emailBlur}
+                  value={newUser.email}
+                  id="email"
+                  name="email"
+                  type="email"
+                  onChange={signUp_onChangeEmail}
+                />
+                {isEmailBlur && !emailValid && (
+                  <div className="email Error">
+                    ! 이메일을 정확히 입력해주세요.
+                  </div>
+                )}
+                {isEmailBlur && emailValid && (
+                  <div className="email Success"></div>
+                )}
+              </div>
+
+              <div className="password_wrap">
+                <input
+                  onBlur={passwordBlur}
+                  value={newUser.password}
+                  placeholder="비밀번호"
+                  type="password"
+                  name="password"
+                  id="password"
+                  onChange={signUp_onChangePassword}
+                />
+                {isPasswordBlur && !passwordValid && (
+                  <div className="password Error">
+                    ! 최소 7글자 최대 14글자까지 입력가능합니다.
+                  </div>
+                )}
+                {isPasswordBlur && passwordValid && (
+                  <div className="password Success"></div>
+                )}
+              </div>
+
+              <input
+                onBlur={passwordConfirm}
+                placeholder="비밀번호 확인"
+                type="password"
+                id="passwordConfirm"
+                onChange={signUp_onChangePasswordConfirm}
+              />
+
+              {!samePassword && (
+                <div className="password Error">
+                  ! 비밀번호가 일치하지 않습니다.
+                </div>
+              )}
+
+              <div className="signUp_wrap">
+                <button onClick={() => SignInUser()}>이메일로 가입하기</button>
+              </div>
+
+              <div className="oauth_wrap">
+                <SiGithub
+                  style={{
+                    fontSize: "50px",
+                    color: "black",
+                    marginRight: "10px",
+                  }}
+                />
+                <img src={Google} alt="Google" style={{ width: "50px" }} />
+              </div>
+              <button className="back_login" onClick={() => setSignIn()}>
+                로그인화면으로 돌아가기
+              </button>
             </div>
-            <button className="back_login" onClick={() => setSignIn()}>
-              로그인화면으로 돌아가기
-            </button>
           </div>
         </div>
       )}
