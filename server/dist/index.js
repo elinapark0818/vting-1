@@ -41,7 +41,6 @@ const options = {
     credentials: true,
     methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
     origin: allowedOrigins,
-    preflightContinue: false,
 };
 app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());
