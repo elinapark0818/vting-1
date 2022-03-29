@@ -8,10 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
+
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+
 exports.UserController = {
     //회원가입과 탈퇴시 모두 사용가능한 체크
     userCheck: {
@@ -47,13 +53,17 @@ exports.UserController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+
+            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+
             console.log("user_id", user_id);
             try {
                 const password = yield req.body;
                 const findUser = yield __1.db
                     .collection("user")
-                    .findOne({ user_id: user_id, password: password });
+
+                    .findOne({ user_id: user_id.user_id, password: password });
+
                 if (!findUser) {
                     return res.status(200).json({
                         message: "It doesn't match",
@@ -81,6 +91,17 @@ exports.UserController = {
             const { user_id, nickname, password, image, vote } = req.body;
             try {
                 if (user_id && password && nickname) {
+
+                    // bcrypt.genSalt(saltRounds, function (err: Error, salt: any) {
+                    //   bcrypt.hash(
+                    //     myPlaintextPassword,
+                    //     salt,
+                    //     function (err: Error, hash: any) {
+                    //       //store hash in your password DB
+                    //     }
+                    //   );
+                    // });
+
                     __1.db.collection("user").insertOne({
                         user_id,
                         nickname,
@@ -89,7 +110,11 @@ exports.UserController = {
                         vote,
                     });
                     // user_id을 playload에 담아 토큰 생성
-                    const accessToken = jwt.sign({ name: user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 });
+
+                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, {
+                        expiresIn: 60 * 60,
+                    });
+
                     console.log("1", accessToken);
                     // user_id을 playload에 담은 토큰을 쿠키로 전달
                     res.cookie("accessToken", accessToken, {
@@ -134,11 +159,13 @@ exports.UserController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+
+            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             console.log("user_id", user_id);
             try {
                 // 유저 정보 삭제하기
-                yield __1.db.collection("user").deleteOne({ user_id: user_id });
+                yield __1.db.collection("user").deleteOne({ user_id: user_id.user_id });
+
                 // 쿠키에 토큰 삭제하기
                 yield res.clearCookie("accessToken", {
                     sameSite: "none",
@@ -157,19 +184,23 @@ exports.UserController = {
     userInfo: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             function getCookie(name) {
-                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
-                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                    "=([^;]*)"));
-                console.log(req.headers);
-                return matches ? decodeURIComponent(matches[1]) : undefined;
+
+                const cookie = req.headers.cookie;
+                if (cookie) {
+                    let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
+                        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+                        "=([^;]*)"));
+                    return matches ? decodeURIComponent(matches[1]) : undefined;
+                }
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
-            console.log("user_id", user_id);
+            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+            console.log("user_id decoded", user_id);
             try {
                 const findUser = yield __1.db
                     .collection("user")
-                    .findOne({ user_id: user_id } && { _id: req.params.id });
+                    .findOne({ user_id: user_id.user_id });
+
                 if (findUser) {
                     return res.status(200).json({
                         data: {
@@ -199,12 +230,12 @@ exports.UserController = {
                 return matches ? decodeURIComponent(matches[1]) : undefined;
             }
             const accessToken = getCookie("accessToken");
-            const user_id = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+
+            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
             console.log("user_id", user_id);
             try {
-                const findUser = yield __1.db
-                    .collection("user")
-                    .updateOne({ user_id: user_id } && { _id: req.params.id }, {
+                const findUser = yield __1.db.collection("user").updateOne({ user_id: user_id.user_id }, {
+
                     $set: {
                         nickname: req.body.nickname,
                         image: req.body.image,
