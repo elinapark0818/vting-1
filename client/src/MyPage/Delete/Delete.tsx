@@ -43,10 +43,15 @@ function Delete() {
   };
 
   const deleteUser = async () => {
+    let accessToken = localStorage.getItem("accessToken");
     try {
       const res = await axios.delete(serverURL + "/user", {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
       });
+
       if (res.status === 200) {
         console.log("회원탈퇴완료===", res.data.data);
         alert("회원탈퇴가 완료되었습니다.");
