@@ -59,6 +59,8 @@ function SignIn() {
     navigate(-1);
   };
 
+  // todo:  document.cookie = 'key=value'
+
   // ? 로그인 서버 연동 => [POST] session
   const LogInUser = async () => {
     try {
@@ -73,10 +75,8 @@ function SignIn() {
       if (res.status === 200) {
         const userInfo = res.data.data;
         dispatch(setIsLogin(true));
-        console.log("res.data.data.user_id 출력===", userInfo.user_id);
-        // todo: 모달 끄는 함수를 넣어주기
+        // console.log("res.data.data.user_id 출력===", userInfo.user_id);
         navigate("/");
-        // todo: 리덕스 userInfo에 값 set 하기
         dispatch(
           setUserInfo({
             _id: userInfo._id,
@@ -85,7 +85,10 @@ function SignIn() {
             image: userInfo.image,
           })
         );
-        console.log("로그인하자마자회원정보저장", userInfo);
+        const token = res.data.data.accessToken;
+        localStorage.setItem("accessToken", token);
+        // console.log("token=========", token);
+        // console.log("로그인하자마자회원정보저장", userInfo);
       }
     } catch (err) {
       // setIsServerOk(false);
