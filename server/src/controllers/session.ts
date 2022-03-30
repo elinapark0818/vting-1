@@ -45,7 +45,7 @@ export let SessionController = {
   signIn: {
     post: async (req: Request, res: Response) => {
       // 로그인을 위한 이메일, 패스워드 받기
-      const { user_id, password }: UserType = await req.body;
+      const { user_id, password }: UserType = req.body;
 
       try {
         const findUser = await db

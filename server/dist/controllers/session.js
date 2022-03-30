@@ -39,12 +39,11 @@ exports.SessionController = {
     signIn: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             // 로그인을 위한 이메일, 패스워드 받기
-            const { user_id, password } = yield req.body;
+            const { user_id, password } = req.body;
             try {
                 const findUser = yield __1.db
                     .collection("user")
                     .findOne({ user_id: user_id });
-                console.log(findUser);
                 var check = yield bcrypt.compare(password, findUser.password);
                 console.log(check);
                 if (check) {

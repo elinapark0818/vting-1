@@ -25,10 +25,12 @@ exports.UserController = {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const { user_id, password } = req.body;
+                console.log(user_id);
                 if (user_id) {
                     const findUserWithId = yield __1.db
                         .collection("user")
                         .findOne({ user_id: user_id });
+                    console.log(findUserWithId);
                     if (!findUserWithId) {
                         return res.status(200).json({
                             message: "It doesn't match",
@@ -84,7 +86,7 @@ exports.UserController = {
                         else {
                             console.log("salt", salt);
                             //genearte hash on separate function calls):
-                            var hashed = bcrypt.hash(password, salt, function (err, hash) {
+                            bcrypt.hash(password, salt, function (err, hash) {
                                 console.log("hash", hash);
                                 __1.db.collection("user").insertOne({
                                     user_id: req.body.user_id,
@@ -92,7 +94,29 @@ exports.UserController = {
                                     password: hash,
                                     image: req.body.image,
                                     vote: req.body.vote,
-                                });
+                                }, (err, data) => __awaiter(this, void 0, void 0, function* () {
+                                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, {
+                                        expiresIn: 60 * 60,
+                                    });
+                                    // user_id을 playload에 담은 토큰을 쿠키로 전달
+                                    res.cookie("accessToken", accessToken, {
+                                        sameSite: "none",
+                                        secure: true,
+                                    });
+                                    let findUserId = yield __1.db
+                                        .collection("user")
+                                        .findOne({ user_id: req.body.user_id });
+                                    console.log(findUserId._id);
+                                    return res.status(201).json({
+                                        data: {
+                                            _id: findUserId._id,
+                                            user_id: req.body.user_id,
+                                            nickname: req.body.nickname,
+                                            image: req.body.image,
+                                            vote: req.body.vote,
+                                        },
+                                    });
+                                }));
                                 if (err) {
                                     console.log("bycrpt hash method error : ", err.message);
                                 }
@@ -102,27 +126,6 @@ exports.UserController = {
                         }
                     });
                     // user_id을 playload에 담아 토큰 생성
-                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, {
-                        expiresIn: 60 * 60,
-                    });
-                    // user_id을 playload에 담은 토큰을 쿠키로 전달
-                    res.cookie("accessToken", accessToken, {
-                        sameSite: "none",
-                        secure: true,
-                    });
-                    let findUserId = yield __1.db
-                        .collection("user")
-                        .findOne({ user_id: req.body.user_id });
-                    console.log(findUserId);
-                    return res.status(201).json({
-                        data: {
-                            _id: findUserId._id,
-                            user_id: req.body.user_id,
-                            nickname: req.body.nickname,
-                            image: req.body.image,
-                            vote: req.body.vote,
-                        },
-                    });
                 }
                 else {
                     return res.status(203).json({
