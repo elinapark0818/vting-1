@@ -59,8 +59,10 @@ app.use("/auth", authRoutes);
 //db 연결 -> 되면 포트 열기
 export const MongoClient = require("mongodb").MongoClient;
 export var db: any;
+// const url = "mongodb://127.0.0.1:27017";
 
 MongoClient.connect(
+  // url,
   process.env.DATABASE_URL,
   { useUnifiedTopology: true },
   function (err: Error, database: any) {
