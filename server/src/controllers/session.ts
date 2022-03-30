@@ -52,11 +52,10 @@ export let SessionController = {
           .collection("user")
           .findOne({ user_id: user_id });
 
-        console.log(findUser);
-
         var check = await bcrypt.compare(password, findUser.password);
 
         console.log(check);
+
         if (check) {
           const accessToken = jwt.sign(
             { user_id },
