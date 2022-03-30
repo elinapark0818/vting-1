@@ -1,4 +1,5 @@
 import { db } from "..";
+import jwt from "jsonwebtoken";
 import express, {
   ErrorRequestHandler,
   Request,
@@ -7,10 +8,11 @@ import express, {
 } from "express";
 import { IncomingHttpHeaders, request } from "http";
 import { AnyMxRecord } from "dns";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { isRegExp } from "util/types";
 dotenv.config();
+const SALT_ROUNDS = 6;
+const bcrypt = require("bcrypt");
 
 interface UserType {
   user_id: string;
@@ -22,6 +24,23 @@ interface SessionController {
   signOut: { get: any };
 }
 
+//평문과 hash 된 password 비교  -> 로그인 기능에 사용하기 좋음.
+// bcrypt.compare(
+//   plaintextPassword,
+//   hash,
+//   function (err: Error, res: Response) {
+//     if (err) {
+//       console.log("bcrypt.compare() error : ", err.message);
+//     } else {
+//       if (res) {
+//         console.log("plaintextPassword === hashedPassword");
+//       } else {
+//         console.log("plaintextPassword !== hashedPassword");
+//       }
+//     }
+//   }
+// );
+
 export let SessionController = {
   signIn: {
     post: async (req: Request, res: Response) => {
@@ -31,11 +50,15 @@ export let SessionController = {
       try {
         const findUser = await db
           .collection("user")
-          .findOne({ user_id: req.body.user_id, password: req.body.password });
+          .findOne({ user_id: user_id });
 
-        if (findUser) {
+        var check = await bcrypt.compare(password, findUser.password);
+
+        console.log(check);
+
+        if (check) {
           const accessToken = jwt.sign(
-            { name: user_id },
+            { user_id },
             process.env.ACCESS_SECRET as jwt.Secret,
             { expiresIn: 60 * 60 }
           );
@@ -46,9 +69,18 @@ export let SessionController = {
             secure: true,
           });
 
-          console.log("logged in", accessToken);
-
-          return res.status(200).json({ message: "Successfully logged in" });
+          return res.status(200).json({
+            data: {
+              _id: findUser._id,
+              user_id: findUser.user_id,
+              nickname: findUser.nickname,
+              image: findUser.image,
+              vote: findUser.vote,
+            },
+            message: "Successfully logged in",
+          });
+        } else {
+          return res.status(400).json({ message: "Wrong password" });
         }
       } catch (err) {
         console.log(err);
@@ -60,24 +92,6 @@ export let SessionController = {
   // logout, clear cookie
   signOut: {
     get: async (req: Request, res: Response) => {
-      // function getCookie(name: string) {
-      //   let matches = req.headers.cookie.match(
-      //     new RegExp(
-      //       "(?:^|; )" +
-      //         name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-      //         "=([^;]*)"
-      //     )
-      //   );
-      //   return matches ? decodeURIComponent(matches[1]) : undefined;
-      // }
-      // const accessToken = getCookie("accessToken");
-      // console.log("logged out", accessToken);
-      // // const accessToken = req.get("accessToken");
-      // const user_id = jwt.verify(
-      //   accessToken as string,
-      //   process.env.ACCESS_SECRET as jwt.Secret
-      // );
-
       function getCookie(name: any) {
         let matches = req.headers.cookie.match(
           new RegExp(

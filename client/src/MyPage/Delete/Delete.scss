@@ -1,0 +1,132 @@
+@import "../../index.scss";
+
+.delete_container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 100px;
+  box-shadow: 0 7px 7px -4px $vting-orange;
+}
+
+.delete_header {
+  display: flex;
+  height: 100px;
+  background-color: $vting-orange;
+
+  & h1 {
+    font-size: 2.5rem;
+    color: #fff;
+    padding: 0 1em;
+  }
+}
+
+.delete_wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: $vting-orange;
+  margin-top: 3em;
+}
+
+.delete_btnWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 3em 0;
+
+  & h1 {
+    color: red;
+    margin: 2em 0;
+  }
+}
+
+.delete_btn {
+  cursor: pointer;
+  border: none;
+  background-color: $vting-orange;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 30px;
+  padding: 10px 55px;
+  transition: all 0.3s ease;
+}
+
+// * 회원탈퇴 모달
+
+.deleteModal_container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  // transform: scale(0);
+}
+
+.deleteModal_container .deleteModal_background {
+  display: table-cell;
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.deleteModal_container .deleteModal_background .deleteModal_modal {
+  background: #fff;
+  padding: 50px;
+  margin-bottom: 30px;
+  display: inline-block;
+  border-radius: 3px;
+  position: relative;
+
+  & h3 {
+    font-size: 20px;
+  }
+}
+
+.deleteModal_background {
+  & button {
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.btnWrap {
+  margin-top: 3em;
+}
+
+.delete_ok {
+  background-color: $vting-gray;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0.5em;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $vting-blue;
+  }
+}
+
+.delete_cancel {
+  background-color: $vting-gray;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0.5em;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $vting-blue;
+  }
+}

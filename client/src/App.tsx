@@ -6,14 +6,16 @@ import Edit from "./MyPage/Edit/Edit";
 import MyPage from "./MyPage/MyPage";
 import Navbar from "./Navbar/Navbar";
 import V from "./v/V";
+import VCode from "./v/VCode";
+import VResult from "./v/VResult";
 import NewVote from "./new/new";
 import { Provider } from "react-redux";
 import store from "./store/index";
 
-import React from "react";
-// import SignUp from "./SignUp/SignUp";
+import React, { useEffect, useState } from "react";
 import SignIn from "./SignIn/SignIn";
-import SignUp from "./SignUp/SignUp";
+// import Modal from "./Modal/Modal";
+
 // import NewVote from "./new/new";
 // import axios from "axios";
 
@@ -25,58 +27,70 @@ import SignUp from "./SignUp/SignUp";
 // ? 굳이 React.FC 안쓰고 함수선언식으로 해도 되니까 화살표함수를 안쓰는 방향으로 해보자!
 
 function App() {
-  // 서버통신 및 파이프라인 체크를 위한 임시 기능입니다.
-  // 성공 후 삭제하셔도 됩니다.
-  // useEffect(() => {
-  //   const getAccessToken = async () => {
-  //     try {
-  //       const response = await axios({
-  //         method: "post",
-  //         url: "/",
-  //         data: { email: "test@yof.com" },
-  //       });
-  //       if (response.status === 200) {
-  //         console.log("Hello World from client");
-  //       }
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
+  const [voteMode, setVoteMode] = useState(false);
 
-  //   getAccessToken();
-  // }, []);
+  useEffect(() => {
+    if (document.location.href.includes("v")) {
+      setVoteMode(true);
+    } else {
+      setVoteMode(false);
+    }
+  }, []);
 
-  // type SignInProps = {
-  //   styles: React.CSSProperties;
-  // };
+  if (voteMode) {
+    return (
+      <Provider store={store}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/v" element={<V />}>
+              <Route path="" element={<VCode />} />
+              <Route path=":code" element={<VResult />} />
+            </Route>
+          </Routes>
 
-  return (
-    <Provider store={store}>
-      <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
+          <Routes>
+            <Route path="/" element={<Home />} />
 
-          <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
 
-          <Route path="v">
-            <Route index element={<V />} />
-            <Route path=":number" element={<V />} />
-          </Route>
+            <Route path="new" element={<NewVote />} />
 
-          <Route path="new" element={<NewVote />} />
+            <Route path="myPage" element={<MyPage />}>
+              <Route path="" element={<Edit />} />
+              <Route path="delete" element={<Delete />} />
+            </Route>
 
-          <Route path="myPage" element={<MyPage />}>
-            <Route path="edit" element={<Edit />} />
-            <Route path="delete" element={<Delete />} />
-          </Route>
+            <Route path="signIn" element={<SignIn />} />
+          </Routes>
+          {/* <Modal /> */}
+        </BrowserRouter>
+      </Provider>
+    );
+  } else {
+    return (
+      <Provider store={store}>
+        <BrowserRouter>
+          <Navbar />
 
-          <Route path="signIn" element={<SignIn />} />
-          <Route path="signUp" element={<SignUp />} />
-        </Routes>
-      </BrowserRouter>
-    </Provider>
-  );
+          <Routes>
+            <Route path="/" element={<Home />} />
+
+            <Route path="dashboard" element={<Dashboard />} />
+
+            <Route path="new" element={<NewVote />} />
+
+            <Route path="myPage" element={<MyPage />}>
+              <Route path="" element={<Edit />} />
+              <Route path="delete" element={<Delete />} />
+            </Route>
+
+            <Route path="signIn" element={<SignIn />} />
+          </Routes>
+          {/* <Modal /> */}
+        </BrowserRouter>
+      </Provider>
+    );
+  }
 }
 
 export default App;

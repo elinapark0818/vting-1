@@ -1,61 +1,152 @@
-.checkPwd_container {
-  display: flex;
-  flex-direction: column;
-  border: 3px solid rgb(236, 177, 100);
-  margin: 0 200px;
-}
-
-.edit_header {
-  height: 100px;
-  background-color: orange;
-
-  & h1 {
-    margin-left: 40px;
-    color: #fff;
-  }
-}
-
-.edit_passwordCheck {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 500px;
-}
-
-.edit_input {
-  background-color: rgb(184, 184, 184);
-  border: none;
-  height: 30px;
-  width: 300px;
-  font-size: 30px;
-}
-
-.edit_checkBtn {
-  margin: 50px 0;
-  background-color: orange;
-  color: #fff;
-  font-weight: bold;
-  font-size: large;
-  padding: 10px 10px;
-  border: none;
-  width: 200px;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.passwordCheck {
-  font-size: 16px;
-  color: red;
-  border: 1px solid red;
-  padding: 5px 5px;
-  margin: 0;
-  //   display: ${(props) => (props.passwordCheck ? "none" : "block")};
-}
+@import "../../index.scss";
 
 .edit_container {
   display: flex;
   flex-direction: column;
+  margin: 0 100px;
+  box-shadow: 0 7px 7px -4px $vting-orange;
+}
+
+.edit_header {
+  display: flex;
+  height: 100px;
+  width: 100%;
+  background-color: $vting-orange;
+
+  & h1 {
+    font-size: 2.5rem;
+    color: #fff;
+    padding: 0 1em;
+  }
+}
+
+.edit_wrap {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-top: 3em;
+
+  & h3 {
+    font-size: 2em;
+    color: $vting-orange;
+  }
+
+  & input {
+    border: none;
+    background-color: transparent;
+    border-bottom: 1px solid $vting-gray;
+    width: 16em;
+    font-size: 25px;
+    padding-left: 5px;
+  }
 }
+
+.edit_profile .edit_nickname .edit_password {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit_btnWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 3em 0;
+}
+
+.edit_btn {
+  cursor: pointer;
+  border: none;
+  background-color: $vting-orange;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 30px;
+  padding: 10px 55px;
+  transition: all 0.5s ease;
+}
+
+// .edit_container {
+//   display: flex;
+//   flex-direction: column;
+//   border: 3px solid $vting-orange;
+//   margin: 0 200px;
+
+//   & input {
+//     border: none;
+//     background-color: transparent;
+//     border-bottom: 1px solid $vting-gray;
+//     width: 16em;
+//     font-size: 25px;
+//     padding-left: 5px;
+//   }
+
+//   & button {
+//     cursor: pointer;
+//     padding: 10px 10px;
+//     margin: 10px;
+//     width: 100px;
+//     font-size: 20px;
+//     font-weight: bold;
+//     border: none;
+//     border-radius: 50px;
+//     background-color: $vting-orange;
+//     color: #fff;
+//   }
+// }
+
+// .edit_header {
+//   display: flex;
+//   height: 100px;
+//   background-color: $vting-orange;
+
+//   & h1 {
+//     margin-left: 40px;
+//     color: #fff;
+//   }
+// }
+
+// .edit_passwordCheck {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   height: 500px;
+// }
+
+// .edit_input {
+//   background-color: $vting-gray;
+//   border: none;
+//   height: 30px;
+//   width: 300px;
+//   font-size: 30px;
+// }
+
+// .edit_checkBtn {
+//   margin: 50px 0;
+//   background-color: $vting-orange;
+//   color: #fff;
+//   font-weight: bold;
+//   font-size: large;
+//   padding: 10px 10px;
+//   border: none;
+//   width: 200px;
+//   border-radius: 20px;
+//   cursor: pointer;
+// }
+
+// .passwordCheck {
+//   text-align: left;
+//   font-size: 16px;
+//   color: red;
+//   margin-left: 10%;
+// }
+
+// .edit_container {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+// }

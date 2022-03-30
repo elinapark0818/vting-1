@@ -1,57 +1,128 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Edit.scss";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, setUserInfo } from "../../store/index";
+import axios from "axios";
 
-interface Props {
-  text: string;
+interface PatchUser {
+  image: string;
+  name: string;
+  password: string;
 }
 
-function Edit({ text }: Props) {
-  // const [password, setPassword] = useState("");
-  // const [passwordCheck, setPasswordCheck] = useState("true");
+const serverURL: string = "http://localhost:8000";
+
+function Edit() {
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+
+  const [patchUserInfo, setPatchUserInfo] = useState<PatchUser>({
+    image: "",
+    name: "",
+    password: "",
+  });
+
+  const edit_onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPatchUserInfo({ ...patchUserInfo, [name]: value });
+  };
+
+  const edit_onChangeProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPatchUserInfo({ ...patchUserInfo, [name]: value });
+  };
+
+  const edit_onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPatchUserInfo({ ...patchUserInfo, [name]: value });
+  };
+
+  const EditUserInfo = async () => {
+    try {
+      const res = await axios.patch(`${serverURL}/user/${userInfo._id}`);
+      console.log("에딧유저인포===", res);
+
+      if (res.status === 200) {
+        dispatch(
+          setUserInfo({
+            _id: String(userInfo._id),
+            nickname: patchUserInfo.name || userInfo.nickname,
+            email: userInfo.email,
+            image: patchUserInfo.image || userInfo.image,
+          })
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const EditUserPassword = async () => {
+    try {
+      const res = await axios.patch(`${serverURL}/user/${userInfo._id}`, {
+        password: patchUserInfo.password,
+      });
+      console.log("패스워드변경 ===", res);
+
+      if (res.status === 200) {
+        console.log("이러면 바뀜?");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
-    <div className="checkPwd_container">
+    <div className="edit_container">
       <header className="edit_header">
         <h1>회원정보 관리</h1>
       </header>
 
-      <div className="edit_passwordCheck">
-        <input
-          className="edit_input"
-          type="password"
-          // onChange={(e) => {
-          //   setPassword(e.target.value);
-          // }}
-        />
-        <div className="passwordCheck">! 비밀번호가 틀렸습니다.</div>
-        <button className="edit_checkBtn">비밀번호 확인</button>
-      </div>
+      <main className="edit_wrap">
+        <div className="edit_profile">
+          <h3>프로필</h3>
 
-      <div className="edit_container">
-        <h3>프로필 변경</h3>
-        <img alt="profile_img" />
-        <label htmlFor="file">업로드</label>
-        <input
-          id="file"
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-        />
+          <img alt="profile_img" src={patchUserInfo.image} />
+          <label htmlFor="file">업로드</label>
+          <input
+            id="file"
+            name="profile"
+            onChange={edit_onChangeProfile}
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+          />
+        </div>
 
-        <h3>닉네임 변경</h3>
-        <input type="text" />
+        <div className="edit_nickname">
+          <h3>닉네임</h3>
+          <input
+            name="name"
+            onChange={edit_onChangeName}
+            type="text"
+            placeholder={userInfo.nickname}
+          />
+        </div>
 
-        <h3>비밀번호 변경</h3>
-        <input type="password" />
-        <input type="password" />
-        <button>수정하기</button>
+        <div className="edit_password">
+          <h3>비밀번호</h3>
+          <input
+            type="password"
+            name="password"
+            onChange={edit_onChangePassword}
+          />
+        </div>
+        {patchUserInfo.password}
+      </main>
+      <div className="edit_btnWrap">
+        <button className="edit_btn" onClick={() => EditUserInfo()}>
+          수정하기
+        </button>
+
+        <button onClick={() => EditUserPassword()}>비밀번호 수정하기</button>
       </div>
     </div>
   );
 }
-
-Edit.defaultProps = {
-  text: "This is Edit!",
-};
 
 export default Edit;
