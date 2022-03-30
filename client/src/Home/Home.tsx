@@ -6,7 +6,6 @@ import "./Home.scss";
 
 import { Link } from "react-router-dom";
 
-
 axios.defaults.withCredentials = true;
 
 interface Props {
@@ -18,7 +17,6 @@ function Home({ text }: Props) {
 
   return (
     <div className="homeCon">
-
       <div className="hotVotesTitle">
         {isLogin ? (
           <div>
@@ -43,7 +41,6 @@ function Home({ text }: Props) {
         )}
       </div>
       <div className="hotVotes">
-
         <div className="hotVotesContents">
           <div className="hotVoteCard">
             <div className="hotVoteCardTitle">엄마가 좋아 아빠가 좋아?</div>
@@ -71,8 +68,114 @@ function Home({ text }: Props) {
       <Link to="/new">
         <div className="newVoteBtn vtingButton">설문 생성하기</div>
       </Link>
+      <div className="services">
+        <Testfunc />
+      </div>
+    </div>
+  );
+}
 
-      <div className="services">서비스 소개 영역입니다. (추후 제작 예정)</div>
+function Testfunc() {
+  const serverURL: string = "http://localhost:8000";
+
+  const CheckEmail1 = async () => {
+    try {
+      const res = await axios.post(
+        serverURL + "/user/check",
+        {
+          user_id: "test@yof.com",
+        },
+        { withCredentials: true }
+      );
+      if (res.status === 200 && res.data.message === "Success verified") {
+        console.log("이미 가입된 회원입니다.");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const CheckEmail2 = async () => {
+    try {
+      const res = await axios.post(
+        serverURL + "/user/check",
+        {
+          user_id: "dummy@email.com",
+        },
+        { withCredentials: true }
+      );
+      if (res.status === 200 && res.data.message === "It doesn't match") {
+        console.log("회원가입이 가능한 아이디입니다.");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const CheckPass1 = async () => {
+    try {
+      const res = await axios.post(
+        serverURL + "/user/check",
+        {
+          password: "1q2w3e4r",
+        },
+        { withCredentials: true }
+      );
+      if (res.status === 200) {
+        console.log("message 뭐라고? ===>", res.data.message);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const CheckPass2 = async () => {
+    try {
+      const res = await axios.post(
+        serverURL + "/user/check",
+        {
+          password: "q1w2e34r",
+        },
+        { withCredentials: true }
+      );
+      if (res.status === 200) {
+        console.log("message 뭐라고? ===>", res.data.message);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return (
+    <div>
+      <button
+        onClick={() => {
+          CheckEmail1();
+        }}
+      >
+        1. 이미 있는 아이디
+      </button>
+      <button
+        onClick={() => {
+          CheckEmail2();
+        }}
+      >
+        2. 새로운 아이디
+      </button>
+      <button
+        onClick={() => {
+          CheckPass1();
+        }}
+      >
+        3. 맞는 비밀번호
+      </button>
+      <button
+        onClick={() => {
+          CheckPass2();
+        }}
+      >
+        4. 틀린 비밀번호
+      </button>
     </div>
   );
 }

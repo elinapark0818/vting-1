@@ -1,34 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, Routes, Route, Outlet } from "react-router-dom";
+import "./v.scss";
+import vtinglogo from "../assets/vt_logo_2.png";
+import VResult from "./VResult";
+import VCode from "./VCode";
 
-interface Props {
-  text: string;
-}
-
-function V({ text }: Props) {
-  const [message, setMessage] = useState("");
-  const { number } = useParams();
-
-  useEffect(() => {
-    if (number) {
-      setMessage("The number is" + number);
-    } else {
-      setMessage("No number was provided");
-    }
-  }, []);
+function V() {
+  const [voteCode, setVoteCode] = useState("");
+  const [result, setResult] = useState(false);
+  const { code } = useParams();
 
   return (
-    <div>
-      <p>{text}</p>
-
-      <p>{message}</p>
-      <Link to="/">Go to the Home Page!</Link>
+    <div className="voteCodePageCon">
+      <div className="voteCodePage">
+        <Outlet />
+      </div>
     </div>
   );
 }
-
-V.defaultProps = {
-  text: "This is v!",
-};
 
 export default V;

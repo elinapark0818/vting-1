@@ -11,6 +11,8 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { isRegExp } from "util/types";
 dotenv.config();
+const SALT_ROUNDS = 6;
+const bcrypt = require("bcrypt");
 
 interface UserType {
   user_id: string;
@@ -51,11 +53,13 @@ export let SessionController = {
         console.log("여기까지는");
         const findUser = await db
           .collection("user")
-          .findOne({ user_id: req.body.user_id, password: req.body.password });
+          .findOne({ user_id: user_id });
 
-        if (findUser) {
-          console.log("user====>", findUser);
+        var check = await bcrypt.compare(password, findUser.password);
 
+        console.log(check);
+
+        if (check) {
           const accessToken = jwt.sign(
             { name: user_id },
             process.env.ACCESS_SECRET as jwt.Secret,
@@ -64,23 +68,18 @@ export let SessionController = {
 
           console.log("token====>", accessToken);
 
-          // user_id을 playload에 담은 토큰을 쿠키로 전달
-          res
-            .cookie("accessToken", accessToken, {
-              sameSite: "none",
-              secure: true,
-            })
-            .status(200)
-            .json({
-              data: {
-                _id: findUser._id,
-                user_id: findUser.user_id,
-                nickname: findUser.nickname,
-                image: findUser.image,
-                vote: findUser.vote,
-              },
-              message: "Successfully logged in",
-            });
+          return res.status(200).json({
+            data: {
+              _id: findUser._id,
+              user_id: findUser.user_id,
+              nickname: findUser.nickname,
+              image: findUser.image,
+              vote: findUser.vote,
+            },
+            message: "Successfully logged in",
+          });
+        } else {
+          return res.status(400).json({ message: "Wrong password" });
         }
       } catch (err) {
         console.log(err);
@@ -123,13 +122,13 @@ export let SessionController = {
 
       const accessToken = getCookie("accessToken");
 
-      const decoded = jwt.verify(
+      const user_id = jwt.verify(
         accessToken as string,
         process.env.ACCESS_SECRET as jwt.Secret
       );
 
       try {
-        if (decoded) {
+        if (user_id) {
           res.clearCookie("accessToken", { sameSite: "none", secure: true });
           return res.status(200).json({ message: "Successfully logged out" });
         }

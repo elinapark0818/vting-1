@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.scss";
 import Logo from "../assets/vt_logo_1.png";
@@ -49,6 +49,8 @@ function Navbar() {
   //   navigate(-1);
   // };
 
+  // todo : 네비게이션 바 버튼 CSS
+
   return (
     <div className="container">
       <div className="NavLeft">
@@ -58,44 +60,45 @@ function Navbar() {
       </div>
       {loginState ? (
         <div className="NavRight">
-          <Link className="link" to="/">
+          <Link className="nav-link link" to="/">
             Home
           </Link>
-          <Link className="link" to="dashboard">
+          <Link className="nav-link link" to="dashboard">
             Dashboard
           </Link>
-          <Link className="link" to="v">
+          <Link className="nav-link link" to="v">
             Vote
           </Link>
 
           <div className="profile">
-            <img
-              src={Profile}
-              alt="profile_img"
-              style={{ width: "60px", borderRadius: "50%" }}
-            />
-            <ul className="subMenu">
-              <li className="subMenuLi">
-                <Link className="subMenuLink" to="myPage">
-                  MyPage
-                </Link>
-              </li>
-              <li></li>
-              <li className="subMenuLink" onClick={() => handleLogout()}>
-                SingOut
-              </li>
-            </ul>
+            <div>
+              <img
+                src={Profile}
+                alt="profile_img"
+                style={{ width: "60px", borderRadius: "50%" }}
+              />
+              <ul className="subMenu">
+                <div className="subMenuLi">
+                  <Link className="nav-link link" to="myPage">
+                    MyPage
+                  </Link>
+                </div>
+                <div className="nav-link link" onClick={() => handleLogout()}>
+                  SingOut
+                </div>
+              </ul>
+            </div>
           </div>
         </div>
       ) : (
         <div className="NavRight">
-          <Link className="link" to="/">
+          <Link className="nav-link link" to="/">
             Home
           </Link>
-          <Link className="link" to="v">
+          <Link className="nav-link link" to="v">
             Vote
           </Link>
-          <Link className="subMenuLink" to="signIn">
+          <Link className="nav-link link" to="signIn">
             SignIn
           </Link>
         </div>
