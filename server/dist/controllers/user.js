@@ -25,6 +25,7 @@ exports.UserController = {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const { user_id, password } = req.body;
+                console.log(user_id);
                 if (user_id) {
                     const findUserWithId = yield __1.db
                         .collection("user")

@@ -44,7 +44,6 @@ exports.SessionController = {
                 const findUser = yield __1.db
                     .collection("user")
                     .findOne({ user_id: user_id });
-                console.log(findUser);
                 var check = yield bcrypt.compare(password, findUser.password);
                 console.log(check);
                 if (check) {
