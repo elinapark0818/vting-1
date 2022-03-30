@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import "./MyPage.scss";
 
-const serverURL: string = "https://test.v-ting.net";
+const serverURL: string = "http://localhost:8000";
 
 function MyPage() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -21,20 +21,25 @@ function MyPage() {
   // * 패스워드 체크
   // todo: serverURL + "/user/check" { user_id: userInfo.email, password: myPagePwd }, { withCredentials: true }
   const handlePasswordCheck = async () => {
+    let accessToken = localStorage.getItem("accessToken");
     try {
       const res = await axios.post(
         `${serverURL}/user/check`,
         {
-          user_id: userInfo.email,
           password: myPagePwd,
         },
-        { withCredentials: true }
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        }
       );
+
       if (res.status === 200 && res.data.message === "It doesn't match") {
         console.log("비밀번호가 일치하지 않습니다.");
       }
       if (res.status === 200 && res.data.message === "Success verified") {
-        console.log("패스워드체크완료!", res.data.message);
         setCheckPwd(true);
       }
     } catch (err) {
@@ -70,6 +75,7 @@ function MyPage() {
               name="password"
               onChange={myPage_onChangePassword}
             />
+            {myPagePwd}
             {!myPagePwd && <div>! 비밀번호를 입력하세요.</div>}
           </main>
           <div className="passwordCheck_btnWrap">
