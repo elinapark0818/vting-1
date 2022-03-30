@@ -12,6 +12,7 @@ const auth_1 = __importDefault(require("./routes/auth"));
 const cors_1 = __importDefault(require("cors"));
 const vote_1 = __importDefault(require("./routes/vote"));
 const voter_1 = __importDefault(require("./routes/voter"));
+
 dotenv_1.default.config();
 const PORT = process.env.PORT;
 const app = (0, express_1.default)();

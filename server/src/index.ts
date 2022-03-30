@@ -8,14 +8,14 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/user";
 import sessionRoutes from "./routes/session";
 import authRoutes from "./routes/auth";
-import cors from "cors";
 import voteRoutes from "./routes/vote";
 import voterRoutes from "./routes/voter";
+import cors from "cors";
+
 dotenv.config();
 
 const PORT = process.env.PORT;
 const app: express.Application = express();
-
 
 const allowedOrigins = ["http://localhost:3000", "v-ting.net"];
 

@@ -59,6 +59,8 @@ function SignIn() {
     navigate(-1);
   };
 
+  // todo:  document.cookie = 'key=value'
+
   // ? 로그인 서버 연동 => [POST] session
   const LogInUser = async () => {
     try {
@@ -73,10 +75,8 @@ function SignIn() {
       if (res.status === 200) {
         const userInfo = res.data.data;
         dispatch(setIsLogin(true));
-        console.log("res.data.data.user_id 출력===", userInfo.user_id);
-        // todo: 모달 끄는 함수를 넣어주기
+        // console.log("res.data.data.user_id 출력===", userInfo.user_id);
         navigate("/");
-        // todo: 리덕스 userInfo에 값 set 하기
         dispatch(
           setUserInfo({
             _id: userInfo._id,
@@ -85,9 +85,13 @@ function SignIn() {
             image: userInfo.image,
           })
         );
-        console.log("로그인하자마자회원정보저장", userInfo);
+        const token = res.data.data.accessToken;
+        localStorage.setItem("accessToken", token);
+        // console.log("token=========", token);
+        // console.log("로그인하자마자회원정보저장", userInfo);
       }
     } catch (err) {
+      // setIsServerOk(false);
       console.log(err);
     }
   };
@@ -96,18 +100,32 @@ function SignIn() {
   const SignInUser = async () => {
     try {
       const res = await axios.post(
-        serverURL + "/user",
-        {
-          user_id: newUser.email,
-          nickname: newUser.name,
-          password: newUser.password,
-          passwordConfirm: newUser.passwordConfirm,
-          // image: newUser.image,
-        },
-        { withCredentials: true }
+        serverURL + "/user"
+        // , {
+        //   user_id: newUser.email,
+        //   nickname: newUser.name,
+        //   password: newUser.password,
+        //   passwordConfirm: newUser.passwordConfirm,
+        //   // image: newUser.image,
+        // }
       );
-      if (res.status === 201) {
+      if (
+        !newUser.email &&
+        !newUser.name &&
+        !newUser.password &&
+        !newUser.passwordConfirm
+      ) {
+        alert("회원정보를 모두 입력해주세요.");
+      }
+      if (
+        res.status === 201 &&
+        newUser.email &&
+        newUser.name &&
+        newUser.password &&
+        newUser.passwordConfirm
+      ) {
         console.log("회원가입 성공===", res.data);
+        alert("회원가입이 완료되었습니다.");
         // ? 회원가입과 동시에 로그인 처리
         dispatch(setIsLogin(true));
         navigate("/");
@@ -152,14 +170,16 @@ function SignIn() {
 
   // ! Validation
 
+  // * 서버 불안전
+  const [isServerOk, setIsServerOk] = useState(true);
+
   // * 닉네임 유효성검사
   const [nameValid, setNameValid] = useState(false);
   const [isBlur, setIsBlur] = useState(false);
 
   const nameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsBlur(true);
-    // * 닉네임 한글만 넣을 수 있게 했어여
-    if (newUser.name.match(/^[ㄱ-ㅣ가-힣]*$/i)) {
+    if (newUser.name.match(/^[\w\Wㄱ-ㅎㅏ-ㅣ가-힣]{2,20}$/)) {
       setNameValid(true);
     } else {
       setNameValid(false);
@@ -189,10 +209,17 @@ function SignIn() {
 
   const passwordBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsPasswordBlur(true);
-    // * 비번 영문자  7글자이상으로 해놨습니다(임시)
-    if (newUser.password.match(/^[A-Za-z]\w{7,14}$/)) {
+    if (
+      newUser.password.match(
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/i
+      )
+    ) {
       setPasswordValid(true);
-    } else if (user.password.match(/^[A-Za-z]\w{7,14}$/)) {
+    } else if (
+      user.password.match(
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/i
+      )
+    ) {
       setPasswordValid(true);
     } else {
       setPasswordValid(false);
@@ -236,9 +263,6 @@ function SignIn() {
                     ! 이메일을 정확히 입력해주세요.
                   </div>
                 )}
-                {isEmailBlur && emailValid && (
-                  <div className="email Success"></div>
-                )}
               </div>
 
               <div className="password_wrap">
@@ -251,12 +275,12 @@ function SignIn() {
                   onChange={lonIn_onChangePassword}
                 />
 
-                {isPasswordBlur && !passwordValid && (
-                  <div className="password Error">
-                    ! 비밀번호를 다시 확인해주세요
+                {isPasswordBlur && !user.password && (
+                  <div className="password Empty">
+                    ! 비밀번호를 입력해주세요
                   </div>
                 )}
-                {isPasswordBlur && passwordValid && (
+                {isPasswordBlur && user.password && (
                   <div className="password Success"></div>
                 )}
               </div>
@@ -294,7 +318,9 @@ function SignIn() {
                 onChange={signUp_onChangeName}
               />
               {isBlur && !nameValid && (
-                <div className="nickname Error">! 한글 입력만 가능합니다.</div>
+                <div className="nickname Error">
+                  ! 한글, 영문, 숫자만 가능하며 2-10자리 입력해주세요
+                </div>
               )}
               {isBlur && nameValid && <div className="nickname Success"></div>}
 
@@ -330,7 +356,7 @@ function SignIn() {
                 />
                 {isPasswordBlur && !passwordValid && (
                   <div className="password Error">
-                    ! 최소 7글자 최대 14글자까지 입력가능합니다.
+                    ! 영문, 숫자, 특수문자 포함 8자리이상 입력해주세요.
                   </div>
                 )}
                 {isPasswordBlur && passwordValid && (
