@@ -45,12 +45,14 @@ export let SessionController = {
   signIn: {
     post: async (req: Request, res: Response) => {
       // 로그인을 위한 이메일, 패스워드 받기
-      const { user_id, password }: UserType = await req.body;
+      const { user_id, password }: UserType = req.body;
 
       try {
         const findUser = await db
           .collection("user")
           .findOne({ user_id: user_id });
+
+        console.log(findUser);
 
         var check = await bcrypt.compare(password, findUser.password);
 
@@ -60,7 +62,7 @@ export let SessionController = {
           const accessToken = jwt.sign(
             { user_id },
             process.env.ACCESS_SECRET as jwt.Secret,
-            { expiresIn: 60 * 60 }
+            { expiresIn: 60 * 60 * 60 }
           );
 
           // user_id을 playload에 담은 토큰을 쿠키로 전달
@@ -71,11 +73,14 @@ export let SessionController = {
 
           return res.status(200).json({
             data: {
-              _id: findUser._id,
-              user_id: findUser.user_id,
-              nickname: findUser.nickname,
-              image: findUser.image,
-              vote: findUser.vote,
+              user_data: {
+                _id: findUser._id,
+                user_id: findUser.user_id,
+                nickname: findUser.nickname,
+                image: findUser.image,
+                vote: findUser.vote,
+              },
+              accessToken: accessToken,
             },
             message: "Successfully logged in",
           });
@@ -92,32 +97,27 @@ export let SessionController = {
   // logout, clear cookie
   signOut: {
     get: async (req: Request, res: Response) => {
-      function getCookie(name: any) {
-        let matches = req.headers.cookie.match(
-          new RegExp(
-            "(?:^|; )" +
-              name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-              "=([^;]*)"
-          )
+      if (
+        req.headers.authorization &&
+        req.headers.authorization.split(" ")[0] === "Bearer"
+      ) {
+        let authorization: string | undefined = req.headers.authorization;
+        let token: string = authorization.split(" ")[1];
+
+        const decoded = jwt.verify(
+          token as string,
+          process.env.ACCESS_SECRET as jwt.Secret
         );
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-      }
 
-      const accessToken = getCookie("accessToken");
-
-      const user_id = jwt.verify(
-        accessToken as string,
-        process.env.ACCESS_SECRET as jwt.Secret
-      );
-
-      try {
-        if (user_id) {
-          res.clearCookie("accessToken", { sameSite: "none", secure: true });
-          return res.status(200).json({ message: "Successfully logged out" });
+        try {
+          if (decoded) {
+            res.clearCookie("accessToken", { sameSite: "none", secure: true });
+            return res.status(200).json({ message: "Successfully logged out" });
+          }
+        } catch (err) {
+          console.log(err);
+          return res.status(400).json({ message: "Failed logged out" });
         }
-      } catch (err) {
-        console.log(err);
-        return res.status(400).json({ message: "Failed logged out" });
       }
     },
   },

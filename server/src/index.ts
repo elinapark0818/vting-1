@@ -8,9 +8,9 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/user";
 import sessionRoutes from "./routes/session";
 import authRoutes from "./routes/auth";
+import voteRoutes from "./routes/vote";
+import voterRoutes from "./routes/voter";
 import cors from "cors";
-// import voteRoutes from "./routes/vote";
-// import voterRoutes from "./routes/voter";
 dotenv.config();
 
 const PORT = process.env.PORT;

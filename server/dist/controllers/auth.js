@@ -14,31 +14,29 @@ const jwt = require("jsonwebtoken");
 exports.AuthController = {
     navBar: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            function getCookie(name) {
-                let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
-                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                    "=([^;]*)"));
-                return matches ? decodeURIComponent(matches[1]) : undefined;
-            }
-            const accessToken = getCookie("accessToken");
-            const decoded = jwt.verify(accessToken, process.env.ACCESS_SECRET);
-            try {
-                const findUser = yield __1.db
-                    .collection("user")
-                    .findOne({ user_id: decoded.user_id });
-                return res.status(200).json({
-                    data: {
-                        _id: findUser._id,
-                        user_id: findUser.user_id,
-                        nickname: findUser.nickname,
-                        image: findUser.image,
-                        vote: findUser.vote,
-                    },
-                });
-            }
-            catch (err) {
-                console.log(err);
-                return res.status(400).json({ message: "Bad request" });
+            if (req.headers.authorization &&
+                req.headers.authorization.split(" ")[0] === "Bearer") {
+                let authorization = req.headers.authorization;
+                let token = authorization.split(" ")[1];
+                const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+                try {
+                    const findUser = yield __1.db
+                        .collection("user")
+                        .findOne({ user_id: decoded.user_id });
+                    return res.status(200).json({
+                        data: {
+                            _id: findUser._id,
+                            user_id: findUser.user_id,
+                            nickname: findUser.nickname,
+                            image: findUser.image,
+                            vote: findUser.vote,
+                        },
+                    });
+                }
+                catch (err) {
+                    console.log(err);
+                    return res.status(400).json({ message: "Bad request" });
+                }
             }
         }),
     },
