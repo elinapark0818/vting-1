@@ -1,13 +1,14 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-
-// import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/index";
 import "./MyPage.scss";
 
 const serverURL: string = "http://localhost:8000";
 
 function MyPage() {
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   const [myPagePwd, setMyPagePwd] = useState<string>("");
   // const [myPageState, setMyPageState] = useState<boolean>(false);
 
@@ -15,17 +16,24 @@ function MyPage() {
     setMyPagePwd(e.target.value);
   };
 
-  // const dispatch = useDispatch();
-
   const [checkPwd, setCheckPwd] = useState<boolean>(false);
 
+  // * 패스워드 체크
+  // todo: serverURL + "/user/check" { user_id: userInfo.email, password: myPagePwd }, { withCredentials: true }
   const handlePasswordCheck = async () => {
     try {
-      const res = await axios.post(`${serverURL}/user/check`);
-      console.log("패스워드체크", res.data.message);
-      if (res.data.message === "It doesn't match") {
-        alert("비밀번호가 일치하지 않습니다.");
-      } else {
+      const res = await axios.post(
+        `${serverURL}/user/check`,
+        {
+          user_id: userInfo.email,
+          password: myPagePwd,
+        },
+        { withCredentials: true }
+      );
+      if (res.status === 200 && res.data.message === "It doesn't match") {
+        console.log("비밀번호가 일치하지 않습니다.");
+      }
+      if (res.status === 200 && res.data.message === "Success verified") {
         console.log("패스워드체크완료!", res.data.message);
         setCheckPwd(true);
       }
@@ -45,7 +53,7 @@ function MyPage() {
         </Link>
       </div>
 
-      {!checkPwd ? (
+      {checkPwd ? (
         <div className="outlet_wrap">
           <Outlet />
         </div>

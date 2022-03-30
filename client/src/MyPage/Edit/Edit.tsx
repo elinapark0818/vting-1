@@ -16,6 +16,7 @@ function Edit() {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
+  //* 닉네임 프로필 변경
   const [patchUserInfo, setPatchUserInfo] = useState<PatchUser>({
     image: "",
     name: "",
@@ -37,40 +38,46 @@ function Edit() {
     setPatchUserInfo({ ...patchUserInfo, [name]: value });
   };
 
+  // * 프로필, 닉네임, 비밀번호 변경
   const EditUserInfo = async () => {
     try {
       const res = await axios.patch(`${serverURL}/user/${userInfo._id}`);
-      console.log("에딧유저인포===", res);
-
       if (res.status === 200) {
-        dispatch(
-          setUserInfo({
-            _id: String(userInfo._id),
-            nickname: patchUserInfo.name || userInfo.nickname,
-            email: userInfo.email,
-            image: patchUserInfo.image || userInfo.image,
-          })
-        );
+        // dispatch(
+        //   setUserInfo({
+        //     _id: String(userInfo._id),
+        //     nickname: patchUserInfo.name || userInfo.nickname,
+        //     email: userInfo.email,
+        //     image: patchUserInfo.image || userInfo.image,
+        //   })
+        // );
+        res.data.nickname = patchUserInfo.name || userInfo.nickname;
+        res.data.password = patchUserInfo.password;
+        res.data.image = patchUserInfo.image || userInfo.image;
+        console.log("프로필,닉네임,비밀번호 수정===", res.data.data);
+      } else {
+        console.log("Bad Request 입니다. 400에러");
       }
     } catch (err) {
       console.log(err);
     }
   };
 
-  const EditUserPassword = async () => {
-    try {
-      const res = await axios.patch(`${serverURL}/user/${userInfo._id}`, {
-        password: patchUserInfo.password,
-      });
-      console.log("패스워드변경 ===", res);
+  // //* 비밀번호 변경
+  // const EditUserPassword = async () => {
+  //   try {
+  //     const res = await axios.patch(`${serverURL}/user/${userInfo._id}`, {
+  //       password: patchUserInfo.password,
+  //     });
+  //     console.log("패스워드변경 ===", res);
 
-      if (res.status === 200) {
-        console.log("이러면 바뀜?");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  //     if (res.status === 200 && res.data.message === "Success verified") {
+  //       console.log("바뀐 패스워드===", res.data.data.password);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   return (
     <div className="edit_container">
@@ -112,15 +119,17 @@ function Edit() {
             onChange={edit_onChangePassword}
           />
         </div>
-        {patchUserInfo.password}
       </main>
       <div className="edit_btnWrap">
         <button className="edit_btn" onClick={() => EditUserInfo()}>
           수정하기
         </button>
-
-        <button onClick={() => EditUserPassword()}>비밀번호 수정하기</button>
       </div>
+      {/* <div className="edit_btnWrap">
+        <button className="edit_btn" onClick={() => EditUserPassword()}>
+          비밀번호 수정하기
+        </button>
+      </div> */}
     </div>
   );
 }
