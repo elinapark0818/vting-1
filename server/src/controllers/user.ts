@@ -127,7 +127,7 @@ export let UserController = {
 
   signup: {
     post: async (req: Request & { body: UserType }, res: Response) => {
-      const { user_id, nickname, password, image, vote } = req.body;
+      const { user_id, nickname, password, image } = req.body;
 
       try {
         if (user_id && password && nickname) {
@@ -146,7 +146,7 @@ export let UserController = {
                     nickname: req.body.nickname,
                     password: hash,
                     image: req.body.image,
-                    vote: req.body.vote,
+                    vote: [],
                   },
                   async (err: Error, data: any) => {
                     const accessToken = jwt.sign(
