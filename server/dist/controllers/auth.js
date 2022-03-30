@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthController = void 0;
 const __1 = require("..");
 const jwt = require("jsonwebtoken");
 exports.AuthController = {
