@@ -12,14 +12,10 @@ import voteRoutes from "./routes/vote";
 import voterRoutes from "./routes/voter";
 import cors from "cors";
 
-import voteRoutes from "./routes/vote";
-import voterRoutes from "./routes/voter";
-
 dotenv.config();
 
 const PORT = process.env.PORT;
 const app: express.Application = express();
-
 
 const allowedOrigins = ["http://localhost:3000", "v-ting.net"];
 
