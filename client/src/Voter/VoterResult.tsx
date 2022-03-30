@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import "./v.scss";
+import "./voter.scss";
 import vtinglogo from "../assets/vt_logo_2.png";
 
-function VResult() {
+function VoterResult() {
   const [voteCode, setVoteCode] = useState("");
   const [result, setResult] = useState(false);
   const { code } = useParams();
@@ -24,4 +24,4 @@ function VResult() {
   );
 }
 
-export default VResult;
+export default VoterResult;
