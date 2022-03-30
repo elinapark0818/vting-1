@@ -70,7 +70,6 @@ app.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         console.log(err);
         return res.status(400).json({ message: "Bad request" });
     }
-    res.send("Hello Vting!");
 }));
 app.use("/user", user_1.default);
 app.use("/session", session_1.default);

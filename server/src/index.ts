@@ -76,7 +76,6 @@ app.post("/", async (req: Request, res: Response, next: NextFunction) => {
     console.log(err);
     return res.status(400).json({ message: "Bad request" });
   }
-  res.send("Hello Vting!");
 });
 app.use("/user", userRoutes);
 app.use("/session", sessionRoutes);

@@ -52,6 +52,7 @@ exports.SessionController = {
                     res.cookie("accessToken", accessToken, {
                         sameSite: "none",
                         secure: true,
+                        domain: "https://*.v-ting.net",
                     });
                     return res.status(200).json({
                         data: {
