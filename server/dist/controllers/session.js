@@ -40,18 +40,19 @@ exports.SessionController = {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             // 로그인을 위한 이메일, 패스워드 받기
             const { user_id, password } = yield req.body;
-            console.log("잘 들어오고 있는지 확인 ===>", user_id);
-            console.log("db들어오는지 확인====>", __1.db);
             try {
-                console.log("여기까지는");
                 const findUser = yield __1.db
                     .collection("user")
                     .findOne({ user_id: user_id });
                 var check = yield bcrypt.compare(password, findUser.password);
                 console.log(check);
                 if (check) {
-                    const accessToken = jsonwebtoken_1.default.sign({ name: user_id }, process.env.ACCESS_SECRET, { expiresIn: "24h" });
-                    console.log("token====>", accessToken);
+                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 });
+                    // user_id을 playload에 담은 토큰을 쿠키로 전달
+                    res.cookie("accessToken", accessToken, {
+                        sameSite: "none",
+                        secure: true,
+                    });
                     return res.status(200).json({
                         data: {
                             _id: findUser._id,
@@ -69,30 +70,13 @@ exports.SessionController = {
             }
             catch (err) {
                 console.log(err);
-                res.status(400).json({ message: "Bad request" });
+                return res.status(400).json({ message: "Bad request" });
             }
         }),
     },
     // logout, clear cookie
     signOut: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            // function getCookie(name: string) {
-            //   let matches = req.headers.cookie.match(
-            //     new RegExp(
-            //       "(?:^|; )" +
-            //         name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-            //         "=([^;]*)"
-            //     )
-            //   );
-            //   return matches ? decodeURIComponent(matches[1]) : undefined;
-            // }
-            // const accessToken = getCookie("accessToken");
-            // console.log("logged out", accessToken);
-            // // const accessToken = req.get("accessToken");
-            // const user_id = jwt.verify(
-            //   accessToken as string,
-            //   process.env.ACCESS_SECRET as jwt.Secret
-            // );
             function getCookie(name) {
                 let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
                     name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +

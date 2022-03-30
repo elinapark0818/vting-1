@@ -83,7 +83,7 @@ exports.MongoClient = require("mongodb").MongoClient;
 // console.log(process.env.DATABASE_PORT);
 exports.MongoClient.connect(
 // url,
-process.env.DATABASE_URL, { useUnifiedTopology: true }, function (err, database) {
+"mongodb+srv://admin:dudqls12@cluster0.pldtu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", { useUnifiedTopology: true }, function (err, database) {
     if (err)
         console.log(err);
     exports.db = database.db("vting_dev");
