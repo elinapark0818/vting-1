@@ -140,8 +140,14 @@
   }
 }
 
+.Empty {
+  display: flex;
+  font-size: 18px;
+  color: red;
+}
+
 .Error {
-  display: block;
+  display: flex;
   font-size: 18px;
   color: red;
 }
