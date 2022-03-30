@@ -50,11 +50,13 @@ exports.SessionController = {
                     const accessToken = jsonwebtoken_1.default.sign({ name: user_id }, process.env.ACCESS_SECRET, { expiresIn: "24h" });
                     console.log("token====>", accessToken);
                     // user_id을 playload에 담은 토큰을 쿠키로 전달
-                    res.cookie("accessToken", accessToken, {
+                    res
+                        .cookie("accessToken", accessToken, {
                         sameSite: "none",
                         secure: true,
-                    });
-                    return res.status(200).json({
+                    })
+                        .status(200)
+                        .json({
                         data: {
                             _id: findUser._id,
                             user_id: findUser.user_id,
@@ -68,7 +70,7 @@ exports.SessionController = {
             }
             catch (err) {
                 console.log(err);
-                return res.status(400).json({ message: "Bad request" });
+                res.status(400).json({ message: "Bad request" });
             }
         }),
     },

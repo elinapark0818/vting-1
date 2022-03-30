@@ -58,11 +58,13 @@ app.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         const accessToken = jsonwebtoken_1.default.sign({ name: user_id }, process.env.ACCESS_SECRET, { expiresIn: "24h" });
         console.log("token====>", accessToken);
         // user_id을 playload에 담은 토큰을 쿠키로 전달
-        res.cookie("accessToken", accessToken, {
+        res
+            .cookie("accessToken", accessToken, {
             sameSite: "none",
             secure: true,
-        });
-        res.status(200).json({ message: "good!" });
+        })
+            .status(200)
+            .json({ message: "good!" });
     }
     catch (err) {
         console.log(err);
