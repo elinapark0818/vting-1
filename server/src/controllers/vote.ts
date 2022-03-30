@@ -9,7 +9,6 @@ import { request } from "http";
 import { read } from "fs";
 import { ObjectId } from "mongodb";
 const jwt = require("jsonwebtoken");
-const QRCode = require("qrcode");
 
 // QRcode
 
@@ -36,16 +35,7 @@ interface VoteType1 {
 
 export let VoteController = {
   test: {
-    get: async (req: Request, res: Response) => {
-      QRCode.toString(
-        "www.daum.net",
-        // { type: "terminal" },
-        function (err: Error, url: any) {
-          console.log(url);
-          res.send(url);
-        }
-      );
-    },
+    get: async (req: Request, res: Response) => {},
   },
 
   create: {

@@ -9,9 +9,7 @@ import { request } from "http";
 import { read } from "fs";
 const jwt = require("jsonwebtoken");
 
-
 require("dotenv").config();
-
 
 // const clientID = process.env.GITHUB_CLIENT_ID;
 // const clientSecret = process.env.GITHUB_CLIENT_SECRET;
@@ -223,7 +221,6 @@ export let UserController = {
       }
     },
   },
-
 
   userInfo: {
     get: async (req: Request, res: Response) => {

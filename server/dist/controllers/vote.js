@@ -13,7 +13,6 @@ exports.VoteController = void 0;
 const __1 = require("..");
 const mongodb_1 = require("mongodb");
 const jwt = require("jsonwebtoken");
-const QRCode = require("qrcode");
 // interface VoteType2 {
 //   title: string;
 //   format: string;
@@ -25,14 +24,7 @@ const QRCode = require("qrcode");
 // }
 exports.VoteController = {
     test: {
-        get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            QRCode.toString("www.daum.net", 
-            // { type: "terminal" },
-            function (err, url) {
-                console.log(url);
-                res.send(url);
-            });
-        }),
+        get: (req, res) => __awaiter(void 0, void 0, void 0, function* () { }),
     },
     create: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
