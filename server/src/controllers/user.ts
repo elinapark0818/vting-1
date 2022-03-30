@@ -93,10 +93,10 @@ export let UserController = {
             req.headers.authorization.split(" ")[0] === "Bearer"
           ) {
             let authorization: string | undefined = req.headers.authorization;
-            let token: string = authorization.split(" ")[1];
+            let accessToken: string = authorization.split(" ")[1];
 
             const decoded = jwt.verify(
-              token as string,
+              accessToken as string,
               process.env.ACCESS_SECRET as jwt.Secret
             );
 
@@ -157,12 +157,6 @@ export let UserController = {
                       }
                     );
 
-                    // user_id을 playload에 담은 토큰을 쿠키로 전달
-                    res.cookie("accessToken", accessToken, {
-                      sameSite: "none",
-                      secure: true,
-                    });
-
                     let findUserId = await db
                       .collection("user")
                       .findOne({ user_id: req.body.user_id });
@@ -213,10 +207,10 @@ export let UserController = {
         req.headers.authorization.split(" ")[0] === "Bearer"
       ) {
         let authorization: string | undefined = req.headers.authorization;
-        let token: string = authorization.split(" ")[1];
+        let accessToken: string = authorization.split(" ")[1];
 
         const decoded = jwt.verify(
-          token as string,
+          accessToken as string,
           process.env.ACCESS_SECRET as jwt.Secret
         );
 
@@ -224,13 +218,10 @@ export let UserController = {
           // 유저 정보 삭제하기
           await db.collection("user").deleteOne({ user_id: decoded.user_id });
           // 쿠키에 토큰 삭제하기
-          await res.clearCookie("accessToken", {
-            sameSite: "none",
-            secure: true,
+          return res.status(200).json({
+            data: { accessToken: "" },
+            message: "Successfully account deleted",
           });
-          return res
-            .status(200)
-            .json({ message: "Successfully account deleted" });
         } catch (err) {
           console.log(err);
           return res.status(400).json({ message: "Bad request" });
@@ -246,10 +237,10 @@ export let UserController = {
         req.headers.authorization.split(" ")[0] === "Bearer"
       ) {
         let authorization: string | undefined = req.headers.authorization;
-        let token: string = authorization.split(" ")[1];
+        let accessToken: string = authorization.split(" ")[1];
 
         const decoded = jwt.verify(
-          token as string,
+          accessToken as string,
           process.env.ACCESS_SECRET as jwt.Secret
         );
 
@@ -289,10 +280,10 @@ export let UserController = {
         req.headers.authorization.split(" ")[0] === "Bearer"
       ) {
         let authorization: string | undefined = req.headers.authorization;
-        let token: string = authorization.split(" ")[1];
+        let accessToken: string = authorization.split(" ")[1];
 
         const decoded = jwt.verify(
-          token as string,
+          accessToken as string,
           process.env.ACCESS_SECRET as jwt.Secret
         );
 

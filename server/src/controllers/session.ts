@@ -65,12 +65,6 @@ export let SessionController = {
             { expiresIn: 60 * 60 * 60 }
           );
 
-          // user_id을 playload에 담은 토큰을 쿠키로 전달
-          res.cookie("accessToken", accessToken, {
-            sameSite: "none",
-            secure: true,
-          });
-
           return res.status(200).json({
             data: {
               user_data: {
@@ -102,17 +96,19 @@ export let SessionController = {
         req.headers.authorization.split(" ")[0] === "Bearer"
       ) {
         let authorization: string | undefined = req.headers.authorization;
-        let token: string = authorization.split(" ")[1];
-
+        let accessToken: string = authorization.split(" ")[1];
+        console.log(accessToken);
         const decoded = jwt.verify(
-          token as string,
+          accessToken as string,
           process.env.ACCESS_SECRET as jwt.Secret
         );
 
         try {
           if (decoded) {
-            res.clearCookie("accessToken", { sameSite: "none", secure: true });
-            return res.status(200).json({ message: "Successfully logged out" });
+            return res.status(200).json({
+              data: { accessToken: "" },
+              message: "Successfully logged out",
+            });
           }
         } catch (err) {
           console.log(err);
