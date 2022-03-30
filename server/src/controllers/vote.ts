@@ -233,6 +233,7 @@ export let VoteController = {
           );
         } else {
           //TODO: 비회원 일때 생성 관련된 응답 만들기!
+          // 모든 보트 만들수있게? 아니면 특정 보트만 만들수 있게?
         }
       } catch {
         return res.status(400);
