@@ -9,20 +9,13 @@ import userRoutes from "./routes/user";
 import sessionRoutes from "./routes/session";
 import authRoutes from "./routes/auth";
 import cors from "cors";
-// import voteRoutes from "./routes/vote";
-// import voterRoutes from "./routes/voter";
+import voteRoutes from "./routes/vote";
+import voterRoutes from "./routes/voter";
 dotenv.config();
 
 const PORT = process.env.PORT;
 const app: express.Application = express();
 
-// app.use("/", (req: Request, res: Response, next: NextFunction) => {
-//   res.send("Hello world");
-// });
-
-// app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
-//   res.status(500).send(err.message);
-// }) as ErrorRequestHandler);
 
 const allowedOrigins = ["http://localhost:3000", "v-ting.net"];
 
@@ -53,14 +46,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/user", userRoutes);
 app.use("/session", sessionRoutes);
 app.use("/auth", authRoutes);
-// app.use("/vting", voteRoutes);
-// app.use("/voter", voterRoutes);
+app.use("/vting", voteRoutes);
+app.use("/voter", voterRoutes);
 
 //db 연결 -> 되면 포트 열기
 export const MongoClient = require("mongodb").MongoClient;
 export var db: any;
+// const url = "mongodb://127.0.0.1:27017";
 
 MongoClient.connect(
+  // url,
   process.env.DATABASE_URL,
   { useUnifiedTopology: true },
   function (err: Error, database: any) {

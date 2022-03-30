@@ -10,6 +10,7 @@ import { IncomingHttpHeaders, request } from "http";
 import { AnyMxRecord } from "dns";
 import dotenv from "dotenv";
 import { isRegExp } from "util/types";
+import { hash } from "bcryptjs";
 dotenv.config();
 
 const SALT_ROUNDS = 6;
@@ -72,11 +73,14 @@ export let UserController = {
       try {
         const { user_id, password } = req.body;
 
+        console.log(user_id);
+
         if (user_id) {
           const findUserWithId = await db
             .collection("user")
             .findOne({ user_id: user_id });
 
+          console.log(findUserWithId);
           if (!findUserWithId) {
             return res.status(200).json({
               message: "It doesn't match",
@@ -98,19 +102,24 @@ export let UserController = {
 
             return matches ? decodeURIComponent(matches[1]) : undefined;
           }
-
           const accessToken = getCookie("accessToken");
 
-          const decoded = jwt.verify(
+          const decoded = await jwt.verify(
             accessToken as string,
             process.env.ACCESS_SECRET as jwt.Secret
           );
 
           const findUserWithPw = await db
             .collection("user")
-            .findOne({ user_id: decoded.user_id } && { password: password });
+            .findOne({ user_id: decoded.user_id });
 
-          if (!findUserWithPw) {
+          console.log("findUserWithPw", findUserWithPw);
+
+          var check = await bcrypt.compare(password, findUserWithPw.password);
+
+          console.log("check", check);
+
+          if (!check) {
             return res.status(200).json({
               message: "It doesn't match",
             });
@@ -130,58 +139,68 @@ export let UserController = {
     post: async (req: Request & { body: UserType }, res: Response) => {
       const { user_id, nickname, password, image, vote } = req.body;
 
-      // await bcrypt.genSalt(SALT_ROUNDS, function (err:Error, salt:string) {
-      //   if (err) {
-      //     console.log("genSalt Error: " + err);
-      //   } else {
-      //     console.log("salt", salt)
-      //     //genearte hash on separate function calls):
-      //     bcrypt.hash(password, salt, function (err:Error, hash:string) {
-      //       if (err) {
-      //         console.log("bycrpt hash method error : ", err.message);
-      //       } else {
-      //        console.log("hash", hash);
-      //       }
-      //     });
-      //   }
-      // }
-
       try {
         if (user_id && password && nickname) {
-          db.collection("user").insertOne({
-            user_id,
-            nickname,
-            password,
-            image,
-            vote,
+          bcrypt.genSalt(SALT_ROUNDS, function (err: Error, salt: string) {
+            if (err) {
+              console.log("genSalt Error: " + err);
+            } else {
+              console.log("salt", salt);
+
+              //genearte hash on separate function calls):
+
+              bcrypt.hash(password, salt, function (err: Error, hash: string) {
+                console.log("hash", hash);
+
+                db.collection("user").insertOne(
+                  {
+                    user_id: req.body.user_id,
+                    nickname: req.body.nickname,
+                    password: hash,
+                    image: req.body.image,
+                    vote: req.body.vote,
+                  },
+                  async (err: Error, data: any) => {
+                    const accessToken = jwt.sign(
+                      { user_id },
+                      process.env.ACCESS_SECRET as jwt.Secret,
+                      {
+                        expiresIn: 60 * 60,
+                      }
+                    );
+
+                    // user_id을 playload에 담은 토큰을 쿠키로 전달
+                    res.cookie("accessToken", accessToken, {
+                      sameSite: "none",
+                      secure: true,
+                    });
+
+                    let findUserId = await db
+                      .collection("user")
+                      .findOne({ user_id: req.body.user_id });
+
+                    console.log(findUserId._id);
+
+                    return res.status(201).json({
+                      data: {
+                        _id: findUserId._id,
+                        user_id: req.body.user_id,
+                        nickname: req.body.nickname,
+                        image: req.body.image,
+                        vote: req.body.vote,
+                      },
+                    });
+                  }
+                );
+
+                if (err) {
+                  console.log("bycrpt hash method error : ", err.message);
+                } else {
+                }
+              });
+            }
           });
           // user_id을 playload에 담아 토큰 생성
-          const accessToken = jwt.sign(
-            { user_id },
-            process.env.ACCESS_SECRET as jwt.Secret,
-            {
-              expiresIn: 60 * 60,
-            }
-          );
-          console.log("1", accessToken);
-          // user_id을 playload에 담은 토큰을 쿠키로 전달
-          res.cookie("accessToken", accessToken, {
-            sameSite: "none",
-            secure: true,
-          });
-          let findUserId = await db
-            .collection("user")
-            .findOne({ user_id: req.body.user_id });
-          console.log(findUserId);
-          return res.status(201).json({
-            data: {
-              _id: findUserId._id,
-              user_id: req.body.user_id,
-              nickname: req.body.nickname,
-              image: req.body.image,
-              vote: req.body.vote,
-            },
-          });
         } else {
           return res.status(203).json({
             data: null,

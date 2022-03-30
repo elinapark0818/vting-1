@@ -22,7 +22,7 @@ function MyPage() {
   const handlePasswordCheck = async () => {
     try {
       const res = await axios.post(`${serverURL}/user/check`);
-      console.log("패스워드체크", res.data);
+      console.log("패스워드체크", res.data.message);
       if (res.data.message === "It doesn't match") {
         alert("비밀번호가 일치하지 않습니다.");
       } else {
@@ -45,7 +45,7 @@ function MyPage() {
         </Link>
       </div>
 
-      {checkPwd ? (
+      {!checkPwd ? (
         <div className="outlet_wrap">
           <Outlet />
         </div>
