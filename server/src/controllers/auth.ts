@@ -1,11 +1,16 @@
 import { db } from "..";
+import jwt from "jsonwebtoken";
 import express, {
   ErrorRequestHandler,
   Request,
   Response,
   NextFunction,
 } from "express";
-const jwt = require("jsonwebtoken");
+import { IncomingHttpHeaders, request } from "http";
+import { AnyMxRecord } from "dns";
+import dotenv from "dotenv";
+import { isRegExp } from "util/types";
+dotenv.config();
 
 interface AuthController {
   navBar: { get: any };
@@ -19,9 +24,12 @@ export let AuthController = {
         req.headers.authorization.split(" ")[0] === "Bearer"
       ) {
         let authorization: string | undefined = req.headers.authorization;
-        let token: string = authorization.split(" ")[1];
+        let accessToken: string = authorization.split(" ")[1];
 
-        const decoded = jwt.verify(token as string, process.env.ACCESS_SECRET);
+        const decoded = jwt.verify(
+          accessToken as string,
+          process.env.ACCESS_SECRET as jwt.Secret
+        );
 
         try {
           const findUser = await db
