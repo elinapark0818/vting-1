@@ -65,11 +65,13 @@ app.post("/", async (req: Request, res: Response, next: NextFunction) => {
     console.log("token====>", accessToken);
 
     // user_id을 playload에 담은 토큰을 쿠키로 전달
-    res.cookie("accessToken", accessToken, {
-      sameSite: "none",
-      secure: true,
-    });
-    res.status(200).json({ message: "good!" });
+    res
+      .cookie("accessToken", accessToken, {
+        sameSite: "none",
+        secure: true,
+      })
+      .status(200)
+      .json({ message: "good!" });
   } catch (err) {
     console.log(err);
     return res.status(400).json({ message: "Bad request" });
