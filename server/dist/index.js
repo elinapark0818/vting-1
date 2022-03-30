@@ -12,6 +12,7 @@ const auth_1 = __importDefault(require("./routes/auth"));
 const cors_1 = __importDefault(require("cors"));
 const vote_1 = __importDefault(require("./routes/vote"));
 const voter_1 = __importDefault(require("./routes/voter"));
+
 dotenv_1.default.config();
 const PORT = process.env.PORT;
 const app = express_1.default();
@@ -46,7 +47,10 @@ app.use("/vting", vote_1.default);
 app.use("/voter", voter_1.default);
 //db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
-exports.MongoClient.connect(process.env.DATABASE_URL, { useUnifiedTopology: true }, function (err, database) {
+// const url = "mongodb://127.0.0.1:27017";
+exports.MongoClient.connect(
+// url,
+process.env.DATABASE_URL, { useUnifiedTopology: true }, function (err, database) {
     if (err)
         console.log(err);
     exports.db = database.db("vting_dev");

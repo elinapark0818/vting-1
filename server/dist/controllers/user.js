@@ -29,6 +29,7 @@ exports.UserController = {
                     const findUserWithId = yield __1.db
                         .collection("user")
                         .findOne({ user_id: user_id });
+                    console.log(findUserWithId);
                     if (!findUserWithId) {
                         return res.status(200).json({
                             message: "It doesn't match",
@@ -41,29 +42,26 @@ exports.UserController = {
                     }
                 }
                 else if (password) {
-                    function getCookie(name) {
-                        let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
-                            name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                            "=([^;]*)"));
-                        return matches ? decodeURIComponent(matches[1]) : undefined;
-                    }
-                    const accessToken = getCookie("accessToken");
-                    const decoded = yield jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-                    const findUserWithPw = yield __1.db
-                        .collection("user")
-                        .findOne({ user_id: decoded.user_id });
-                    console.log("findUserWithPw", findUserWithPw);
-                    var check = yield bcrypt.compare(password, findUserWithPw.password);
-                    console.log("check", check);
-                    if (!check) {
-                        return res.status(200).json({
-                            message: "It doesn't match",
-                        });
-                    }
-                    else {
-                        return res.status(200).json({
-                            message: "Success verified",
-                        });
+                    if (req.headers.authorization &&
+                        req.headers.authorization.split(" ")[0] === "Bearer") {
+                        let authorization = req.headers.authorization;
+                        let token = authorization.split(" ")[1];
+                        const decoded = jsonwebtoken_1.default.verify(token, process.env.ACCESS_SECRET);
+                        const findUserWithPw = yield __1.db
+                            .collection("user")
+                            .findOne({ user_id: decoded.user_id });
+                        var check = yield bcrypt.compare(password, findUserWithPw.password);
+                        console.log("check", check);
+                        if (!check) {
+                            return res.status(200).json({
+                                message: "It doesn't match",
+                            });
+                        }
+                        else {
+                            return res.status(200).json({
+                                message: "Success verified",
+                            });
+                        }
                     }
                 }
             }
@@ -83,8 +81,7 @@ exports.UserController = {
                         }
                         else {
                             console.log("salt", salt);
-                            //genearte hash on separate function calls):
-                            var hashed = bcrypt.hash(password, salt, function (err, hash) {
+                            bcrypt.hash(password, salt, function (err, hash) {
                                 console.log("hash", hash);
                                 __1.db.collection("user").insertOne({
                                     user_id: req.body.user_id,
@@ -92,7 +89,33 @@ exports.UserController = {
                                     password: hash,
                                     image: req.body.image,
                                     vote: req.body.vote,
-                                });
+                                }, (err, data) => __awaiter(this, void 0, void 0, function* () {
+                                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, {
+                                        expiresIn: 60 * 60 * 60,
+                                    });
+                                    // user_id을 playload에 담은 토큰을 쿠키로 전달
+                                    res.cookie("accessToken", accessToken, {
+                                        sameSite: "none",
+                                        secure: true,
+                                    });
+                                    let findUserId = yield __1.db
+                                        .collection("user")
+                                        .findOne({ user_id: req.body.user_id });
+                                    console.log(findUserId._id);
+                                    return res.status(201).json({
+                                        data: {
+                                            user_data: {
+                                                _id: findUserId._id,
+                                                user_id: req.body.user_id,
+                                                nickname: req.body.nickname,
+                                                image: req.body.image,
+                                                vote: req.body.vote,
+                                            },
+                                            accessToken: accessToken,
+                                        },
+                                        message: "Successfully Signed Up",
+                                    });
+                                }));
                                 if (err) {
                                     console.log("bycrpt hash method error : ", err.message);
                                 }
@@ -100,28 +123,6 @@ exports.UserController = {
                                 }
                             });
                         }
-                    });
-                    // user_id을 playload에 담아 토큰 생성
-                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, {
-                        expiresIn: 60 * 60,
-                    });
-                    // user_id을 playload에 담은 토큰을 쿠키로 전달
-                    res.cookie("accessToken", accessToken, {
-                        sameSite: "none",
-                        secure: true,
-                    });
-                    let findUserId = yield __1.db
-                        .collection("user")
-                        .findOne({ user_id: req.body.user_id });
-                    console.log(findUserId);
-                    return res.status(201).json({
-                        data: {
-                            _id: findUserId._id,
-                            user_id: req.body.user_id,
-                            nickname: req.body.nickname,
-                            image: req.body.image,
-                            vote: req.body.vote,
-                        },
                     });
                 }
                 else {
@@ -140,93 +141,86 @@ exports.UserController = {
     // oauth.post,
     resign: {
         delete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            // FIXME: 만약토큰으로 작업하면 이 부분으로 작업하기
-            function getCookie(name) {
-                let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
-                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                    "=([^;]*)"));
-                return matches ? decodeURIComponent(matches[1]) : undefined;
-            }
-            const accessToken = getCookie("accessToken");
-            const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-            try {
-                // 유저 정보 삭제하기
-                yield __1.db.collection("user").deleteOne({ user_id: decoded.user_id });
-                // 쿠키에 토큰 삭제하기
-                yield res.clearCookie("accessToken", {
-                    sameSite: "none",
-                    secure: true,
-                });
-                return res
-                    .status(200)
-                    .json({ message: "Successfully account deleted" });
-            }
-            catch (err) {
-                console.log(err);
-                return res.status(400).json({ message: "Bad request" });
+            if (req.headers.authorization &&
+                req.headers.authorization.split(" ")[0] === "Bearer") {
+                let authorization = req.headers.authorization;
+                let token = authorization.split(" ")[1];
+                const decoded = jsonwebtoken_1.default.verify(token, process.env.ACCESS_SECRET);
+                try {
+                    // 유저 정보 삭제하기
+                    yield __1.db.collection("user").deleteOne({ user_id: decoded.user_id });
+                    // 쿠키에 토큰 삭제하기
+                    yield res.clearCookie("accessToken", {
+                        sameSite: "none",
+                        secure: true,
+                    });
+                    return res
+                        .status(200)
+                        .json({ message: "Successfully account deleted" });
+                }
+                catch (err) {
+                    console.log(err);
+                    return res.status(400).json({ message: "Bad request" });
+                }
             }
         }),
     },
     userInfo: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            function getCookie(name) {
-                let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
-                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                    "=([^;]*)"));
-                return matches ? decodeURIComponent(matches[1]) : undefined;
-            }
-            const accessToken = getCookie("accessToken");
-            const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-            try {
-                const findUser = yield __1.db
-                    .collection("user")
-                    .findOne({ user_id: decoded.user_id });
-                if (findUser) {
-                    return res.status(200).json({
-                        data: {
-                            _id: findUser._id,
-                            nickname: findUser.nickname,
-                            user_id: findUser.user_id,
-                            image: findUser.image,
-                            vote: findUser.vote,
-                        },
-                    });
+            if (req.headers.authorization &&
+                req.headers.authorization.split(" ")[0] === "Bearer") {
+                let authorization = req.headers.authorization;
+                let token = authorization.split(" ")[1];
+                const decoded = jsonwebtoken_1.default.verify(token, process.env.ACCESS_SECRET);
+                try {
+                    const findUser = yield __1.db
+                        .collection("user")
+                        .findOne({ user_id: decoded.user_id });
+                    if (findUser) {
+                        return res.status(200).json({
+                            data: {
+                                _id: findUser._id,
+                                nickname: findUser.nickname,
+                                user_id: findUser.user_id,
+                                image: findUser.image,
+                                vote: findUser.vote,
+                            },
+                        });
+                    }
+                    else {
+                        return res.status(400).json({ message: "Bad request" });
+                    }
                 }
-                else {
-                    return res.status(400).json({ message: "Bad request" });
+                catch (err) {
+                    console.log(err);
                 }
-            }
-            catch (err) {
-                console.log(err);
             }
         }),
         patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const { nickname, password, image } = req.body;
-            function getCookie(name) {
-                let matches = String(req.headers.cookie).match(new RegExp("(?:^|; )" +
-                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                    "=([^;]*)"));
-                return matches ? decodeURIComponent(matches[1]) : undefined;
-            }
-            const accessToken = getCookie("accessToken");
-            const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-            try {
-                const findUser = yield __1.db
-                    .collection("user")
-                    .findOne({ user_id: decoded.user_id });
-                yield __1.db.collection("user").updateOne({ user_id: decoded.user_id }, 
-                //바디가 들어온것만 바꿈
-                {
-                    $set: {
-                        nickname: req.body.nickname || findUser.nickname,
-                        image: req.body.image || findUser.image,
-                        password: req.body.password || findUser.password,
-                    },
-                });
-                return res.status(200).json({ message: "Successfully updated" });
-            }
-            catch (_b) {
-                return res.status(400).json({ message: "Bad request" });
+            if (req.headers.authorization &&
+                req.headers.authorization.split(" ")[0] === "Bearer") {
+                let authorization = req.headers.authorization;
+                let token = authorization.split(" ")[1];
+                const decoded = jsonwebtoken_1.default.verify(token, process.env.ACCESS_SECRET);
+                try {
+                    const findUser = yield __1.db
+                        .collection("user")
+                        .findOne({ user_id: decoded.user_id });
+                    yield __1.db.collection("user").updateOne({ user_id: decoded.user_id }, 
+                    //바디가 들어온것만 바꿈
+                    {
+                        $set: {
+                            nickname: req.body.nickname || findUser.nickname,
+                            image: req.body.image || findUser.image,
+                            password: req.body.password || findUser.password,
+                        },
+                    });
+                    return res.status(200).json({ message: "Successfully updated" });
+                }
+                catch (_b) {
+                    return res.status(400).json({ message: "Bad request" });
+                }
             }
         }),
     },
