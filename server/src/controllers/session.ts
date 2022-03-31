@@ -113,6 +113,8 @@ export let SessionController = {
           console.log(err);
           return res.status(400).json({ message: "Failed logged out" });
         }
+      } else {
+        res.status(400).json({ message: "No token exists" });
       }
     },
   },

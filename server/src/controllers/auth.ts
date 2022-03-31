@@ -26,12 +26,12 @@ export let AuthController = {
         let authorization: string | undefined = req.headers.authorization;
         let accessToken: string = authorization.split(" ")[1];
 
-        const decoded = jwt.verify(
-          accessToken as string,
-          process.env.ACCESS_SECRET as jwt.Secret
-        );
-
         try {
+          const decoded = jwt.verify(
+            accessToken as string,
+            process.env.ACCESS_SECRET as jwt.Secret
+          );
+
           const findUser = await db
             .collection("user")
             .findOne({ user_id: decoded.user_id });
@@ -49,6 +49,8 @@ export let AuthController = {
           console.log(err);
           return res.status(400).json({ message: "Bad request" });
         }
+      } else {
+        res.status(400).json({ message: "No token exists" });
       }
     },
   },

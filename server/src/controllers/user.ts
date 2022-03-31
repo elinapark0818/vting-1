@@ -95,27 +95,34 @@ export let UserController = {
             let authorization: string | undefined = req.headers.authorization;
             let accessToken: string = authorization.split(" ")[1];
 
-            const decoded = jwt.verify(
-              accessToken as string,
-              process.env.ACCESS_SECRET as jwt.Secret
-            );
+            try {
+              const decoded = jwt.verify(
+                accessToken as string,
+                process.env.ACCESS_SECRET as jwt.Secret
+              );
 
-            const findUserWithPw = await db
-              .collection("user")
-              .findOne({ user_id: decoded.user_id });
+              const findUserWithPw = await db
+                .collection("user")
+                .findOne({ user_id: decoded.user_id });
 
-            var check = await bcrypt.compare(password, findUserWithPw.password);
+              var check = await bcrypt.compare(
+                password,
+                findUserWithPw.password
+              );
 
-            console.log("check", check);
+              console.log("check", check);
 
-            if (!check) {
-              return res.status(200).json({
-                message: "It doesn't match",
-              });
-            } else {
-              return res.status(200).json({
-                message: "Success verified",
-              });
+              if (!check) {
+                return res.status(200).json({
+                  message: "It doesn't match",
+                });
+              } else {
+                return res.status(200).json({
+                  message: "Success verified",
+                });
+              }
+            } catch {
+              res.status(400).json({ message: "Bad Request" });
             }
           }
         }
@@ -209,13 +216,13 @@ export let UserController = {
         let authorization: string | undefined = req.headers.authorization;
         let accessToken: string = authorization.split(" ")[1];
 
-        const decoded = jwt.verify(
-          accessToken as string,
-          process.env.ACCESS_SECRET as jwt.Secret
-        );
-
         try {
+          const decoded = jwt.verify(
+            accessToken as string,
+            process.env.ACCESS_SECRET as jwt.Secret
+          );
           // 유저 정보 삭제하기
+          await db.collection("vote").deleteMany({ user_id: decoded.user_id });
           await db.collection("user").deleteOne({ user_id: decoded.user_id });
           // 쿠키에 토큰 삭제하기
           return res.status(200).json({
@@ -239,12 +246,11 @@ export let UserController = {
         let authorization: string | undefined = req.headers.authorization;
         let accessToken: string = authorization.split(" ")[1];
 
-        const decoded = jwt.verify(
-          accessToken as string,
-          process.env.ACCESS_SECRET as jwt.Secret
-        );
-
         try {
+          const decoded = jwt.verify(
+            accessToken as string,
+            process.env.ACCESS_SECRET as jwt.Secret
+          );
           const findUser = await db
             .collection("user")
             .findOne({ user_id: decoded.user_id });
@@ -282,15 +288,20 @@ export let UserController = {
         let authorization: string | undefined = req.headers.authorization;
         let accessToken: string = authorization.split(" ")[1];
 
-        const decoded = jwt.verify(
-          accessToken as string,
-          process.env.ACCESS_SECRET as jwt.Secret
-        );
-
         try {
+          const decoded = jwt.verify(
+            accessToken as string,
+            process.env.ACCESS_SECRET as jwt.Secret
+          );
+
+          console.log(decoded);
+
           const findUser = await db
             .collection("user")
             .findOne({ user_id: decoded.user_id });
+
+          console.log(findUser);
+
           await db.collection("user").updateOne(
             { user_id: decoded.user_id },
 
