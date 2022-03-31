@@ -40,20 +40,36 @@ function Edit() {
 
   // * 프로필, 닉네임, 비밀번호 변경
   const EditUserInfo = async () => {
+    let accessToken = localStorage.getItem("accessToken");
     try {
-      const res = await axios.patch(`${serverURL}/user/${userInfo._id}`);
+      const res = await axios.patch(
+        `${serverURL}/user/${userInfo._id}`,
+        {
+          nickname: patchUserInfo.name,
+          password: patchUserInfo.password,
+          image: patchUserInfo.image,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        }
+      );
       if (res.status === 200) {
-        // dispatch(
-        //   setUserInfo({
-        //     _id: String(userInfo._id),
-        //     nickname: patchUserInfo.name || userInfo.nickname,
-        //     email: userInfo.email,
-        //     image: patchUserInfo.image || userInfo.image,
-        //   })
-        // );
-        res.data.nickname = patchUserInfo.name || userInfo.nickname;
-        res.data.password = patchUserInfo.password;
-        res.data.image = patchUserInfo.image || userInfo.image;
+        console.log("데이타", res.data);
+
+        dispatch(
+          setUserInfo({
+            _id: String(userInfo._id),
+            nickname: patchUserInfo.name || userInfo.nickname,
+            email: userInfo.email,
+            image: patchUserInfo.image || userInfo.image,
+          })
+        );
+        // res.data.nickname = patchUserInfo.name || userInfo.nickname;
+        // res.data.password = patchUserInfo.password;
+        // res.data.image = patchUserInfo.image || userInfo.image;
         console.log("프로필,닉네임,비밀번호 수정===", res.data.data);
       } else {
         console.log("Bad Request 입니다. 400에러");

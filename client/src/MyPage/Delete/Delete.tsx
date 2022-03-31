@@ -13,24 +13,32 @@ function Delete() {
 
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
-  // useEffect(() => {
-  //   const getUserInfo = async () => {
-  //     try {
-  //       const res = await axios.get(serverURL + "/user/" + userInfo._id);
-  //       if (res.status === 200) {
-  //         setUserInfo({
-  //           _id: res.data.data._id,
-  //           nickname: res.data.data.nickname,
-  //           email: res.data.data.email,
-  //           image: res.data.data.image,
-  //         });
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   getUserInfo();
-  // }, []);
+  console.log("안되나===", userInfo);
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      let accessToken = localStorage.getItem("accessToken");
+      try {
+        const res = await axios.get(`${serverURL}/user/${userInfo._id}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        });
+        if (res.status === 200) {
+          setUserInfo({
+            _id: res.data.data._id,
+            nickname: res.data.data.nickname,
+            email: res.data.data.email,
+            image: res.data.data.image,
+          });
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUserInfo();
+  }, []);
 
   const [modalState, setModalState] = useState<boolean>(false);
 
@@ -53,6 +61,7 @@ function Delete() {
       });
 
       if (res.status === 200) {
+        localStorage.setItem("accessToken", res.data.data.accessToken);
         console.log("회원탈퇴완료===", res.data.data);
         alert("회원탈퇴가 완료되었습니다.");
         // ? 로그아웃처리
