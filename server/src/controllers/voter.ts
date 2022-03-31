@@ -13,7 +13,11 @@ const jwt = require("jsonwebtoken");
 export let VoterController = {
   test: {
     get: async (req: Request, res: Response) => {
-      res.send("voter test");
+      res.send(
+        (new Date("2022-03-31T20:22:12.787+00:00").getTime() -
+          new Date().getTime()) /
+          (1000 * 60)
+      );
     },
   },
 
