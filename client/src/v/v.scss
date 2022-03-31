@@ -18,7 +18,7 @@
       padding: 20px 30px;
       width: 100%;
       font-size: 20px;
-      font-weight: 500;
+      font-weight: 400;
       box-sizing: border-box;
     }
   }
@@ -35,7 +35,7 @@
       padding: 10px;
       .voteResultChildTitle {
         font-size: 20px;
-        font-weight: 500;
+        font-weight: 400;
         text-align: center;
       }
       .voteResultChildContent {
@@ -44,7 +44,7 @@
         padding: 10px;
         background-color: $vting-gray;
         font-size: 20px;
-        font-weight: 700;
+        font-weight: 500;
         margin: 10px 0;
         display: flex;
         align-items: center;
@@ -207,7 +207,7 @@
   .imgAlertBtn {
     border: none;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
     background-color: $vting-blue;
     color: white;
     width: 30px;

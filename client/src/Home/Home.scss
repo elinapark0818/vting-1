@@ -9,7 +9,7 @@
   .hotVotesTitle {
     margin-top: 50px;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
     padding: 20px 50px;
     border: 3px solid $vting-orange;
     #newVoteFilter {
@@ -22,7 +22,7 @@
       border: 1px solid $vting-green;
       border-radius: 0;
       appearance: none;
-      font-weight: 700;
+      font-weight: 500;
       font-size: 18px;
     }
   }
@@ -46,7 +46,7 @@
           text-overflow: ellipsis;
           overflow: hidden;
           text-align: center;
-          font-weight: 500;
+          font-weight: 400;
           background-color: $vting-blue;
           padding: 20px;
           color: white;
@@ -55,13 +55,13 @@
           padding-top: 10px;
           background-color: $vting-gray;
           text-align: center;
-          font-weight: 500;
+          font-weight: 400;
         }
         .hotVoteCardCount {
           padding: 10px 0;
           background-color: $vting-gray;
           text-align: center;
-          font-weight: 500;
+          font-weight: 400;
           font-size: 20px;
         }
       }
@@ -75,7 +75,7 @@
 
   .vtingButton {
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 400;
 
     background-color: $vting-orange;
     color: white;
@@ -93,7 +93,7 @@
     padding: 20px;
     border-radius: 40px;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 500;
   }
 
   a {
