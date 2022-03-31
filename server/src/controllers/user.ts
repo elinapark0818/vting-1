@@ -52,7 +52,7 @@ interface UserType {
   user_id: string;
   nickname: string;
   password: string;
-  image?: string;
+  image?: FormData;
   vote?: string[];
 }
 
@@ -137,7 +137,10 @@ export let UserController = {
   signup: {
     post: async (req: Request & { body: UserType }, res: Response) => {
       const { user_id, nickname, password, image } = req.body;
-
+      // const image = req.file.path;
+      // if (!image) {
+      //   return res.send({ message: "No image" });
+      // }
       try {
         if (user_id && password && nickname) {
           bcrypt.genSalt(SALT_ROUNDS, function (err: Error, salt: string) {
@@ -223,7 +226,7 @@ export let UserController = {
             accessToken as string,
             process.env.ACCESS_SECRET as jwt.Secret
           );
-          // 유저 정보 삭제하기
+          // 보트 전부 삭제하고 유저 삭제하기
           await db.collection("vote").deleteMany({ user_id: decoded.user_id });
           await db.collection("user").deleteOne({ user_id: decoded.user_id });
           // 쿠키에 토큰 삭제하기
@@ -315,31 +318,47 @@ export let UserController = {
             process.env.ACCESS_SECRET as jwt.Secret
           );
 
-          console.log(decoded);
-
           const findUser = await db
             .collection("user")
             .findOne({ user_id: decoded.user_id });
 
-          console.log(findUser);
+          await bcrypt.genSalt(
+            SALT_ROUNDS,
+            function (err: Error, salt: string) {
+              if (err) {
+                console.log("genSalt Error: " + err);
+              } else {
+                console.log("salt", salt);
 
-          await db.collection("user").updateOne(
-            { user_id: decoded.user_id },
+                bcrypt.hash(
+                  req.body.password,
+                  salt,
+                  function (err: Error, hash: string) {
+                    console.log("hash", hash);
 
-            //바디가 들어온것만 바꿈
-            {
-              $set: {
-                nickname: req.body.nickname || findUser.nickname,
-                image: req.body.image || findUser.image,
-                password: req.body.password || findUser.password,
-              },
+                    db.collection("user").updateOne(
+                      { user_id: decoded.user_id },
+                      {
+                        $set: {
+                          nickname: req.body.nickname || findUser.nickname,
+                          image: req.body.image || findUser.image,
+                          password: hash || findUser.password,
+                        },
+                      }
+                    );
+                    return res
+                      .status(200)
+                      .json({ message: "Successfully updated" });
+                  }
+                );
+              }
             }
           );
-
-          return res.status(200).json({ message: "Successfully updated" });
         } catch {
-          return res.status(400).json({ message: "Bad request" });
+          res.status(400).json({ message: "Bad request" });
         }
+      } else {
+        res.status(400).json({ message: "No token exists" });
       }
     },
   },

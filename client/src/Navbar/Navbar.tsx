@@ -12,6 +12,7 @@ import axios from "axios";
 const serverURL: string = "http://localhost:8000";
 
 function Navbar() {
+
   let location = useLocation();
 
   useEffect(() => {
@@ -21,8 +22,6 @@ function Navbar() {
   // * 로그인상태
   let isLoginState = useSelector((state: RootState) => state.isLogin);
   let loginState = isLoginState.login;
-
-  // console.log("loginState===", loginState);
 
   // ? 처음 렌더링할때, 로그인상태 useEffect로 토큰여부에 따라 판단한다.
   useEffect(() => {
