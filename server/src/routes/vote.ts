@@ -10,5 +10,4 @@ router.post("/", VoteController.create.post);
 router.delete("/:id", VoteController.delete.delete);
 router.patch("/:id", VoteController.undergoing.patch);
 
-
 export default router;
