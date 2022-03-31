@@ -1,58 +1,85 @@
-import React, { useState } from "react";
+import React from "react";
 import VotePreview from "./VotePreview";
 import VoteMaker from "./VoteMaker";
 import "./new.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import { useAlert } from "react-alert";
+import axios from "axios";
 
 function VoteBody() {
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   const newVote = useSelector((state: RootState) => state.makeNewVote);
   const isLogin = useSelector((state: RootState) => state.isLogin);
   const newVoteFormat = newVote.format;
 
   const alert = useAlert();
 
-  const sendNewVote = () => {
+  const serverURL = "http://localhost:8000";
+
+  const sendNewVote = async () => {
+    const sendBody = loginVoteBody();
+    console.log(userInfo);
+    console.log(sendBody);
+    const accessToken = localStorage.getItem("accessToken");
+
+    try {
+      const res = await axios.post(serverURL + "/vting", sendBody, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
+      });
+      if (res.status === 201) {
+        console.log(res.data);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const loginVoteBody = () => {
+    let sendVoteBody = {};
+
     if (isLogin.login) {
       switch (newVoteFormat) {
         case "bar":
-          const barformat = {
+          sendVoteBody = {
             title: newVote.title,
             format: newVote.format,
             type: newVote.type,
             items: newVote.items,
             manytimes: newVote.manytimes,
             multiple: newVote.multiple,
+            user_id: userInfo.email,
           };
-          console.log("막대그래프 포맷으로 생성 시", barformat);
-          return;
+          return sendVoteBody;
         case "open":
-          const openformat = {
+          sendVoteBody = {
             title: newVote.title,
             format: newVote.format,
             manytimes: newVote.manytimes,
+            user_id: userInfo.email,
           };
-          console.log("대화 포맷으로 생성 시", openformat);
-          return;
+          return sendVoteBody;
         case "versus":
-          const versusformat = {
+          sendVoteBody = {
             title: newVote.title,
             format: newVote.format,
             items: newVote.items,
             manytimes: newVote.manytimes,
             multiple: newVote.multiple,
+            user_id: userInfo.email,
           };
-          console.log("대결 포맷으로 생성 시", versusformat);
-          return;
+          return sendVoteBody;
         case "word":
-          const wordformat = {
+          sendVoteBody = {
             title: newVote.title,
             format: newVote.format,
             manytimes: newVote.manytimes,
+            user_id: userInfo.email,
           };
-          console.log("워드클라우드 포맷으로 생성 시", wordformat);
-          return;
+          return sendVoteBody;
         default:
           console.log("오류 발생 : 투표 포맷이 선택되지 않음");
           return;
@@ -70,7 +97,9 @@ function VoteBody() {
           <VotePreview />
         </div>
         <div className="vote-button">
-          <button onClick={() => sendNewVote()}>투표 생성하기</button>
+          <button className="vtingButton" onClick={() => sendNewVote()}>
+            투표 생성하기
+          </button>
         </div>
       </div>
     );

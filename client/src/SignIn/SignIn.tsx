@@ -24,7 +24,7 @@ interface InOrUp {
   signIn: boolean;
 }
 
-const serverURL: string = "https://test.v-ting.net";
+const serverURL: string = "http://localhost:8000";
 
 function SignIn() {
   const dispatch = useDispatch();
@@ -87,8 +87,8 @@ function SignIn() {
         );
         const token = res.data.data.accessToken;
         localStorage.setItem("accessToken", token);
-        // console.log("token=========", token);
-        // console.log("로그인하자마자회원정보저장", userInfo);
+        console.log("token=========", token);
+        console.log("로그인하자마자회원정보저장", userInfo);
       }
     } catch (err) {
       // setIsServerOk(false);
@@ -99,16 +99,13 @@ function SignIn() {
   // ? 회원가입 서버연동
   const SignInUser = async () => {
     try {
-      const res = await axios.post(
-        serverURL + "/user"
-        // , {
-        //   user_id: newUser.email,
-        //   nickname: newUser.name,
-        //   password: newUser.password,
-        //   passwordConfirm: newUser.passwordConfirm,
-        //   // image: newUser.image,
-        // }
-      );
+      const res = await axios.post(serverURL + "/user", {
+        user_id: newUser.email,
+        nickname: newUser.name,
+        password: newUser.password,
+        passwordConfirm: newUser.passwordConfirm,
+        // image: newUser.image,
+      });
       if (
         !newUser.email &&
         !newUser.name &&

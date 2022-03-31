@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import "./MyPage.scss";
 
-const serverURL: string = "https://test.v-ting.net";
+const serverURL: string = "http://localhost:8000";
 
 function MyPage() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
