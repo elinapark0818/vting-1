@@ -136,70 +136,57 @@ function SignIn() {
 
   const [userCheck, setUserCheck] = useState(true);
 
-  // * 회원가입할때 중복이메일 확인용 유저체크
-  const UserCheck = async () => {
-    let accessToken = localStorage.getItem("accessToken");
-    try {
-      const res = await axios.post(
-        `${serverURL}/user/check`,
-        {
-          user_id: newUser.email,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            withCredentials: true,
-          },
-        }
-      );
-      console.log("이메일체크", res.data.data.user_data.user_id);
-
-      if (res.status === 200 && res.data.message === "Success verified") {
-        setUserCheck(true);
-      }
-      if (res.status === 200 && res.data.message === "It doesn't match") {
-        setUserCheck(false);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  // todo: 이메일로 가입하기 버튼 활성화/비활성화 state 로 관리하고
-  // todo: state 에 따라 조건부 버튼 보여주기 처리를 따로 만들자
-
-  // ? 회원가입 서버연동
+  // ? 회원가입 + 유저체크 핸들링
+  // todo: 가입 전, 이미 가입된 이메일인지 user/check 진행
+  // todo: 가입된 이메일이라면 "이미 가입된 이메일입니다." 알럿 출력
   const SignUpUser = async () => {
     try {
-      const res = await axios.post(serverURL + "/user", {
-        user_id: newUser.email,
-        nickname: newUser.name,
-        password: newUser.password,
-        // image: newUser.image,
-      });
-
-      if (res.status === 201) {
-        // setIsServerOk(true);
-        const userInfo = res.data.data.user_data;
-        // * 로컬스토리지에 accessToken 넣기
-        localStorage.setItem("accessToken", res.data.data.accessToken);
-        // ? 회원가입과 동시에 로그인 처리
-        dispatch(setIsLogin(true));
-        dispatch(
-          setUserInfo({
-            _id: userInfo._id,
-            nickname: userInfo.nickname,
-            email: userInfo.user_id,
-            image: userInfo.image,
-          })
-        );
-        alert("회원가입이 완료되었습니다.");
-        console.log("회원가입 성공===", res.data);
-        navigate("/");
-      }
-    } catch (e) {
+      await axios
+        .post(`${serverURL}/user/check`, {
+          user_id: newUser.email,
+        })
+        .then((data) => {
+          if (data.status === 200 && data.data.message === "It doesn't match") {
+            axios
+              .post(serverURL + "/user", {
+                user_id: newUser.email,
+                nickname: newUser.name,
+                password: newUser.password,
+              })
+              .then((data) => {
+                if (data.status === 201) {
+                  const userInfo = data.data.data.user_data;
+                  // * 로컬스토리지에 accessToken 넣기
+                  localStorage.setItem(
+                    "accessToken",
+                    data.data.data.accessToken
+                  );
+                  // ? 회원가입과 동시에 로그인 처리
+                  dispatch(setIsLogin(true));
+                  dispatch(
+                    setUserInfo({
+                      _id: userInfo._id,
+                      nickname: userInfo.nickname,
+                      email: userInfo.user_id,
+                    })
+                  );
+                  alert("회원가입이 완료되었습니다.");
+                  console.log("회원가입 성공===", data.data);
+                  navigate("/");
+                }
+              });
+          }
+          // ? 이미 가입된 이메일이라면
+          else if (
+            data.status === 200 &&
+            data.data.message === "Success verified"
+          ) {
+            setUserCheck(false);
+          }
+        });
+    } catch (err) {
       setIsServerOk(false);
-      console.log(e);
+      console.log(err);
     }
   };
 
@@ -409,11 +396,6 @@ function SignIn() {
                 )}
                 {isEmailBlur && emailValid && (
                   <div className="email Success"></div>
-                )}
-
-                {/* //? 이미 가입된 이메일 이라면 */}
-                {userCheck && (
-                  <div className="email Error">! 이미 가입된 이메일입니다.</div>
                 )}
               </div>
 

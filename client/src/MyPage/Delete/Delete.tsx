@@ -13,8 +13,6 @@ function Delete() {
 
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
-  console.log("안되나===", userInfo);
-
   useEffect(() => {
     const getUserInfo = async () => {
       let accessToken = localStorage.getItem("accessToken");
@@ -80,14 +78,16 @@ function Delete() {
       </header>
 
       <main className="delete_wrap">
-        {/* <h1>프로필 : {getUserInfo.image}</h1> */}
-        <h1>_id 나와라{userInfo._id}</h1>
-        <h1>닉네임 : {userInfo.nickname}</h1>
-        <h1>이메일 : {userInfo.email}</h1>
+        <div className="delete_profile">
+          <img src={userInfo.image} alt="프로필이미지" />
+        </div>
+        <div className="delete_userInfo">
+          <h1>닉네임 : {userInfo.nickname}</h1>
+          <h1>이메일 : {userInfo.email}</h1>
+        </div>
       </main>
 
       <div className="delete_btnWrap">
-        <h1>정말 탈퇴하시겠습니까?</h1>
         <button className="delete_btn" onClick={openModal}>
           탈퇴하기
         </button>
