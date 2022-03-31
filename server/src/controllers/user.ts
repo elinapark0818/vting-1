@@ -11,6 +11,8 @@ import { AnyMxRecord } from "dns";
 import dotenv from "dotenv";
 import { isRegExp } from "util/types";
 import { hash } from "bcryptjs";
+import e from "express";
+import { ObjectId } from "bson";
 dotenv.config();
 
 const SALT_ROUNDS = 6;
@@ -254,14 +256,33 @@ export let UserController = {
           const findUser = await db
             .collection("user")
             .findOne({ user_id: decoded.user_id });
-          if (findUser) {
+
+          const findUserVote: any[] = await db
+            .collection("vote")
+            .find({ user_id: decoded.user_id })
+            .toArray();
+
+          if (findUser && findUserVote) {
+            var voteInfo = [];
+
+            for (let i = 0; i < findUserVote.length; i++) {
+              const vote: any = {
+                title: findUserVote[i].title,
+                format: findUserVote[i].format,
+                undergoing: findUserVote[i].undergoing,
+                created_at: findUserVote[i].created_at,
+                url: findUserVote[i].url,
+              };
+              voteInfo.push(vote);
+            }
+
             return res.status(200).json({
               data: {
                 _id: findUser._id,
                 nickname: findUser.nickname,
                 user_id: findUser.user_id,
                 image: findUser.image,
-                vote: findUser.vote,
+                vote: voteInfo,
               },
             });
           } else {
