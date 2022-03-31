@@ -53,18 +53,22 @@ function Bar() {
     case "vertical":
       return (
         <div className="votePreviewCon">
-          <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
-          <div className="votePreviewBack">
-            <div className="votePreview-barVer-con">
-              {voteItems.map((el, idx) => (
-                <div key={idx} id="votePreview-barVer-bar">
-                  <div className="barVer-itemName">{el.content}</div>
-                  <div
-                    className="barVer-itemBar"
-                    style={makeRandomHeight(idx)}
-                  ></div>
-                </div>
-              ))}
+          <div className="votePreview">
+            <div className="votePreviewTitle">
+              {newVote.title || "설문 제목"}
+            </div>
+            <div className="votePreviewBack">
+              <div className="votePreview-barVer-con">
+                {voteItems.map((el, idx) => (
+                  <div key={idx} id="votePreview-barVer-bar">
+                    <div className="barVer-itemName">{el.content}</div>
+                    <div
+                      className="barVer-itemBar"
+                      style={makeRandomHeight(idx)}
+                    ></div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
