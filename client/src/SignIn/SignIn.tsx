@@ -30,48 +30,7 @@ function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [isMatch, setIsMatch] = useState(true);
-  useEffect(() => {
-    if (newUser.password === newUser.passwordConfirm) {
-      setIsMatch(true);
-    } else {
-      setIsMatch(false);
-    }
-  });
-
-  // * 서버 불안전
-  const [isServerOk, setIsServerOk] = useState(true);
-
-  // * 유저정보 조회하기
-  const userInfo = useSelector((state: RootState) => state.userInfo);
-
-  // const GetUserInfo = async () => {
-  //   let accessToken = localStorage.getItem("accessToken");
-  //   try {
-  //     const res = await axios.get(`${serverURL}/user/${userInfo._id}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //         withCredentials: true,
-  //       },
-  //     });
-  //     if (res.status === 200) {
-  //       setUserInfo({
-  //         _id: res.data.data._id,
-  //         nickname: res.data.data.nickname,
-  //         email: res.data.data.email,
-  //         image: res.data.data.image,
-  //       });
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
-  // * SignIn & SignUp 조건으로 상태 설정함 (inOrUp ? <SignIn> : <SignUp>)
-  const [inOrUp, setInOrUp] = useState<InOrUp>({ signIn: true });
-
-  // ? 기존 유저정보를 담을 상태 => onChange 밸류값이랑 비교해서 로그인처리
-  const [user, setUser] = useState<User>({ email: "", password: "" });
+  const [isMatch, setIsMatch] = useState(false);
 
   // * 새로운 유저 정보를 담을 상태
   const [newUser, setNewUser] = useState<CreateUser>({
@@ -81,6 +40,22 @@ function SignIn() {
     passwordConfirm: "",
     image: "",
   });
+
+  useEffect(() => {
+    if (newUser.password === newUser.passwordConfirm) {
+      console.log("매치됨?");
+      setIsMatch(true);
+    } else {
+      setIsMatch(false);
+    }
+  }, [newUser.password, newUser.passwordConfirm]);
+
+  // * 서버 불안전
+  const [isServerOk, setIsServerOk] = useState(true);
+  const [inOrUp, setInOrUp] = useState<InOrUp>({ signIn: true });
+
+  // ? 기존 유저정보를 담을 상태 => onChange 밸류값이랑 비교해서 로그인처리
+  const [user, setUser] = useState<User>({ email: "", password: "" });
 
   // ? 아직 계정이 없으신가요?  => 클릭 이벤트로 setInOrUp(false) 처리해주기!
   const setSignUp = () => {
@@ -95,8 +70,6 @@ function SignIn() {
   const isCloseModal = () => {
     navigate(-1);
   };
-
-  // todo:  document.cookie = 'key=value'
 
   // ? 로그인 서버 연동 => [POST] session
   const LogInUser = async () => {
@@ -216,6 +189,8 @@ function SignIn() {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
+    console.log("매개변수 없이 타겟이 잡히고있니?", value);
+
     setNewUser({ ...newUser, [name]: value });
   };
 
@@ -271,18 +246,6 @@ function SignIn() {
       setPasswordValid(true);
     } else {
       setPasswordValid(false);
-    }
-  };
-
-  // * 비밀번호 일치 확인용
-  const [samePassword, setSamePassword] = useState(false);
-  const passwordConfirm = (e: React.FocusEvent<HTMLInputElement>) => {
-    // console.log("입력한비번확인", e.target.value);
-    // console.log("입력한비번", newUser.password);
-    if (newUser.password === e.target.value) {
-      setSamePassword(true);
-    } else {
-      setSamePassword(false);
     }
   };
 
@@ -420,9 +383,10 @@ function SignIn() {
               </div>
 
               <input
-                onBlur={passwordConfirm}
                 placeholder="비밀번호 확인"
+                value={newUser.passwordConfirm}
                 type="password"
+                name="passwordConfirm"
                 id="passwordConfirm"
                 onChange={signUp_onChangePasswordConfirm}
               />
@@ -440,7 +404,7 @@ function SignIn() {
               )}
 
               <div className="signUp_wrap">
-                {nameValid && emailValid && passwordValid && samePassword ? (
+                {nameValid && emailValid && passwordValid ? (
                   <button className="signUp_btn" onClick={() => SignUpUser()}>
                     이메일로 가입하기
                   </button>
