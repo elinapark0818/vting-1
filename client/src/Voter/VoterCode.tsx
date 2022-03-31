@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams, Routes, Route, Outlet } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./voter.scss";
 import vtinglogo from "../assets/vt_logo_2.png";
-import VResult from "./VoterResult";
 
 function VoterCode() {
   const [voteCode, setVoteCode] = useState("");
-  const [result, setResult] = useState(false);
-  const { code } = useParams();
 
   return (
     <>

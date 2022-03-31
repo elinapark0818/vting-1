@@ -106,10 +106,13 @@ function VoteBody() {
   } else {
     return (
       <div className="vote-body">
-        <div className="vote-making">
-          <VoteMaker />
-          <VotePreview />
+        <div className="vote-info">
+          설문 타입을 선택하고
+          <br />
+          5초만에 설문을 만들어보세요!
         </div>
+        {/* <VoteMaker />
+          <VotePreview /> */}
       </div>
     );
   }
