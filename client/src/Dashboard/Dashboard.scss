@@ -5,7 +5,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 5em;
+  margin: 10em 5em;
   height: 100%;
   //   padding: 5em;
   box-shadow: 0 7px 7px -4px $vting-orange;
@@ -20,12 +20,15 @@
   & h1 {
     font-size: 2.5rem;
     color: #fff;
-    padding: 0 1em;
+    padding: 0.5em 1em;
   }
 }
 
 .dashboard_wrap {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   margin: 3em;
   height: 30em;
 
@@ -35,7 +38,7 @@
     font-size: 2em;
     text-align: center;
 
-    & th {
+    & thead {
       //   width: 100%;
       padding-top: 1em;
       border-bottom: 3px solid gray;
@@ -56,11 +59,15 @@
 .dashboard_btnWrap {
   margin-top: 3em;
   margin-left: 70em;
-  margin-bottom: 3em;
+}
 
-  & .dashboard_plusBtn {
-    cursor: pointer;
-    font-size: 6em;
+.dashboard_plusBtn {
+  cursor: pointer;
+  font-size: 6em;
+  color: gray;
+  transition: all 0.3s;
+
+  & :hover {
     color: $vting-orange;
   }
 }
