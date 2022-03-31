@@ -97,13 +97,12 @@ export let SessionController = {
       ) {
         let authorization: string | undefined = req.headers.authorization;
         let accessToken: string = authorization.split(" ")[1];
-        console.log(accessToken);
-        const decoded = jwt.verify(
-          accessToken as string,
-          process.env.ACCESS_SECRET as jwt.Secret
-        );
 
         try {
+          const decoded = jwt.verify(
+            accessToken as string,
+            process.env.ACCESS_SECRET as jwt.Secret
+          );
           if (decoded) {
             return res.status(200).json({
               data: { accessToken: "" },
