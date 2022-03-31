@@ -1,8 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext } from "react";
 import { useParams } from "react-router-dom";
 import { BiShareAlt, BiCopy } from "react-icons/bi";
 import "./v.scss";
+import {
+  useAlert,
+  transitions,
+  positions,
+  AlertOptions,
+  Provider as AlertProvider,
+} from "react-alert";
+import { AlertTemplate, ImgAlertTemplate } from "./AlertTemplate";
 
+const imgAlertContext = createContext<any | null>(null);
+
+// 컴포넌트 시작
 function V() {
   const [isRealTime, setIsRealTime] = useState(false);
   const [togglePublic, setTogglePublic] = useState(false);
@@ -15,68 +26,143 @@ function V() {
     setToggleOngoing((prev) => !prev);
   };
 
+  // Alert Option
+  const options: AlertOptions = {
+    position: positions.TOP_CENTER,
+    timeout: 3000,
+    offset: "70px",
+    transition: transitions.SCALE,
+  };
+
+  const imgoptions: AlertOptions = {
+    position: positions.MIDDLE,
+    // timeout: 3000,
+    // offset: "70px",
+    transition: transitions.SCALE,
+  };
+
   return (
-    <div className="voteResultPageCon">
-      <div className="voteResultPage">
-        <div className="voteResultTitle">자신을 한 문장으로 표현한다면?</div>
-        <div className="voteResultContent">
-          {isRealTime ? <RealTime /> : <Howto />}
-        </div>
-      </div>
-      <div className="voteResultFooter">
-        <div className="modeChange">
-          <div
-            className={isRealTime ? "modebtn gray" : "modebtn"}
-            onClick={() => setIsRealTime(false)}
-          >
-            Vting 접속 방법
-          </div>
-          <div
-            className={isRealTime ? "modebtn" : "modebtn gray"}
-            onClick={() => setIsRealTime(true)}
-          >
-            실시간 응답 보기
-          </div>
-        </div>
-        <div className="options">
-          <button onClick={clickedTogglePublic} className="toggleBtn">
-            <div
-              className={
-                togglePublic ? "toggleCircle toggleOn" : "toggleCircle"
-              }
-            >
-              {togglePublic ? "비공개" : "공개"}
+    <AlertProvider template={AlertTemplate} {...options}>
+      <AlertProvider
+        template={ImgAlertTemplate}
+        {...imgoptions}
+        context={imgAlertContext}
+      >
+        <div className="voteResultPageCon">
+          <div className="voteResultPage">
+            <div className="voteResultTitle">
+              자신을 한 문장으로 표현한다면?
             </div>
-          </button>
-          <button onClick={clickedToggleOngoing} className="toggleBtn">
-            <div
-              className={
-                toggleOngoing ? "toggleCircle toggleOn" : "toggleCircle"
-              }
-            >
-              {toggleOngoing ? "재시작" : "진행중"}
+            <div className="voteResultContent">
+              {isRealTime ? <RealTime /> : <Howto />}
             </div>
-          </button>
+          </div>
+          <div className="voteResultFooter">
+            <div className="modeChange">
+              <div
+                className={isRealTime ? "modebtn gray" : "modebtn"}
+                onClick={() => setIsRealTime(false)}
+              >
+                Vting 접속 방법
+              </div>
+              <div
+                className={isRealTime ? "modebtn" : "modebtn gray"}
+                onClick={() => setIsRealTime(true)}
+              >
+                실시간 응답 보기
+              </div>
+            </div>
+            <div className="options">
+              <button onClick={clickedTogglePublic} className="toggleBtn">
+                <div
+                  className={
+                    togglePublic ? "toggleCircle toggleOn" : "toggleCircle"
+                  }
+                >
+                  {togglePublic ? "비공개" : "공개"}
+                </div>
+              </button>
+              <button onClick={clickedToggleOngoing} className="toggleBtn">
+                <div
+                  className={
+                    toggleOngoing ? "toggleCircle toggleOn" : "toggleCircle"
+                  }
+                >
+                  {toggleOngoing ? "재시작" : "진행중"}
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </AlertProvider>
+    </AlertProvider>
   );
 }
 
 function Howto() {
   const [url, setUrl] = useState("");
   const { code } = useParams();
+  const alert = useAlert();
+  const imgAlert = useAlert(imgAlertContext);
 
+  let codeString = "";
+  if (code) codeString = code.toString();
+
+  // param에서 코드 받아와서 주소 만들기
+  const shortUrl = "https://vote.v-ting.net/" + codeString;
+
+  // QR 코드 생성
   const QRCode = require("qrcode");
-
   useEffect(() => {
-    QRCode.toDataURL(
-      "https://vote.v-ting.net/123456",
-      function (err: any, url: string) {
-        setUrl(url);
-      }
-    );
-  }, []);
+    QRCode.toDataURL(shortUrl, function (err: Error, url: string) {
+      setUrl(url);
+    });
+  }, [shortUrl]);
+
+  // 클립보드에 복사
+  function shortUrlClip() {
+    try {
+      navigator.clipboard.writeText(url);
+      alert.show("접속주소가 클립보드에 복사되었습니다.");
+    } catch (e) {
+      alert.show("에러가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+  }
+
+  function codeClip() {
+    try {
+      navigator.clipboard.writeText(codeString);
+      alert.show("접속코드가 클립보드에 복사되었습니다.");
+    } catch (e) {
+      alert.show("에러가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+  }
+
+  async function quBlobClip() {
+    try {
+      const imgURL = url;
+      const data = await fetch(imgURL);
+      const blob = await data.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          [blob.type]: blob,
+        }),
+      ]);
+      alert.show("QR 코드가 클립보드에 복사되었습니다.");
+    } catch (err) {
+      alert.show("에러가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+  }
+
+  // qr코드 클릭 시 확대
+  function zoomQr() {
+    const qrimgDiv = <img src={url} alt={url} />;
+    imgAlert.show(qrimgDiv, {
+      close: () => {
+        alert.remove(imgAlert);
+      },
+    });
+  }
 
   return (
     <>
@@ -88,7 +174,7 @@ function Howto() {
           {code}
         </div>
         <div className="voteResultChildShare">
-          <div className="copy">
+          <div className="copy" onClick={() => shortUrlClip()}>
             <BiCopy />
           </div>
           <div className="sns">
@@ -104,7 +190,7 @@ function Howto() {
         <div className="voteResultChildTitle">Vting Code</div>
         <div className="voteResultChildContent">{code}</div>
         <div className="voteResultChildShare">
-          <div className="copy">
+          <div className="copy" onClick={() => codeClip()}>
             <BiCopy />
           </div>
           <div className="sns">
@@ -119,10 +205,10 @@ function Howto() {
       <div className="voteResultChild voteResultQr">
         <div className="voteResultChildTitle">QR Code</div>
         <div className="voteResultChildContent voteResultChildQr">
-          <img src={url} alt="qr" />
+          <img src={url} alt="qr" onClick={() => zoomQr()} />
         </div>
         <div className="voteResultChildShare">
-          <div className="copy">
+          <div className="copy" onClick={() => quBlobClip()}>
             <BiCopy />
           </div>
           <div className="sns">
@@ -137,6 +223,7 @@ function Howto() {
   );
 }
 
+// 실시간 응답보기 컴포넌트
 function RealTime() {
   const dummyData = [
     "저는 그야말로 말하는 감자",

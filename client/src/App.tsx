@@ -8,7 +8,7 @@ import Navbar from "./Navbar/Navbar";
 import Voter from "./Voter/Voter";
 import VoterCode from "./Voter/VoterCode";
 import VoterResult from "./Voter/VoterResult";
-// import V from "./V/V";
+import V from "./v/V";
 import NewVote from "./new/new";
 import { Provider } from "react-redux";
 import store from "./store/index";
@@ -64,7 +64,7 @@ function App() {
 
             <Route path="new" element={<NewVote />} />
 
-            {/* <Route path="v/:code" element={<V />} /> */}
+            <Route path="v/:code" element={<V />} />
 
             <Route path="myPage" element={<MyPage />}>
               <Route path="" element={<Edit />} />
