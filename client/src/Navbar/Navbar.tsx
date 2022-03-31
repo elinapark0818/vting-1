@@ -1,17 +1,18 @@
 import React, { useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./Navbar.scss";
 import Logo from "../assets/vt_logo_1.png";
 import Profile from "../assets/yof_logo-17.jpg";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, setIsLogin } from "../store/index";
 import axios from "axios";
+// import jwt from "jsonwebtoken";
 
 const serverURL: string = "http://localhost:8000";
 
 function Navbar() {
-  const location = useLocation();
-  // console.log(location);
+  let location = useLocation();
 
   useEffect(() => {
     console.log("페이지 바뀜");
@@ -21,16 +22,12 @@ function Navbar() {
   let isLoginState = useSelector((state: RootState) => state.isLogin);
   let loginState = isLoginState.login;
 
-  // * 페이지 이동시마다 리렌더링
-  const location = useLocation();
+  // console.log("loginState===", loginState);
 
   // ? 처음 렌더링할때, 로그인상태 useEffect로 토큰여부에 따라 판단한다.
   useEffect(() => {
-    console.log("넵바리렌더링==");
-    if (document.cookie.includes("accessToken")) {
-      settingLogin();
-    }
-  }, [location]);
+    if (document.cookie.includes("accessToken")) settingLogin();
+  }, []);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -41,27 +38,30 @@ function Navbar() {
   const settingLogin = () => {
     setIsLogin(true);
   };
-
   // ? 로그아웃 핸들링
   const handleLogout = async () => {
-    let accessToken = localStorage.getItem("accessToken");
+    let accessToken = document.cookie;
     try {
       const res = await axios.get(serverURL + "/session", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          withCredentials: true,
-        },
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (res.status === 200) {
-        localStorage.setItem("accessToken", res.data.data.accessToken);
         dispatch(setIsLogin(false));
+        // console.log("로그아웃됨===", res.data);
+        // ? 로그아웃되면 일단 구분하려고 홈으로 이동시킴
         navigate("/");
-        alert("로그아웃 되었습니다.");
       }
     } catch (err) {
       console.log(err);
     }
   };
+
+  // ? 모달 끄기 핸들링
+  // const isCloseModal = () => {
+  //   navigate(-1);
+  // };
+
+  // todo : 네비게이션 바 버튼 CSS
 
   return (
     <div className="container">
@@ -78,7 +78,7 @@ function Navbar() {
           <Link className="nav-link link" to="dashboard">
             Dashboard
           </Link>
-          <Link className="nav-link link" to="v">
+          <Link className="nav-link link" to="new">
             Vote
           </Link>
 
@@ -107,7 +107,7 @@ function Navbar() {
           <Link className="nav-link link" to="/">
             Home
           </Link>
-          <Link className="nav-link link" to="v">
+          <Link className="nav-link link" to="new">
             Vote
           </Link>
           <Link className="nav-link link" to="signIn">

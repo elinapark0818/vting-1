@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import VotePreview from "./VotePreview";
 import VoteMaker from "./VoteMaker";
 import "./new.scss";
@@ -8,6 +9,7 @@ import { useAlert } from "react-alert";
 import axios from "axios";
 
 function VoteBody() {
+  const navigate = useNavigate();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const newVote = useSelector((state: RootState) => state.makeNewVote);
   const isLogin = useSelector((state: RootState) => state.isLogin);
@@ -18,74 +20,72 @@ function VoteBody() {
   const serverURL = "http://localhost:8000";
 
   const sendNewVote = async () => {
-    const sendBody = loginVoteBody();
-    console.log(userInfo);
-    console.log(sendBody);
-    const accessToken = localStorage.getItem("accessToken");
+    if (isLogin.login) {
+      const sendBody = loginVoteBody();
+      const accessToken = localStorage.getItem("accessToken");
 
-    try {
-      const res = await axios.post(serverURL + "/vting", sendBody, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          withCredentials: true,
-        },
-      });
-      if (res.status === 201) {
-        console.log(res.data);
+      try {
+        const res = await axios.post(serverURL + "/vting", sendBody, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        });
+        if (res.status === 201) {
+          navigate(`/v/${res.data.data.url}`);
+        }
+      } catch (e) {
+        console.log(e);
       }
-    } catch (e) {
-      console.log(e);
+    } else {
+      alert.show();
     }
   };
 
   const loginVoteBody = () => {
     let sendVoteBody = {};
 
-    if (isLogin.login) {
-      switch (newVoteFormat) {
-        case "bar":
-          sendVoteBody = {
-            title: newVote.title,
-            format: newVote.format,
-            type: newVote.type,
-            items: newVote.items,
-            manytimes: newVote.manytimes,
-            multiple: newVote.multiple,
-            user_id: userInfo.email,
-          };
-          return sendVoteBody;
-        case "open":
-          sendVoteBody = {
-            title: newVote.title,
-            format: newVote.format,
-            manytimes: newVote.manytimes,
-            user_id: userInfo.email,
-          };
-          return sendVoteBody;
-        case "versus":
-          sendVoteBody = {
-            title: newVote.title,
-            format: newVote.format,
-            items: newVote.items,
-            manytimes: newVote.manytimes,
-            multiple: newVote.multiple,
-            user_id: userInfo.email,
-          };
-          return sendVoteBody;
-        case "word":
-          sendVoteBody = {
-            title: newVote.title,
-            format: newVote.format,
-            manytimes: newVote.manytimes,
-            user_id: userInfo.email,
-          };
-          return sendVoteBody;
-        default:
-          console.log("오류 발생 : 투표 포맷이 선택되지 않음");
-          return;
-      }
-    } else {
-      alert.show();
+    switch (newVoteFormat) {
+      case "bar":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          type: newVote.type,
+          items: newVote.items,
+          manytimes: newVote.manytimes,
+          multiple: newVote.multiple,
+          user_id: userInfo.email,
+        };
+        return sendVoteBody;
+      case "open":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          manytimes: newVote.manytimes,
+          user_id: userInfo.email,
+        };
+        return sendVoteBody;
+      case "versus":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          items: newVote.items,
+          manytimes: newVote.manytimes,
+          multiple: newVote.multiple,
+          user_id: userInfo.email,
+        };
+        return sendVoteBody;
+      case "word":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          manytimes: newVote.manytimes,
+          user_id: userInfo.email,
+        };
+        return sendVoteBody;
+      default:
+        console.log("오류 발생 : 투표 포맷이 선택되지 않음");
+        return;
     }
   };
 

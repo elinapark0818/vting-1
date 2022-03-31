@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, setPassword } from "../store/index";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/index";
 import VoteBody from "./VoteBody";
 import VoteFormats from "./VoteFormats";
+import axios from "axios";
 import "./new.scss";
 import {
   transitions,
@@ -47,11 +49,14 @@ function NewVote() {
 }
 
 function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
+  const navigate = useNavigate();
   const newVote = useSelector((state: RootState) => state.makeNewVote);
+  const newVoteFormat = newVote.format;
   const [newVotePassword, setNewVotePassword] = useState("");
   const [newVotePasswordRe, setNewVotePasswordRe] = useState("");
   const [isMatch, setIsMatch] = useState(true);
-  const dispatch = useDispatch();
+
+  const serverURL = "http://localhost:8000";
 
   useEffect(() => {
     if (newVotePassword === newVotePasswordRe) {
@@ -61,9 +66,70 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
     }
   }, [newVotePassword, newVotePasswordRe]);
 
-  const sendPassword = () => {
-    dispatch(setPassword(newVotePassword));
-    console.log(newVote);
+  const sendNewVote = async () => {
+    const sendBody = logoutVoteBody();
+    console.log(sendBody);
+
+    try {
+      const res = await axios.post(serverURL + "/vting", sendBody, {
+        headers: {
+          withCredentials: true,
+        },
+      });
+      if (res.status === 201) {
+        navigate(`/v/${res.data.data.url}`);
+        close();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const logoutVoteBody = () => {
+    let sendVoteBody = {};
+
+    switch (newVoteFormat) {
+      case "bar":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          type: newVote.type,
+          items: newVote.items,
+          manytimes: newVote.manytimes,
+          multiple: newVote.multiple,
+          password: newVotePassword,
+        };
+        return sendVoteBody;
+      case "open":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          manytimes: newVote.manytimes,
+          password: newVotePassword,
+        };
+        return sendVoteBody;
+      case "versus":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          items: newVote.items,
+          manytimes: newVote.manytimes,
+          multiple: newVote.multiple,
+          password: newVotePassword,
+        };
+        return sendVoteBody;
+      case "word":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          manytimes: newVote.manytimes,
+          password: newVotePassword,
+        };
+        return sendVoteBody;
+      default:
+        console.log("오류 발생 : 투표 포맷이 선택되지 않음");
+        return;
+    }
   };
 
   return (
@@ -119,7 +185,7 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
       </button>
       <button
         className={isMatch ? "vtingButton" : "vtingButtonGray"}
-        onClick={() => sendPassword()}
+        onClick={() => sendNewVote()}
       >
         설문 생성 완료
       </button>
