@@ -22,7 +22,7 @@ interface VoteType1 {
   items?: { idx: number; content: string; count: number }[];
   undergoing?: true;
   response: { idx: number; content: string }[];
-  password: string;
+  password?: string;
 }
 
 export let VoteController = {
@@ -30,7 +30,7 @@ export let VoteController = {
     get: async (req: Request, res: Response) => {
       db.collection("non-member").insertOne({
         test: true,
-        create_at: new Date(),
+        created_at: new Date(),
       });
       res.send("vote test!!");
     },
@@ -86,7 +86,8 @@ export let VoteController = {
                     multiple,
                     manytimes,
                     undergoing: true,
-                    create_at: new Date(),
+                    status: "public",
+                    created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
                     // random url(6digit) 만들어 주기
@@ -112,13 +113,16 @@ export let VoteController = {
                         title: madeVote.title,
                         items: madeVote.items,
                         url,
-                        create_at: madeVote.create_at,
+                        status: madeVote.status,
+                        undergoing: madeVote.undergoing,
+                        created_at: madeVote.created_at,
                       },
                     });
                   }
                 );
                 // FIXME: FORMAT 'open ended'
-              } else if (format === "open ended") {
+              } else if (format === "open") {
+                console.log("open ended start");
                 db.collection("vote").insertOne(
                   {
                     user_id: data.user_id,
@@ -128,6 +132,7 @@ export let VoteController = {
                     manytimes,
                     response,
                     undergoing: true,
+                    status: "public",
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -151,14 +156,16 @@ export let VoteController = {
                         _id: madeVote._id,
                         title: madeVote.title,
                         response: madeVote.response,
-                        create_at: madeVote.create_at,
+                        status: madeVote.status,
+                        undergoing: madeVote.undergoing,
+                        created_at: madeVote.created_at,
                         url,
                       },
                     });
                   }
                 );
                 // FIXME: FORMAT 'vs'
-              } else if (format === "vs") {
+              } else if (format === "versus") {
                 db.collection("vote").insertOne(
                   {
                     user_id: data.user_id,
@@ -168,6 +175,7 @@ export let VoteController = {
                     manytimes,
                     items,
                     undergoing: true,
+                    status: "public",
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -191,14 +199,16 @@ export let VoteController = {
                         _id: madeVote._id,
                         title: madeVote.title,
                         items: madeVote.items,
-                        create_at: madeVote.create_at,
+                        status: madeVote.status,
+                        undergoing: madeVote.undergoing,
+                        created_at: madeVote.created_at,
                         url,
                       },
                     });
                   }
                 );
                 // FIXME: FORMAT 'word cloud'
-              } else if (format === "word cloud") {
+              } else if (format === "word") {
                 db.collection("vote").insertOne(
                   {
                     user_id: data.user_id,
@@ -208,6 +218,7 @@ export let VoteController = {
                     manytimes,
                     items,
                     undergoing: true,
+                    status: "public",
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -231,7 +242,9 @@ export let VoteController = {
                         _id: madeVote._id,
                         title: madeVote.title,
                         items: madeVote.items,
-                        create_at: madeVote.create_at,
+                        status: madeVote.status,
+                        undergoing: madeVote.undergoing,
+                        created_at: madeVote.created_at,
                         url,
                       },
                     });
@@ -244,6 +257,7 @@ export let VoteController = {
           // TODO: 비회원 일때 생성 관련된 응답 만들기!
           // TODO: non-member collection에 데이터 넣기(1시간후 자동 삭제됨)
           // TODO: 유저아이디 X, 유저데이터에 넣기 X, 임시비번 저장하기, 임시비번으로 분기 해서 실행시키기
+          // TODO: timeover date 추가하기 (남은시간 = 생성시간 - 현재시간 > 0)
 
           // format에 따라 vote 데이터 DB 저장하기
           // FIXME: FORMAT 'bar'
@@ -261,7 +275,7 @@ export let VoteController = {
                 multiple,
                 manytimes,
                 undergoing: true,
-                create_at: new Date(),
+                created_at: new Date(),
               },
               async (err: Error, data: any) => {
                 // random url(6digit) 만들어 주기
@@ -272,6 +286,14 @@ export let VoteController = {
                   .collection("non-member")
                   .findOne({ _id: new ObjectId(objectId) });
 
+                // 남은시간(분) 계산해서 보내주기
+                let overtime =
+                  (new Date(madeVote.created_at.toString()).getTime() -
+                    new Date().getTime()) /
+                    (1000 * 60) +
+                  60;
+                overtime = Math.round(overtime);
+
                 // 응답 보내기
                 return res.status(201).json({
                   data: {
@@ -279,13 +301,15 @@ export let VoteController = {
                     title: madeVote.title,
                     items: madeVote.items,
                     url,
-                    create_at: madeVote.create_at,
+                    created_at: madeVote.created_at,
+                    undergoing: madeVote.undergoing,
+                    overtime,
                   },
                 });
               }
             );
             // FIXME: FORMAT 'open ended'
-          } else if (format === "open ended") {
+          } else if (format === "open") {
             db.collection("non-member").insertOne(
               {
                 password,
@@ -304,20 +328,30 @@ export let VoteController = {
                   .collection("non-member")
                   .findOne({ _id: new ObjectId(objectId) });
 
+                // 남은시간(분) 계산해서 보내주기
+                let overtime =
+                  (new Date(madeVote.created_at.toString()).getTime() -
+                    new Date().getTime()) /
+                    (1000 * 60) +
+                  60;
+                overtime = Math.round(overtime);
+
                 // 응답 보내기
                 return res.status(201).json({
                   data: {
                     _id: madeVote._id,
                     title: madeVote.title,
                     response: madeVote.response,
-                    create_at: madeVote.create_at,
                     url,
+                    created_at: madeVote.created_at,
+                    undergoing: madeVote.undergoing,
+                    overtime,
                   },
                 });
               }
             );
             // FIXME: FORMAT 'vs'
-          } else if (format === "vs") {
+          } else if (format === "versus") {
             db.collection("non-member").insertOne(
               {
                 password,
@@ -336,20 +370,30 @@ export let VoteController = {
                   .collection("non-member")
                   .findOne({ _id: new ObjectId(objectId) });
 
+                // 남은시간(분) 계산해서 보내주기
+                let overtime =
+                  (new Date(madeVote.created_at.toString()).getTime() -
+                    new Date().getTime()) /
+                    (1000 * 60) +
+                  60;
+                overtime = Math.round(overtime);
+
                 // 응답 보내기
                 return res.status(201).json({
                   data: {
                     _id: madeVote._id,
                     title: madeVote.title,
                     items: madeVote.items,
-                    create_at: madeVote.create_at,
                     url,
+                    created_at: madeVote.created_at,
+                    undergoing: madeVote.undergoing,
+                    overtime,
                   },
                 });
               }
             );
             // FIXME: FORMAT 'word cloud'
-          } else if (format === "word cloud") {
+          } else if (format === "word") {
             db.collection("non-member").insertOne(
               {
                 password,
@@ -368,14 +412,24 @@ export let VoteController = {
                   .collection("non-member")
                   .findOne({ _id: new ObjectId(objectId) });
 
+                // 남은시간(분) 계산해서 보내주기
+                let overtime =
+                  (new Date(madeVote.created_at.toString()).getTime() -
+                    new Date().getTime()) /
+                    (1000 * 60) +
+                  60;
+                overtime = Math.round(overtime);
+
                 // 응답 보내기
                 return res.status(201).json({
                   data: {
                     _id: madeVote._id,
                     title: madeVote.title,
                     items: madeVote.items,
-                    create_at: madeVote.create_at,
                     url,
+                    created_at: madeVote.created_at,
+                    undergoing: madeVote.undergoing,
+                    overtime,
                   },
                 });
               }
@@ -430,33 +484,104 @@ export let VoteController = {
     },
   },
 
-  undergoing: {
-    patch: async (req: Request & { params: any }, res: Response) => {
+  undergoingAndPublic: {
+    patch: async (req: Request & { params: any; body: any }, res: Response) => {
       const voteId = req.params;
+      const reqData = req.body;
 
-      const isActive = await db
-        .collection("vote")
-        .findOne({ _id: new ObjectId(voteId) }, (err: Error, data: any) => {
-          // undergoing === true => false
-          if (data.undergoing === true) {
-            db.collection("vote").updateOne(
-              { _id: new ObjectId(voteId) },
-              { $set: { undergoing: false } },
-              async (err: Error, data: any) => {
-                return res.status(200).json({ isActive: "false" });
-              }
-            );
-            // undergoing === false => true
-          } else {
+      try {
+        // 회원인 경우 token 확인 후 내 vote를 수정하기
+        if (
+          req.headers.authorization &&
+          req.headers.authorization.split(" ")[0] === "Bearer"
+        ) {
+          let authorization: string | undefined = req.headers.authorization;
+          let token: string = authorization.split(" ")[1];
+          jwt.verify(
+            token,
+            process.env.ACCESS_SECRET as jwt.Secret,
+            async (err, data: any) => {
+              // 토큰이 확인되면 vote collection에서 해당유저가 만들었던 vote중 요청된 보트가 일치하면 patch 가능
+              await db
+                .collection("vote")
+                .findOne(
+                  { _id: new ObjectId(voteId), user_id: data.user_id },
+                  (err: Error, data: any) => {
+                    // undergoing === true => false
+
+                    console.log("reqData", req.body);
+
+                    if (reqData.isActive !== null && reqData.status === null) {
+                      if (reqData.isActive) {
+                        db.collection("vote").updateOne(
+                          { _id: new ObjectId(voteId) },
+                          { $set: { undergoing: true } },
+                          async (err: Error, data: any) => {
+                            return res.status(200).json({ isActive: true });
+                          }
+                        );
+                      } else {
+                        db.collection("vote").updateOne(
+                          { _id: new ObjectId(voteId) },
+                          { $set: { undergoing: false } },
+                          async (err: Error, data: any) => {
+                            return res.status(200).json({ isActive: false });
+                          }
+                        );
+                      }
+                    } else if (
+                      reqData.isActive === null &&
+                      reqData.status !== null
+                    ) {
+                      if (reqData.status === "public") {
+                        db.collection("vote").updateOne(
+                          { _id: new ObjectId(voteId) },
+                          { $set: { undergoing: "public" } },
+                          async (err: Error, data: any) => {
+                            return res
+                              .status(200)
+                              .json({ undergoing: "public" });
+                          }
+                        );
+                      } else {
+                        db.collection("vote").updateOne(
+                          { _id: new ObjectId(voteId) },
+                          { $set: { undergoing: "private" } },
+                          async (err: Error, data: any) => {
+                            return res
+                              .status(200)
+                              .json({ undergoing: "private" });
+                          }
+                        );
+                      }
+                    }
+                  }
+                );
+            }
+          );
+          // 비회원일떄 수정 하기(undergoing만 바꿀 수 있음)
+        } else {
+          if (reqData.undergoing === true) {
             db.collection("vote").updateOne(
               { _id: new ObjectId(voteId) },
               { $set: { undergoing: true } },
               async (err: Error, data: any) => {
-                return res.status(200).json({ isActive: "true" });
+                return res.status(200).json({ isActive: true });
+              }
+            );
+          } else {
+            db.collection("vote").updateOne(
+              { _id: new ObjectId(voteId) },
+              { $set: { undergoing: false } },
+              async (err: Error, data: any) => {
+                return res.status(200).json({ isActive: false });
               }
             );
           }
-        });
+        }
+      } catch {
+        return res.status(400).json({ message: "Bad Request" });
+      }
     },
   },
 };
