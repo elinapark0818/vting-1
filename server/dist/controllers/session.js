@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SessionController = void 0;
 const __1 = require("..");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -44,15 +43,11 @@ exports.SessionController = {
                 const findUser = yield __1.db
                     .collection("user")
                     .findOne({ user_id: user_id });
+                console.log(findUser);
                 var check = yield bcrypt.compare(password, findUser.password);
                 console.log(check);
                 if (check) {
                     const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 * 60 });
-                    // user_id을 playload에 담은 토큰을 쿠키로 전달
-                    res.cookie("accessToken", accessToken, {
-                        sameSite: "none",
-                        secure: true,
-                    });
                     return res.status(200).json({
                         data: {
                             user_data: {
@@ -83,18 +78,23 @@ exports.SessionController = {
             if (req.headers.authorization &&
                 req.headers.authorization.split(" ")[0] === "Bearer") {
                 let authorization = req.headers.authorization;
-                let token = authorization.split(" ")[1];
-                const decoded = jsonwebtoken_1.default.verify(token, process.env.ACCESS_SECRET);
+                let accessToken = authorization.split(" ")[1];
                 try {
+                    const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
                     if (decoded) {
-                        res.clearCookie("accessToken", { sameSite: "none", secure: true });
-                        return res.status(200).json({ message: "Successfully logged out" });
+                        return res.status(200).json({
+                            data: { accessToken: "" },
+                            message: "Successfully logged out",
+                        });
                     }
                 }
                 catch (err) {
                     console.log(err);
                     return res.status(400).json({ message: "Failed logged out" });
                 }
+            }
+            else {
+                res.status(400).json({ message: "No token exists" });
             }
         }),
     },
