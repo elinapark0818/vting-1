@@ -10,8 +10,8 @@ import axios from "axios";
 const serverURL: string = "http://localhost:8000";
 
 function Navbar() {
+  // * 페이지 이동시마다 리렌더링
   const location = useLocation();
-  // console.log(location);
 
   useEffect(() => {
     console.log("페이지 바뀜");
@@ -20,9 +20,6 @@ function Navbar() {
   // * 로그인상태
   let isLoginState = useSelector((state: RootState) => state.isLogin);
   let loginState = isLoginState.login;
-
-  // * 페이지 이동시마다 리렌더링
-  const location = useLocation();
 
   // ? 처음 렌더링할때, 로그인상태 useEffect로 토큰여부에 따라 판단한다.
   useEffect(() => {

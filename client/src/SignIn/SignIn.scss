@@ -162,18 +162,6 @@
   justify-content: center;
   align-items: center;
   margin-top: 2em;
-
-  & button {
-    cursor: pointer;
-    border: none;
-    background-color: $vting-orange;
-    color: #fff;
-    font-size: 20px;
-    font-weight: bold;
-    border-radius: 30px;
-    padding: 10px 55px;
-    transition: all 0.5s ease;
-  }
 }
 
 .oauth_wrap {
@@ -192,7 +180,7 @@
   color: #fff;
 }
 .back_login {
-  padding: 10px 10px;
+  padding: 10px 15px;
   margin: 10px;
   font-size: 20px;
   font-weight: bold;
@@ -200,4 +188,29 @@
   border-radius: 50px;
   background-color: $vting-orange;
   color: #fff;
+}
+
+.signUp_btn {
+  cursor: pointer;
+  border: none;
+  background-color: $vting-orange;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 30px;
+  padding: 10px 55px;
+  transition: all 0.5s ease;
+}
+
+.signUp_no {
+  cursor: pointer;
+  pointer-events: none;
+  border: none;
+  background-color: $vting-gray;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 30px;
+  padding: 10px 55px;
+  transition: all 0.5s ease;
 }

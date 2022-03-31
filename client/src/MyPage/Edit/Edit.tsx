@@ -15,6 +15,7 @@ const serverURL: string = "http://localhost:8000";
 function Edit() {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  console.log("에디트유저정보===", userInfo._id);
 
   //* 닉네임 프로필 변경
   const [patchUserInfo, setPatchUserInfo] = useState<PatchUser>({
@@ -41,6 +42,8 @@ function Edit() {
   // * 프로필, 닉네임, 비밀번호 변경
   const EditUserInfo = async () => {
     let accessToken = localStorage.getItem("accessToken");
+    console.log("에디트 이메일===", userInfo._id);
+
     try {
       const res = await axios.patch(
         `${serverURL}/user/${userInfo._id}`,
@@ -67,10 +70,7 @@ function Edit() {
             image: patchUserInfo.image || userInfo.image,
           })
         );
-        // res.data.nickname = patchUserInfo.name || userInfo.nickname;
-        // res.data.password = patchUserInfo.password;
-        // res.data.image = patchUserInfo.image || userInfo.image;
-        console.log("프로필,닉네임,비밀번호 수정===", res.data.data);
+        alert("회원정보가 수정되었습니다.");
       } else {
         console.log("Bad Request 입니다. 400에러");
       }
@@ -78,22 +78,6 @@ function Edit() {
       console.log(err);
     }
   };
-
-  // //* 비밀번호 변경
-  // const EditUserPassword = async () => {
-  //   try {
-  //     const res = await axios.patch(`${serverURL}/user/${userInfo._id}`, {
-  //       password: patchUserInfo.password,
-  //     });
-  //     console.log("패스워드변경 ===", res);
-
-  //     if (res.status === 200 && res.data.message === "Success verified") {
-  //       console.log("바뀐 패스워드===", res.data.data.password);
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
 
   return (
     <div className="edit_container">
