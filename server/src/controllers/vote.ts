@@ -244,14 +244,40 @@ export let VoteController = {
   delete: {
     delete: async (req: Request & { params: any }, res: Response) => {
       const voteId = req.params;
-      //TODO: user data에 해당 vote(배열로 되어있음) 삭제해야됨
 
-      db.collection("vote").deleteOne(
-        { _id: new ObjectId(voteId) },
-        async (err: Error, data: any) => {
-          return res.status(200).json({ message: "Successfully deleted" });
+      try {
+        //TODO: user data에 해당 vote(배열로 되어있음) 삭제해야됨
+        // 만약 유저가 여러가지 vote를 만들었다면 vote삭제시 user의 vote array에서 해당 vote를 삭제해야 된다.
+        let userId: string;
+        if (
+          req.headers.authorization &&
+          req.headers.authorization.split(" ")[0] === "Bearer"
+        ) {
+          let authorization: string | undefined = req.headers.authorization;
+          let token: string = authorization.split(" ")[1];
+          jwt.verify(
+            token,
+            process.env.ACCESS_SECRET as jwt.Secret,
+            async (err, data: any) => {
+              let findUser = await db
+                .collection("user")
+                .findOne({ user_id: data.user_id }, (err: Error, data: any) => {
+                  console.log("findUserData", data);
+                });
+              console.log("findUser", findUser);
+            }
+          );
         }
-      );
+
+        // db.collection("vote").deleteOne(
+        //   { _id: new ObjectId(voteId) },
+        //   async (err: Error, data: any) => {
+        //     return res.status(200).json({ message: "Successfully deleted" });
+        //   }
+        // );
+      } catch {
+        return res.status(400).json({ message: "Bad Request" });
+      }
     },
   },
 
