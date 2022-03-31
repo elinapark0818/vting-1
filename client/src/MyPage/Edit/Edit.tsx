@@ -15,7 +15,6 @@ const serverURL: string = "http://localhost:8000";
 function Edit() {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  console.log("에디트유저정보===", userInfo._id);
 
   //* 닉네임 프로필 변경
   const [patchUserInfo, setPatchUserInfo] = useState<PatchUser>({
@@ -86,38 +85,46 @@ function Edit() {
       </header>
 
       <main className="edit_wrap">
-        <div className="edit_profile">
-          <h3>프로필</h3>
+        <div className="edit_userProfile">
+          <div className="edit_profile">
+            <h3>프로필</h3>
 
-          <img alt="profile_img" src={patchUserInfo.image} />
-          <label htmlFor="file">업로드</label>
-          <input
-            id="file"
-            name="profile"
-            onChange={edit_onChangeProfile}
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-          />
+            <img alt="profile_img" src={patchUserInfo.image} />
+
+            <label htmlFor="file" className="edit_btn">
+              업로드
+            </label>
+            <input
+              id="file"
+              name="profile"
+              onChange={edit_onChangeProfile}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+            />
+          </div>
         </div>
 
-        <div className="edit_nickname">
-          <h3>닉네임</h3>
-          <input
-            name="name"
-            onChange={edit_onChangeName}
-            type="text"
-            placeholder={userInfo.nickname}
-          />
-        </div>
+        <div className="edit_userInfo">
+          <div className="edit_nickname">
+            <h3>닉네임 : "{userInfo.nickname}"</h3>
+            <input
+              name="name"
+              onChange={edit_onChangeName}
+              type="text"
+              placeholder="변경하실 닉네임을 입력해주세요."
+            />
+          </div>
 
-        <div className="edit_password">
-          <h3>비밀번호</h3>
-          <input
-            type="password"
-            name="password"
-            onChange={edit_onChangePassword}
-          />
+          <div className="edit_password">
+            <h3>비밀번호</h3>
+            <input
+              type="password"
+              name="password"
+              onChange={edit_onChangePassword}
+              placeholder="변경하실 비밀번호를 입력해주세요."
+            />
+          </div>
         </div>
       </main>
       <div className="edit_btnWrap">
@@ -125,11 +132,6 @@ function Edit() {
           수정하기
         </button>
       </div>
-      {/* <div className="edit_btnWrap">
-        <button className="edit_btn" onClick={() => EditUserPassword()}>
-          비밀번호 수정하기
-        </button>
-      </div> */}
     </div>
   );
 }

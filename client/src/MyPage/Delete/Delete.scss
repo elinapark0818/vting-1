@@ -21,11 +21,25 @@
 
 .delete_wrap {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   color: $vting-orange;
-  margin-top: 3em;
+  margin: 3em;
+
+  & .delete_userInfo {
+    flex: 50%;
+    border: 5px solid $vting-orange;
+    margin: 1em;
+    padding: 1em;
+  }
+
+  & .delete_profile {
+    flex: 50%;
+    margin: 1em;
+    padding: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 5px solid $vting-orange;
+  }
 }
 
 .delete_btnWrap {

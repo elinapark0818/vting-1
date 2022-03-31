@@ -22,11 +22,23 @@
 
 .edit_wrap {
   display: flex;
-  width: 100%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 3em;
+  margin: 3em;
+
+  & .edit_userProfile {
+    flex: 50%;
+    border: 5px solid $vting-orange;
+    margin: 1em;
+    padding: 1em;
+  }
+
+  & .edit_userInfo {
+    flex: 50%;
+    margin: 1em;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    border: 5px solid $vting-orange;
+  }
 
   & h3 {
     font-size: 2em;
@@ -41,11 +53,6 @@
     font-size: 25px;
     padding-left: 5px;
   }
-}
-
-.edit_profile .edit_nickname .edit_password {
-  display: flex;
-  flex-direction: column;
 }
 
 .edit_btnWrap {
