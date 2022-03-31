@@ -22,11 +22,18 @@ interface VoteType1 {
   items?: { idx: number; content: string; count: number }[];
   undergoing?: true;
   response: { idx: number; content: string }[];
+  password: string;
 }
 
 export let VoteController = {
   test: {
-    get: async (req: Request, res: Response) => {},
+    get: async (req: Request, res: Response) => {
+      db.collection("non-member").insertOne({
+        test: true,
+        create_at: new Date(),
+      });
+      res.send("vote test!!");
+    },
   },
 
   create: {
@@ -39,6 +46,7 @@ export let VoteController = {
         type,
         items,
         response,
+        password,
       }: VoteType1 = req.body;
 
       // access code(6-digits) 만들기
@@ -50,7 +58,8 @@ export let VoteController = {
         let userId: string;
         if (
           req.headers.authorization &&
-          req.headers.authorization.split(" ")[0] === "Bearer"
+          req.headers.authorization.split(" ")[0] === "Bearer" &&
+          !password
         ) {
           let authorization: string | undefined = req.headers.authorization;
           let token: string = authorization.split(" ")[1];
@@ -231,9 +240,147 @@ export let VoteController = {
               }
             }
           );
-        } else {
-          //TODO: 비회원 일때 생성 관련된 응답 만들기!
-          // 모든 보트 만들수있게? 아니면 특정 보트만 만들수 있게?
+        } else if (password) {
+          // TODO: 비회원 일때 생성 관련된 응답 만들기!
+          // TODO: non-member collection에 데이터 넣기(1시간후 자동 삭제됨)
+          // TODO: 유저아이디 X, 유저데이터에 넣기 X, 임시비번 저장하기, 임시비번으로 분기 해서 실행시키기
+
+          // format에 따라 vote 데이터 DB 저장하기
+          // FIXME: FORMAT 'bar'
+          if (format === "bar") {
+            let objectId: string;
+
+            await db.collection("non-member").insertOne(
+              {
+                password,
+                url,
+                title,
+                format,
+                type,
+                items,
+                multiple,
+                manytimes,
+                undergoing: true,
+                create_at: new Date(),
+              },
+              async (err: Error, data: any) => {
+                // random url(6digit) 만들어 주기
+                objectId = await data.insertedId.toString();
+
+                // 만들어진 투표 => 골라서 응답 보내주기
+                let madeVote = await db
+                  .collection("non-member")
+                  .findOne({ _id: new ObjectId(objectId) });
+
+                // 응답 보내기
+                return res.status(201).json({
+                  data: {
+                    _id: madeVote._id,
+                    title: madeVote.title,
+                    items: madeVote.items,
+                    url,
+                    create_at: madeVote.create_at,
+                  },
+                });
+              }
+            );
+            // FIXME: FORMAT 'open ended'
+          } else if (format === "open ended") {
+            db.collection("non-member").insertOne(
+              {
+                password,
+                url,
+                title,
+                format,
+                manytimes,
+                response,
+                undergoing: true,
+                created_at: new Date(),
+              },
+              async (err: Error, data: any) => {
+                // 방금 만든 objectId 보내주기
+                let objectId: string = await data.insertedId.toString();
+                let madeVote = await db
+                  .collection("non-member")
+                  .findOne({ _id: new ObjectId(objectId) });
+
+                // 응답 보내기
+                return res.status(201).json({
+                  data: {
+                    _id: madeVote._id,
+                    title: madeVote.title,
+                    response: madeVote.response,
+                    create_at: madeVote.create_at,
+                    url,
+                  },
+                });
+              }
+            );
+            // FIXME: FORMAT 'vs'
+          } else if (format === "vs") {
+            db.collection("non-member").insertOne(
+              {
+                password,
+                url,
+                title,
+                format,
+                manytimes,
+                items,
+                undergoing: true,
+                created_at: new Date(),
+              },
+              async (err: Error, data: any) => {
+                // 방금 만든 objectId 보내주기
+                let objectId: string = await data.insertedId.toString();
+                let madeVote = await db
+                  .collection("non-member")
+                  .findOne({ _id: new ObjectId(objectId) });
+
+                // 응답 보내기
+                return res.status(201).json({
+                  data: {
+                    _id: madeVote._id,
+                    title: madeVote.title,
+                    items: madeVote.items,
+                    create_at: madeVote.create_at,
+                    url,
+                  },
+                });
+              }
+            );
+            // FIXME: FORMAT 'word cloud'
+          } else if (format === "word cloud") {
+            db.collection("non-member").insertOne(
+              {
+                password,
+                url,
+                title,
+                format,
+                manytimes,
+                items,
+                undergoing: true,
+                created_at: new Date(),
+              },
+              async (err: Error, data: any) => {
+                // 방금 만든 objectId 보내주기
+                let objectId: string = await data.insertedId.toString();
+                let madeVote = await db
+                  .collection("non-member")
+                  .findOne({ _id: new ObjectId(objectId) });
+
+                // 응답 보내기
+                return res.status(201).json({
+                  data: {
+                    _id: madeVote._id,
+                    title: madeVote.title,
+                    items: madeVote.items,
+                    create_at: madeVote.create_at,
+                    url,
+                  },
+                });
+              }
+            );
+          }
         }
       } catch {
         return res.status(400);
@@ -243,12 +390,11 @@ export let VoteController = {
 
   delete: {
     delete: async (req: Request & { params: any }, res: Response) => {
-      const voteId = req.params;
+      const voteId = req.params.id;
 
       try {
         //TODO: user data에 해당 vote(배열로 되어있음) 삭제해야됨
         // 만약 유저가 여러가지 vote를 만들었다면 vote삭제시 user의 vote array에서 해당 vote를 삭제해야 된다.
-        let userId: string;
         if (
           req.headers.authorization &&
           req.headers.authorization.split(" ")[0] === "Bearer"
@@ -259,22 +405,25 @@ export let VoteController = {
             token,
             process.env.ACCESS_SECRET as jwt.Secret,
             async (err, data: any) => {
-              let findUser = await db
+              // user collection에서 vote array 데이터 중 일부 데이터 삭제하기($pull)
+              await db
                 .collection("user")
-                .findOne({ user_id: data.user_id }, (err: Error, data: any) => {
-                  console.log("findUserData", data);
+                .updateOne(
+                  { user_id: data.user_id },
+                  { $pull: { vote: new ObjectId(voteId) } }
+                );
+
+              // user vote 삭제 후 vote data 삭제
+              await db
+                .collection("vote")
+                .deleteOne({ _id: new ObjectId(voteId) }, async () => {
+                  return res
+                    .status(200)
+                    .json({ message: "Successfully deleted" });
                 });
-              console.log("findUser", findUser);
             }
           );
         }
-
-        // db.collection("vote").deleteOne(
-        //   { _id: new ObjectId(voteId) },
-        //   async (err: Error, data: any) => {
-        //     return res.status(200).json({ message: "Successfully deleted" });
-        //   }
-        // );
       } catch {
         return res.status(400).json({ message: "Bad Request" });
       }
