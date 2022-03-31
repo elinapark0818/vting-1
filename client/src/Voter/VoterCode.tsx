@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams, Routes, Route, Outlet } from "react-router-dom";
-import "./v.scss";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "./voter.scss";
 import vtinglogo from "../assets/vt_logo_2.png";
-import VResult from "./VResult";
 
-function VCode() {
+function VoterCode() {
   const [voteCode, setVoteCode] = useState("");
-  const [result, setResult] = useState(false);
-  const { code } = useParams();
 
   return (
     <>
@@ -21,11 +18,11 @@ function VCode() {
           placeholder="접속 코드 6자리를 입력하세요."
         ></input>
       </div>
-      <Link to={"/v/" + voteCode}>
+      <Link to={"/" + voteCode}>
         <div className="voteCodeButton vtingButton">Vting 접속하기!</div>
       </Link>
     </>
   );
 }
 
-export default VCode;
+export default VoterCode;

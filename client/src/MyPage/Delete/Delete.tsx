@@ -13,24 +13,30 @@ function Delete() {
 
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
-  // useEffect(() => {
-  //   const getUserInfo = async () => {
-  //     try {
-  //       const res = await axios.get(serverURL + "/user/" + userInfo._id);
-  //       if (res.status === 200) {
-  //         setUserInfo({
-  //           _id: res.data.data._id,
-  //           nickname: res.data.data.nickname,
-  //           email: res.data.data.email,
-  //           image: res.data.data.image,
-  //         });
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   getUserInfo();
-  // }, []);
+  useEffect(() => {
+    const getUserInfo = async () => {
+      let accessToken = localStorage.getItem("accessToken");
+      try {
+        const res = await axios.get(`${serverURL}/user/${userInfo._id}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        });
+        if (res.status === 200) {
+          setUserInfo({
+            _id: res.data.data._id,
+            nickname: res.data.data.nickname,
+            email: res.data.data.email,
+            image: res.data.data.image,
+          });
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUserInfo();
+  }, []);
 
   const [modalState, setModalState] = useState<boolean>(false);
 
@@ -43,11 +49,17 @@ function Delete() {
   };
 
   const deleteUser = async () => {
+    let accessToken = localStorage.getItem("accessToken");
     try {
       const res = await axios.delete(serverURL + "/user", {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
       });
+
       if (res.status === 200) {
+        localStorage.setItem("accessToken", res.data.data.accessToken);
         console.log("회원탈퇴완료===", res.data.data);
         alert("회원탈퇴가 완료되었습니다.");
         // ? 로그아웃처리
@@ -66,14 +78,16 @@ function Delete() {
       </header>
 
       <main className="delete_wrap">
-        {/* <h1>프로필 : {getUserInfo.image}</h1> */}
-        <h1>_id 나와라{userInfo._id}</h1>
-        <h1>닉네임 : {userInfo.nickname}</h1>
-        <h1>이메일 : {userInfo.email}</h1>
+        <div className="delete_profile">
+          <img src={userInfo.image} alt="프로필이미지" />
+        </div>
+        <div className="delete_userInfo">
+          <h1>닉네임 : {userInfo.nickname}</h1>
+          <h1>이메일 : {userInfo.email}</h1>
+        </div>
       </main>
 
       <div className="delete_btnWrap">
-        <h1>정말 탈퇴하시겠습니까?</h1>
         <button className="delete_btn" onClick={openModal}>
           탈퇴하기
         </button>

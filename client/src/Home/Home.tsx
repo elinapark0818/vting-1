@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { RootState, setIsLogin } from "../store/index";
+import { RootState } from "../store/index";
 import "./Home.scss";
 
 import { Link } from "react-router-dom";
@@ -76,107 +76,40 @@ function Home({ text }: Props) {
 }
 
 function Testfunc() {
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   const serverURL: string = "http://localhost:8000";
+  let accessToken = localStorage.getItem("accessToken");
+  const [newNick, setNewNick] = useState("");
 
-  const CheckEmail1 = async () => {
-    try {
-      const res = await axios.post(
-        serverURL + "/user/check",
-        {
-          user_id: "test@yof.com",
-        },
-        { withCredentials: true }
-      );
-      if (res.status === 200 && res.data.message === "Success verified") {
-        console.log("이미 가입된 회원입니다.");
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const formData = new FormData();
 
-  const CheckEmail2 = async () => {
-    try {
-      const res = await axios.post(
-        serverURL + "/user/check",
-        {
-          user_id: "dummy@email.com",
-        },
-        { withCredentials: true }
-      );
-      if (res.status === 200 && res.data.message === "It doesn't match") {
-        console.log("회원가입이 가능한 아이디입니다.");
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const onChangeImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
 
-  const CheckPass1 = async () => {
-    try {
-      const res = await axios.post(
-        serverURL + "/user/check",
-        {
-          password: "1q2w3e4r",
-        },
-        { withCredentials: true }
-      );
-      if (res.status === 200) {
-        console.log("message 뭐라고? ===>", res.data.message);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+    if (e.target.files) {
+      const uploadFile = e.target.files[0];
+      const formData = new FormData();
+      formData.append("files", uploadFile);
+      console.log(formData.getAll("files"));
 
-  const CheckPass2 = async () => {
-    try {
-      const res = await axios.post(
-        serverURL + "/user/check",
-        {
-          password: "q1w2e34r",
+      await axios.patch(`${serverURL}/user/${userInfo._id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-        { withCredentials: true }
-      );
-      if (res.status === 200) {
-        console.log("message 뭐라고? ===>", res.data.message);
-      }
-    } catch (e) {
-      console.log(e);
+      });
     }
   };
 
   return (
-    <div>
-      <button
-        onClick={() => {
-          CheckEmail1();
-        }}
-      >
-        1. 이미 있는 아이디
-      </button>
-      <button
-        onClick={() => {
-          CheckEmail2();
-        }}
-      >
-        2. 새로운 아이디
-      </button>
-      <button
-        onClick={() => {
-          CheckPass1();
-        }}
-      >
-        3. 맞는 비밀번호
-      </button>
-      <button
-        onClick={() => {
-          CheckPass2();
-        }}
-      >
-        4. 틀린 비밀번호
-      </button>
-    </div>
+    <form>
+      <label htmlFor="profile-upload" />
+      <input
+        type="file"
+        id="profile-upload"
+        accept="image/*"
+        onChange={(e) => onChangeImg(e)}
+      />
+    </form>
   );
 }
 

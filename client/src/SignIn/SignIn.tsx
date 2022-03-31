@@ -1,8 +1,8 @@
 import axios from "axios";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setIsLogin, setUserInfo } from "../store/index";
+import { setIsLogin, setUserInfo, RootState } from "../store/index";
 import "./SignIn.scss";
 
 import Logo from "../assets/v-ting_logo_circle.png";
@@ -30,11 +30,7 @@ function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // * SignIn & SignUp 조건으로 상태 설정함 (inOrUp ? <SignIn> : <SignUp>)
-  const [inOrUp, setInOrUp] = useState<InOrUp>({ signIn: true });
-
-  // ? 기존 유저정보를 담을 상태 => onChange 밸류값이랑 비교해서 로그인처리
-  const [user, setUser] = useState<User>({ email: "", password: "" });
+  const [isMatch, setIsMatch] = useState(false);
 
   // * 새로운 유저 정보를 담을 상태
   const [newUser, setNewUser] = useState<CreateUser>({
@@ -44,6 +40,22 @@ function SignIn() {
     passwordConfirm: "",
     image: "",
   });
+
+  useEffect(() => {
+    if (newUser.password === newUser.passwordConfirm) {
+      console.log("매치됨?");
+      setIsMatch(true);
+    } else {
+      setIsMatch(false);
+    }
+  }, [newUser.password, newUser.passwordConfirm]);
+
+  // * 서버 불안전
+  const [isServerOk, setIsServerOk] = useState(true);
+  const [inOrUp, setInOrUp] = useState<InOrUp>({ signIn: true });
+
+  // ? 기존 유저정보를 담을 상태 => onChange 밸류값이랑 비교해서 로그인처리
+  const [user, setUser] = useState<User>({ email: "", password: "" });
 
   // ? 아직 계정이 없으신가요?  => 클릭 이벤트로 setInOrUp(false) 처리해주기!
   const setSignUp = () => {
@@ -71,12 +83,12 @@ function SignIn() {
         { withCredentials: true }
       );
       if (res.status === 200) {
-        const userInfo = res.data.data;
+        // setIsServerOk(true);
+        const userInfo = res.data.data.user_data;
         dispatch(setIsLogin(true));
-        console.log("res.data.data.user_id 출력===", userInfo.user_id);
-        // todo: 모달 끄는 함수를 넣어주기
+        console.log("로그인하면 저장해", userInfo);
+        // console.log("res.data.data.user_id 출력===", userInfo.user_id);
         navigate("/");
-        // todo: 리덕스 userInfo에 값 set 하기
         dispatch(
           setUserInfo({
             _id: userInfo._id,
@@ -85,43 +97,75 @@ function SignIn() {
             image: userInfo.image,
           })
         );
-        console.log("로그인하자마자회원정보저장", userInfo);
+
+        const token = res.data.data.accessToken;
+        localStorage.setItem("accessToken", token);
       }
     } catch (err) {
+      setIsServerOk(false);
       console.log(err);
     }
   };
 
-  // ? 회원가입 서버연동
-  const SignInUser = async () => {
+  const [userCheck, setUserCheck] = useState(true);
+
+  // ? 회원가입 + 유저체크 핸들링
+  // todo: 가입 전, 이미 가입된 이메일인지 user/check 진행
+  // todo: 가입된 이메일이라면 "이미 가입된 이메일입니다." 알럿 출력
+  const SignUpUser = async () => {
     try {
-      const res = await axios.post(
-        serverURL + "/user",
-        {
+      await axios
+        .post(`${serverURL}/user/check`, {
           user_id: newUser.email,
-          nickname: newUser.name,
-          password: newUser.password,
-          passwordConfirm: newUser.passwordConfirm,
-          // image: newUser.image,
-        },
-        { withCredentials: true }
-      );
-      if (res.status === 201) {
-        console.log("회원가입 성공===", res.data);
-        // ? 회원가입과 동시에 로그인 처리
-        dispatch(setIsLogin(true));
-        navigate("/");
-      }
-    } catch (e) {
-      console.log(e);
+        })
+        .then((data) => {
+          if (data.status === 200 && data.data.message === "It doesn't match") {
+            axios
+              .post(serverURL + "/user", {
+                user_id: newUser.email,
+                nickname: newUser.name,
+                password: newUser.password,
+              })
+              .then((data) => {
+                if (data.status === 201) {
+                  const userInfo = data.data.data.user_data;
+                  // * 로컬스토리지에 accessToken 넣기
+                  localStorage.setItem(
+                    "accessToken",
+                    data.data.data.accessToken
+                  );
+                  // ? 회원가입과 동시에 로그인 처리
+                  dispatch(setIsLogin(true));
+                  dispatch(
+                    setUserInfo({
+                      _id: userInfo._id,
+                      nickname: userInfo.nickname,
+                      email: userInfo.user_id,
+                    })
+                  );
+                  alert("회원가입이 완료되었습니다.");
+                  console.log("회원가입 성공===", data.data);
+                  navigate("/");
+                }
+              });
+          }
+          // ? 이미 가입된 이메일이라면
+          else if (
+            data.status === 200 &&
+            data.data.message === "Success verified"
+          ) {
+            setUserCheck(false);
+          }
+        });
+    } catch (err) {
+      setIsServerOk(false);
+      console.log(err);
     }
   };
 
   // ? SignUp input onChanges
   const lonIn_onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.target); // * HTMLInputElement 가 통째로 들어온다
     const { name, value } = e.target;
-    // console.log(e.target.name); // * email
     setUser({ ...user, [name]: value });
   };
   const lonIn_onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,9 +174,7 @@ function SignIn() {
   };
   // ? SignIn input onChanges
   const signUp_onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.target); // * HTMLInputElement 가 통째로 들어온다
     const { name, value } = e.target;
-    // console.log(e.target.name); // * email
     setNewUser({ ...newUser, [name]: value });
   };
   const signUp_onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,6 +189,8 @@ function SignIn() {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
+    console.log("매개변수 없이 타겟이 잡히고있니?", value);
+
     setNewUser({ ...newUser, [name]: value });
   };
 
@@ -158,8 +202,7 @@ function SignIn() {
 
   const nameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsBlur(true);
-    // * 닉네임 한글만 넣을 수 있게 했어여
-    if (newUser.name.match(/^[ㄱ-ㅣ가-힣]*$/i)) {
+    if (newUser.name.match(/^[\w\Wㄱ-ㅎㅏ-ㅣ가-힣]{2,20}$/)) {
       setNameValid(true);
     } else {
       setNameValid(false);
@@ -189,23 +232,20 @@ function SignIn() {
 
   const passwordBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsPasswordBlur(true);
-    // * 비번 영문자  7글자이상으로 해놨습니다(임시)
-    if (newUser.password.match(/^[A-Za-z]\w{7,14}$/)) {
+    if (
+      newUser.password.match(
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/i
+      )
+    ) {
       setPasswordValid(true);
-    } else if (user.password.match(/^[A-Za-z]\w{7,14}$/)) {
+    } else if (
+      user.password.match(
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/i
+      )
+    ) {
       setPasswordValid(true);
     } else {
       setPasswordValid(false);
-    }
-  };
-
-  // * 비밀번호 일치 확인용
-  const [samePassword, setSamePassword] = useState(false);
-  const passwordConfirm = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (newUser.password.match(e.target.value)) {
-      setSamePassword(true);
-    } else {
-      setSamePassword(false);
     }
   };
 
@@ -236,9 +276,6 @@ function SignIn() {
                     ! 이메일을 정확히 입력해주세요.
                   </div>
                 )}
-                {isEmailBlur && emailValid && (
-                  <div className="email Success"></div>
-                )}
               </div>
 
               <div className="password_wrap">
@@ -251,13 +288,18 @@ function SignIn() {
                   onChange={lonIn_onChangePassword}
                 />
 
-                {isPasswordBlur && !passwordValid && (
-                  <div className="password Error">
-                    ! 비밀번호를 다시 확인해주세요
+                {isPasswordBlur && !user.password && (
+                  <div className="password Empty">
+                    ! 비밀번호를 입력해주세요
                   </div>
                 )}
-                {isPasswordBlur && passwordValid && (
+                {isPasswordBlur && user.password && (
                   <div className="password Success"></div>
+                )}
+                {!isServerOk && (
+                  <div className="server Error">
+                    ! 네트워크 상태가 불안정합니다.
+                  </div>
                 )}
               </div>
 
@@ -294,7 +336,9 @@ function SignIn() {
                 onChange={signUp_onChangeName}
               />
               {isBlur && !nameValid && (
-                <div className="nickname Error">! 한글 입력만 가능합니다.</div>
+                <div className="nickname Error">
+                  ! 한글, 영문, 숫자만 가능하며 2-10자리 입력해주세요
+                </div>
               )}
               {isBlur && nameValid && <div className="nickname Success"></div>}
 
@@ -330,7 +374,7 @@ function SignIn() {
                 />
                 {isPasswordBlur && !passwordValid && (
                   <div className="password Error">
-                    ! 최소 7글자 최대 14글자까지 입력가능합니다.
+                    ! 영문, 숫자, 특수문자 포함 8자리이상 입력해주세요.
                   </div>
                 )}
                 {isPasswordBlur && passwordValid && (
@@ -339,21 +383,36 @@ function SignIn() {
               </div>
 
               <input
-                onBlur={passwordConfirm}
                 placeholder="비밀번호 확인"
+                value={newUser.passwordConfirm}
                 type="password"
+                name="passwordConfirm"
                 id="passwordConfirm"
                 onChange={signUp_onChangePasswordConfirm}
               />
 
-              {!samePassword && (
+              {!isMatch && (
                 <div className="password Error">
                   ! 비밀번호가 일치하지 않습니다.
                 </div>
               )}
 
+              {!isServerOk && (
+                <div className="server Error">
+                  ! 네트워크 상태가 불안정합니다.
+                </div>
+              )}
+
               <div className="signUp_wrap">
-                <button onClick={() => SignInUser()}>이메일로 가입하기</button>
+                {nameValid && emailValid && passwordValid ? (
+                  <button className="signUp_btn" onClick={() => SignUpUser()}>
+                    이메일로 가입하기
+                  </button>
+                ) : (
+                  <button className="signUp_no" disabled>
+                    이메일로 가입하기
+                  </button>
+                )}
               </div>
 
               <div className="oauth_wrap">

@@ -8,6 +8,8 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/user";
 import sessionRoutes from "./routes/session";
 import authRoutes from "./routes/auth";
+import voteRoutes from "./routes/vote";
+import voterRoutes from "./routes/voter";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 // import voteRoutes from "./routes/vote";
@@ -80,8 +82,8 @@ app.post("/", async (req: Request, res: Response, next: NextFunction) => {
 app.use("/user", userRoutes);
 app.use("/session", sessionRoutes);
 app.use("/auth", authRoutes);
-// app.use("/vting", voteRoutes);
-// app.use("/voter", voterRoutes);
+app.use("/vting", voteRoutes);
+app.use("/voter", voterRoutes);
 
 //db 연결 -> 되면 포트 열기
 export const MongoClient = require("mongodb").MongoClient;

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import "./Navbar.scss";
 import Logo from "../assets/vt_logo_1.png";
 import Profile from "../assets/yof_logo-17.jpg";
@@ -7,15 +7,21 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, setIsLogin } from "../store/index";
 import axios from "axios";
+// import jwt from "jsonwebtoken";
 
 const serverURL: string = "http://localhost:8000";
 
 function Navbar() {
+
+  let location = useLocation();
+
+  useEffect(() => {
+    console.log("페이지 바뀜");
+  }, [location]);
+
   // * 로그인상태
   let isLoginState = useSelector((state: RootState) => state.isLogin);
   let loginState = isLoginState.login;
-
-  console.log("loginState===", loginState);
 
   // ? 처음 렌더링할때, 로그인상태 useEffect로 토큰여부에 따라 판단한다.
   useEffect(() => {
@@ -25,17 +31,22 @@ function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // const userInfo = useSelector((state: RootState) => state.userInfo);
+
   // ? 로그인 핸들링
   const settingLogin = () => {
     setIsLogin(true);
   };
   // ? 로그아웃 핸들링
   const handleLogout = async () => {
+    let accessToken = document.cookie;
     try {
-      const res = await axios.get(serverURL + "/session", {});
+      const res = await axios.get(serverURL + "/session", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
       if (res.status === 200) {
         dispatch(setIsLogin(false));
-        console.log("로그아웃됨===", res.data);
+        // console.log("로그아웃됨===", res.data);
         // ? 로그아웃되면 일단 구분하려고 홈으로 이동시킴
         navigate("/");
       }
@@ -66,7 +77,7 @@ function Navbar() {
           <Link className="nav-link link" to="dashboard">
             Dashboard
           </Link>
-          <Link className="nav-link link" to="v">
+          <Link className="nav-link link" to="new">
             Vote
           </Link>
 
@@ -95,7 +106,7 @@ function Navbar() {
           <Link className="nav-link link" to="/">
             Home
           </Link>
-          <Link className="nav-link link" to="v">
+          <Link className="nav-link link" to="new">
             Vote
           </Link>
           <Link className="nav-link link" to="signIn">

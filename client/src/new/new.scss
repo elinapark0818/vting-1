@@ -11,6 +11,34 @@
   display: flex;
   flex: 5 1 auto;
   flex-direction: column;
+
+  .vote-info {
+    width: 300px;
+    padding: 20px;
+    background-color: $vting-green;
+    border-radius: 5px;
+    position: relative;
+    animation: motion 0.4s linear 0s infinite alternate;
+  }
+  .vote-info:after {
+    border-top: 0px solid transparent;
+    border-left: 15px solid transparent;
+    border-right: 0px solid transparent;
+    border-bottom: 7px solid $vting-green;
+    content: "";
+    position: absolute;
+    top: 20px;
+    left: -15px;
+  }
+  @keyframes motion {
+    0% {
+      margin-left: 0px;
+    }
+    100% {
+      margin-left: 10px;
+    }
+  }
+
   .vote-making {
     min-height: 400px;
     display: flex;
@@ -23,7 +51,7 @@
 }
 
 .voteFormatsCon {
-  flex: 1 1;
+  flex: 1 1 0;
   ul {
     margin-top: 0;
   }
@@ -68,7 +96,23 @@
 
 .voteMakerCon {
   flex: 2 2 0;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 10px;
+  .voteLabel {
+    font-weight: 500;
+  }
+  .topMargin10 {
+    margin-top: 30px;
+  }
+  .answerIdx {
+    background-color: $vting-orange;
+    color: white;
+    width: 30px;
+    text-align: center;
+    line-height: 29.5px;
+  }
   label.disabledLabel {
     color: $vting-gray;
   }
@@ -78,6 +122,50 @@
   }
   div {
     justify-content: center;
+  }
+  .VotetextInput {
+    width: 250px;
+    padding: 5px;
+    border: 0;
+    border-bottom: 2px solid $vting-orange;
+  }
+  .VoteAnswerInput {
+    width: 200px;
+    padding: 5px;
+    border: 0;
+    border: 2px solid $vting-orange;
+  }
+  .voteAnswers {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+  }
+  .voteAnswer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin: 3px 0;
+  }
+  .plusItem {
+    background-color: $vting-orange;
+    color: white;
+    width: 20px;
+    text-align: center;
+    line-height: 29.5px;
+    font-size: 20px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .shakeIt {
+    animation: shake 0.1s linear 0.1s infinite alternate;
+  }
+  @keyframes shake {
+    0% {
+      margin-left: 0px;
+    }
+    100% {
+      margin-left: 2px;
+    }
   }
 }
 
@@ -91,22 +179,23 @@
   div {
     justify-content: center;
   }
+  .votePreview {
+    max-width: 300px;
+  }
   .votePreviewTitle {
     padding: 10px;
     min-height: 24px;
     font-size: 20px;
-    background-color: $vting-orange;
+    background-color: $vting-blue;
     color: white;
   }
   .votePreviewBack {
-    width: 100%;
     padding: 20px 0;
     min-height: 250px;
     background-color: $vting-gray;
 
     .votePreview-barVer-con {
       padding: 10%;
-      width: 80%;
       height: 250px;
       display: flex;
       flex-direction: row;
@@ -186,7 +275,7 @@
     margin: 10px 0;
     text-align: center;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
     background-color: $vting-blue;
     color: white;
   }
@@ -227,7 +316,7 @@
 
 .vtingButton {
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 400;
   width: 80%;
   background-color: $vting-orange;
   color: white;
@@ -242,7 +331,7 @@
 
 .vtingButtonGray {
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 400;
   width: 80%;
   background-color: $vting-gray;
   color: black;

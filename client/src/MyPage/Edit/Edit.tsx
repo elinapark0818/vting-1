@@ -16,6 +16,7 @@ function Edit() {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
+  //* 닉네임 프로필 변경
   const [patchUserInfo, setPatchUserInfo] = useState<PatchUser>({
     image: "",
     name: "",
@@ -37,12 +38,29 @@ function Edit() {
     setPatchUserInfo({ ...patchUserInfo, [name]: value });
   };
 
+  // * 프로필, 닉네임, 비밀번호 변경
   const EditUserInfo = async () => {
-    try {
-      const res = await axios.patch(`${serverURL}/user/${userInfo._id}`);
-      console.log("에딧유저인포===", res);
+    let accessToken = localStorage.getItem("accessToken");
+    console.log("에디트 이메일===", userInfo._id);
 
+    try {
+      const res = await axios.patch(
+        `${serverURL}/user/${userInfo._id}`,
+        {
+          nickname: patchUserInfo.name,
+          password: patchUserInfo.password,
+          image: patchUserInfo.image,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        }
+      );
       if (res.status === 200) {
+        console.log("데이타", res.data);
+
         dispatch(
           setUserInfo({
             _id: String(userInfo._id),
@@ -51,21 +69,9 @@ function Edit() {
             image: patchUserInfo.image || userInfo.image,
           })
         );
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const EditUserPassword = async () => {
-    try {
-      const res = await axios.patch(`${serverURL}/user/${userInfo._id}`, {
-        password: patchUserInfo.password,
-      });
-      console.log("패스워드변경 ===", res);
-
-      if (res.status === 200) {
-        console.log("이러면 바뀜?");
+        alert("회원정보가 수정되었습니다.");
+      } else {
+        console.log("Bad Request 입니다. 400에러");
       }
     } catch (err) {
       console.log(err);
@@ -79,47 +85,52 @@ function Edit() {
       </header>
 
       <main className="edit_wrap">
-        <div className="edit_profile">
-          <h3>프로필</h3>
+        <div className="edit_userProfile">
+          <div className="edit_profile">
+            <h3>프로필</h3>
 
-          <img alt="profile_img" src={patchUserInfo.image} />
-          <label htmlFor="file">업로드</label>
-          <input
-            id="file"
-            name="profile"
-            onChange={edit_onChangeProfile}
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-          />
+            <img alt="profile_img" src={patchUserInfo.image} />
+
+            <label htmlFor="file" className="edit_btn">
+              업로드
+            </label>
+            <input
+              id="file"
+              name="profile"
+              onChange={edit_onChangeProfile}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+            />
+          </div>
         </div>
 
-        <div className="edit_nickname">
-          <h3>닉네임</h3>
-          <input
-            name="name"
-            onChange={edit_onChangeName}
-            type="text"
-            placeholder={userInfo.nickname}
-          />
-        </div>
+        <div className="edit_userInfo">
+          <div className="edit_nickname">
+            <h3>닉네임 : "{userInfo.nickname}"</h3>
+            <input
+              name="name"
+              onChange={edit_onChangeName}
+              type="text"
+              placeholder="변경하실 닉네임을 입력해주세요."
+            />
+          </div>
 
-        <div className="edit_password">
-          <h3>비밀번호</h3>
-          <input
-            type="password"
-            name="password"
-            onChange={edit_onChangePassword}
-          />
+          <div className="edit_password">
+            <h3>비밀번호</h3>
+            <input
+              type="password"
+              name="password"
+              onChange={edit_onChangePassword}
+              placeholder="변경하실 비밀번호를 입력해주세요."
+            />
+          </div>
         </div>
-        {patchUserInfo.password}
       </main>
       <div className="edit_btnWrap">
         <button className="edit_btn" onClick={() => EditUserInfo()}>
           수정하기
         </button>
-
-        <button onClick={() => EditUserPassword()}>비밀번호 수정하기</button>
       </div>
     </div>
   );

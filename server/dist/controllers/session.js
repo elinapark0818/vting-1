@@ -39,28 +39,26 @@ exports.SessionController = {
     signIn: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             // 로그인을 위한 이메일, 패스워드 받기
-            const { user_id, password } = yield req.body;
+            const { user_id, password } = req.body;
             try {
                 const findUser = yield __1.db
                     .collection("user")
                     .findOne({ user_id: user_id });
+                console.log(findUser);
                 var check = yield bcrypt.compare(password, findUser.password);
                 console.log(check);
                 if (check) {
-                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 });
-                    // user_id을 playload에 담은 토큰을 쿠키로 전달
-                    res.cookie("accessToken", accessToken, {
-                        sameSite: "none",
-                        secure: true,
-                        domain: "v-ting.net",
-                    });
+                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 * 60 });
                     return res.status(200).json({
                         data: {
-                            _id: findUser._id,
-                            user_id: findUser.user_id,
-                            nickname: findUser.nickname,
-                            image: findUser.image,
-                            vote: findUser.vote,
+                            user_data: {
+                                _id: findUser._id,
+                                user_id: findUser.user_id,
+                                nickname: findUser.nickname,
+                                image: findUser.image,
+                                vote: findUser.vote,
+                            },
+                            accessToken: accessToken,
                         },
                         message: "Successfully logged in",
                     });
@@ -78,23 +76,26 @@ exports.SessionController = {
     // logout, clear cookie
     signOut: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            function getCookie(name) {
-                let matches = req.headers.cookie.match(new RegExp("(?:^|; )" +
-                    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                    "=([^;]*)"));
-                return matches ? decodeURIComponent(matches[1]) : undefined;
-            }
-            const accessToken = getCookie("accessToken");
-            const user_id = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-            try {
-                if (user_id) {
-                    res.clearCookie("accessToken", { sameSite: "none", secure: true });
-                    return res.status(200).json({ message: "Successfully logged out" });
+            if (req.headers.authorization &&
+                req.headers.authorization.split(" ")[0] === "Bearer") {
+                let authorization = req.headers.authorization;
+                let accessToken = authorization.split(" ")[1];
+                try {
+                    const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+                    if (decoded) {
+                        return res.status(200).json({
+                            data: { accessToken: "" },
+                            message: "Successfully logged out",
+                        });
+                    }
+                }
+                catch (err) {
+                    console.log(err);
+                    return res.status(400).json({ message: "Failed logged out" });
                 }
             }
-            catch (err) {
-                console.log(err);
-                return res.status(400).json({ message: "Failed logged out" });
+            else {
+                res.status(400).json({ message: "No token exists" });
             }
         }),
     },

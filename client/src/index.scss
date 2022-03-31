@@ -4,8 +4,49 @@ $vting-green: #00e3ae;
 $vting-yellow: #f1f013;
 $vting-gray: #dfe9f3;
 
-body {
+@font-face {
+  font-family: "Noto Sans CJK KR";
+  font-style: normal;
+  font-weight: 100;
+  src: url("./assets/fonts/NotoSansKR-Light.woff2") format("woff2"),
+    url("./assets/fonts/NotoSansKR-Light.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Light.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Sans CJK KR";
+  font-style: normal;
+  font-weight: normal;
+  src: url("./assets/fonts/NotoSansKR-Regular.woff2") format("woff2"),
+    url("./assets/fonts/NotoSansKR-Regular.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Regular.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Sans CJK KR";
+  font-style: normal;
+  font-weight: 500;
+  src: url("./assets/fonts/NotoSansKR-Medium.woff2") format("woff2"),
+    url("./assets/fonts/NotoSansKR-Medium.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Medium.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Sans CJK KR";
+  font-style: normal;
+  font-weight: bold;
+  src: url("./assets/fonts/NotoSansKR-Bold.woff2") format("woff2"),
+    url("./assets/fonts/NotoSansKR-Bold.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Bold.otf") format("truetype");
+}
+
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  font-family: "Noto Sans CJK KR";
+}
+
+body {
+  min-width: 1100px;
 }

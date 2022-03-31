@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setTitle,
-  setType,
   setItems,
   setMultiple,
   setManyTimes,
@@ -45,43 +44,64 @@ function Bar() {
   const newVoteItems = newVote.items;
   const newVoteItem = useSelector((state: RootState) => state.makeNewVoteItem);
   const dispatch = useDispatch();
+  const [isShake, setIsShake] = useState(false);
 
   const plusTriger = () => {
-    dispatch(setItems(newVoteItem));
-    dispatch(setIndex(newVoteItems.length));
-    dispatch(setItem(""));
+    if (newVoteItem.content) {
+      dispatch(setItems(newVoteItem));
+      dispatch(setIndex(newVoteItems.length));
+      dispatch(setItem(""));
+    } else {
+      setIsShake(true);
+      setTimeout(function () {
+        setIsShake(false);
+      }, 1000);
+    }
   };
 
   return (
     <div className="voteMakerCon">
-      <label htmlFor="voteTitle">설문 이름을 입력하세요.</label>
-      <br />
+      <label className="voteLabel" htmlFor="voteTitle">
+        &#128073; 설문 제목을 입력하세요.
+      </label>
       <input
+        className="VotetextInput"
         name="voteTitle"
         value={newVoteTitle}
         onChange={(e) => dispatch(setTitle(e.target.value))}
       ></input>
-      <br />
-      <br />
-      객관식 응답을 입력하세요.
-      {newVoteItems?.map((el, idx) => (
-        <div key={idx}>
-          <div>{idx + 1}</div>
+      <div className="voteLabel topMargin10">
+        &#128073; 객관식 응답을 입력하세요.
+      </div>
+      <div className="voteAnswers">
+        {newVoteItems?.map((el, idx) => (
+          <div key={idx} className="voteAnswer">
+            <div className="answerIdx">{idx + 1}</div>
+            <input
+              className="VoteAnswerInput"
+              value={el.content}
+              readOnly
+              // onChange={(e) => dispatch(setItem(e.target.value))}
+            ></input>
+          </div>
+        ))}
+        <div className={isShake ? "voteAnswer shakeIt" : "voteAnswer"}>
+          <div className="answerIdx">{newVoteItems.length + 1}</div>
           <input
-            value={el.content}
-            readOnly
-            // onChange={(e) => dispatch(setItem(e.target.value))}
+            className="VoteAnswerInput"
+            value={newVoteItem.content}
+            onChange={(e) => {
+              dispatch(setItem(e.target.value));
+            }}
           ></input>
+          <div className="plusItem" onClick={() => plusTriger()}>
+            +
+          </div>
         </div>
-      ))}
-      <div>{newVoteItems.length + 1}</div>
-      <input
-        value={newVoteItem.content}
-        onChange={(e) => dispatch(setItem(e.target.value))}
-      ></input>
-      <div onClick={() => plusTriger()}>+</div>
-      <br />
-      <br />
+      </div>
+      <div className="voteLabel topMargin10">
+        &#128073; 설문 옵션을 선택하세요.
+      </div>
       <label htmlFor="voteMultiple">다중선택 가능</label>
       <input
         type="checkbox"
@@ -89,8 +109,6 @@ function Bar() {
         checked={newVoteMp}
         onChange={(e) => dispatch(setMultiple(e.target.checked))}
       />
-      <br />
-      <br />
       <label htmlFor="voteManytimes">여러번 응답 가능</label>
       <input
         type="checkbox"
@@ -143,7 +161,6 @@ function Versus() {
   const newVoteMt = newVote.manytimes;
   const newVoteMp = newVote.multiple;
   const newVoteItems = newVote.items;
-  const newVoteItem = useSelector((state: RootState) => state.makeNewVoteItem);
   const dispatch = useDispatch();
   const [vitem0, setVitem0] = useState(
     newVoteItems[0] ? newVoteItems[0].content : ""

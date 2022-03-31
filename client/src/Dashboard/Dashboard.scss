@@ -1,0 +1,73 @@
+@import "../index.scss";
+
+.dashboard_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 10em 5em;
+  height: 100%;
+  //   padding: 5em;
+  box-shadow: 0 7px 7px -4px $vting-orange;
+}
+
+.dashboard_header {
+  display: flex;
+  height: 100px;
+  width: 100%;
+  background-color: $vting-orange;
+
+  & h1 {
+    font-size: 2.5rem;
+    color: #fff;
+    padding: 0.5em 1em;
+  }
+}
+
+.dashboard_wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 3em;
+  height: 30em;
+
+  & .dashboard_table {
+    width: 40em;
+    // height: 30em;
+    font-size: 2em;
+    text-align: center;
+
+    & thead {
+      //   width: 100%;
+      padding-top: 1em;
+      border-bottom: 3px solid gray;
+    }
+
+    & tr {
+      border-bottom: 1px solid $vting-gray;
+    }
+
+    & td {
+      padding: 20px;
+      padding-right: 10px;
+      border-bottom: 1px solid $vting-gray;
+    }
+  }
+}
+
+.dashboard_btnWrap {
+  margin-top: 3em;
+  margin-left: 70em;
+}
+
+.dashboard_plusBtn {
+  cursor: pointer;
+  font-size: 6em;
+  color: gray;
+  transition: all 0.3s;
+
+  & :hover {
+    color: $vting-orange;
+  }
+}

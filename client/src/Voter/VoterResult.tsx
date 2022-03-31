@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import "./v.scss";
-import vtinglogo from "../assets/vt_logo_2.png";
+import { useParams } from "react-router-dom";
+import "./voter.scss";
 
-function VResult() {
-  const [voteCode, setVoteCode] = useState("");
+function VoterResult() {
   const [result, setResult] = useState(false);
   const { code } = useParams();
   useEffect(() => {
@@ -24,4 +22,4 @@ function VResult() {
   );
 }
 
-export default VResult;
+export default VoterResult;

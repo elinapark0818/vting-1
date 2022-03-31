@@ -11,6 +11,8 @@ import { AnyMxRecord } from "dns";
 import dotenv from "dotenv";
 import { isRegExp } from "util/types";
 import { hash } from "bcryptjs";
+import e from "express";
+import { ObjectId } from "bson";
 dotenv.config();
 
 const SALT_ROUNDS = 6;
@@ -50,13 +52,12 @@ interface UserType {
   user_id: string;
   nickname: string;
   password: string;
-  image?: string;
+  image?: FormData;
   vote?: string[];
 }
 
 interface UserController {
   userCheck: { post: any };
-  // passwordCheck: { post: any };
   signup: { post: any };
   // oauth: { post: any };
   resign: { delete: any };
@@ -72,8 +73,6 @@ export let UserController = {
     ) => {
       try {
         const { user_id, password } = req.body;
-
-        console.log(user_id);
 
         if (user_id) {
           const findUserWithId = await db
@@ -91,42 +90,42 @@ export let UserController = {
             });
           }
         } else if (password) {
-          function getCookie(name: any) {
-            let matches = req.headers.cookie.match(
-              new RegExp(
-                "(?:^|; )" +
-                  name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-                  "=([^;]*)"
-              )
-            );
+          if (
+            req.headers.authorization &&
+            req.headers.authorization.split(" ")[0] === "Bearer"
+          ) {
+            let authorization: string | undefined = req.headers.authorization;
+            let accessToken: string = authorization.split(" ")[1];
 
-            return matches ? decodeURIComponent(matches[1]) : undefined;
-          }
-          const accessToken = getCookie("accessToken");
+            try {
+              const decoded = jwt.verify(
+                accessToken as string,
+                process.env.ACCESS_SECRET as jwt.Secret
+              );
 
-          const decoded = await jwt.verify(
-            accessToken as string,
-            process.env.ACCESS_SECRET as jwt.Secret
-          );
+              const findUserWithPw = await db
+                .collection("user")
+                .findOne({ user_id: decoded.user_id });
 
-          const findUserWithPw = await db
-            .collection("user")
-            .findOne({ user_id: decoded.user_id });
+              var check = await bcrypt.compare(
+                password,
+                findUserWithPw.password
+              );
 
-          console.log("findUserWithPw", findUserWithPw);
+              console.log("check", check);
 
-          var check = await bcrypt.compare(password, findUserWithPw.password);
-
-          console.log("check", check);
-
-          if (!check) {
-            return res.status(200).json({
-              message: "It doesn't match",
-            });
-          } else {
-            return res.status(200).json({
-              message: "Success verified",
-            });
+              if (!check) {
+                return res.status(200).json({
+                  message: "It doesn't match",
+                });
+              } else {
+                return res.status(200).json({
+                  message: "Success verified",
+                });
+              }
+            } catch {
+              res.status(400).json({ message: "Bad Request" });
+            }
           }
         }
       } catch {
@@ -137,8 +136,11 @@ export let UserController = {
 
   signup: {
     post: async (req: Request & { body: UserType }, res: Response) => {
-      const { user_id, nickname, password, image, vote } = req.body;
-
+      const { user_id, nickname, password, image } = req.body;
+      // const image = req.file.path;
+      // if (!image) {
+      //   return res.send({ message: "No image" });
+      // }
       try {
         if (user_id && password && nickname) {
           bcrypt.genSalt(SALT_ROUNDS, function (err: Error, salt: string) {
@@ -146,8 +148,6 @@ export let UserController = {
               console.log("genSalt Error: " + err);
             } else {
               console.log("salt", salt);
-
-              //genearte hash on separate function calls):
 
               bcrypt.hash(password, salt, function (err: Error, hash: string) {
                 console.log("hash", hash);
@@ -158,22 +158,16 @@ export let UserController = {
                     nickname: req.body.nickname,
                     password: hash,
                     image: req.body.image,
-                    vote: req.body.vote,
+                    vote: [],
                   },
                   async (err: Error, data: any) => {
                     const accessToken = jwt.sign(
                       { user_id },
                       process.env.ACCESS_SECRET as jwt.Secret,
                       {
-                        expiresIn: 60 * 60,
+                        expiresIn: 60 * 60 * 60,
                       }
                     );
-
-                    // user_id을 playload에 담은 토큰을 쿠키로 전달
-                    res.cookie("accessToken", accessToken, {
-                      sameSite: "none",
-                      secure: true,
-                    });
 
                     let findUserId = await db
                       .collection("user")
@@ -183,16 +177,19 @@ export let UserController = {
 
                     return res.status(201).json({
                       data: {
-                        _id: findUserId._id,
-                        user_id: req.body.user_id,
-                        nickname: req.body.nickname,
-                        image: req.body.image,
-                        vote: req.body.vote,
+                        user_data: {
+                          _id: findUserId._id,
+                          user_id: req.body.user_id,
+                          nickname: req.body.nickname,
+                          image: req.body.image,
+                          vote: req.body.vote,
+                        },
+                        accessToken: accessToken,
                       },
+                      message: "Successfully Signed Up",
                     });
                   }
                 );
-
                 if (err) {
                   console.log("bycrpt hash method error : ", err.message);
                 } else {
@@ -200,7 +197,6 @@ export let UserController = {
               });
             }
           });
-          // user_id을 playload에 담아 토큰 생성
         } else {
           return res.status(203).json({
             data: null,
@@ -218,81 +214,86 @@ export let UserController = {
 
   resign: {
     delete: async (req: Request, res: Response) => {
-      // FIXME: 만약토큰으로 작업하면 이 부분으로 작업하기
-      function getCookie(name: string) {
-        let matches = req.headers.cookie.match(
-          new RegExp(
-            "(?:^|; )" +
-              name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-              "=([^;]*)"
-          )
-        );
+      if (
+        req.headers.authorization &&
+        req.headers.authorization.split(" ")[0] === "Bearer"
+      ) {
+        let authorization: string | undefined = req.headers.authorization;
+        let accessToken: string = authorization.split(" ")[1];
 
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-      }
-      const accessToken = getCookie("accessToken");
-      const decoded = jwt.verify(
-        accessToken as string,
-        process.env.ACCESS_SECRET as jwt.Secret
-      );
-
-      try {
-        // 유저 정보 삭제하기
-        await db.collection("user").deleteOne({ user_id: decoded.user_id });
-        // 쿠키에 토큰 삭제하기
-        await res.clearCookie("accessToken", {
-          sameSite: "none",
-          secure: true,
-        });
-        return res
-          .status(200)
-          .json({ message: "Successfully account deleted" });
-      } catch (err) {
-        console.log(err);
-        return res.status(400).json({ message: "Bad request" });
+        try {
+          const decoded = jwt.verify(
+            accessToken as string,
+            process.env.ACCESS_SECRET as jwt.Secret
+          );
+          // 보트 전부 삭제하고 유저 삭제하기
+          await db.collection("vote").deleteMany({ user_id: decoded.user_id });
+          await db.collection("user").deleteOne({ user_id: decoded.user_id });
+          // 쿠키에 토큰 삭제하기
+          return res.status(200).json({
+            data: { accessToken: "" },
+            message: "Successfully account deleted",
+          });
+        } catch (err) {
+          console.log(err);
+          return res.status(400).json({ message: "Bad request" });
+        }
       }
     },
   },
 
   userInfo: {
     get: async (req: Request, res: Response) => {
-      function getCookie(name: any) {
-        let matches = req.headers.cookie.match(
-          new RegExp(
-            "(?:^|; )" +
-              name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-              "=([^;]*)"
-          )
-        );
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-      }
+      if (
+        req.headers.authorization &&
+        req.headers.authorization.split(" ")[0] === "Bearer"
+      ) {
+        let authorization: string | undefined = req.headers.authorization;
+        let accessToken: string = authorization.split(" ")[1];
 
-      const accessToken = getCookie("accessToken");
+        try {
+          const decoded = jwt.verify(
+            accessToken as string,
+            process.env.ACCESS_SECRET as jwt.Secret
+          );
+          const findUser = await db
+            .collection("user")
+            .findOne({ user_id: decoded.user_id });
 
-      const decoded = jwt.verify(
-        accessToken as string,
-        process.env.ACCESS_SECRET as jwt.Secret
-      );
+          const findUserVote: any[] = await db
+            .collection("vote")
+            .find({ user_id: decoded.user_id })
+            .toArray();
 
-      try {
-        const findUser = await db
-          .collection("user")
-          .findOne({ user_id: decoded.user_id });
-        if (findUser) {
-          return res.status(200).json({
-            data: {
-              _id: findUser._id,
-              nickname: findUser.nickname,
-              user_id: findUser.user_id,
-              image: findUser.image,
-              vote: findUser.vote,
-            },
-          });
-        } else {
-          return res.status(400).json({ message: "Bad request" });
+          if (findUser && findUserVote) {
+            var voteInfo = [];
+
+            for (let i = 0; i < findUserVote.length; i++) {
+              const vote: any = {
+                title: findUserVote[i].title,
+                format: findUserVote[i].format,
+                undergoing: findUserVote[i].undergoing,
+                created_at: findUserVote[i].created_at,
+                url: findUserVote[i].url,
+              };
+              voteInfo.push(vote);
+            }
+
+            return res.status(200).json({
+              data: {
+                _id: findUser._id,
+                nickname: findUser.nickname,
+                user_id: findUser.user_id,
+                image: findUser.image,
+                vote: voteInfo,
+              },
+            });
+          } else {
+            return res.status(400).json({ message: "Bad request" });
+          }
+        } catch (err) {
+          console.log(err);
         }
-      } catch (err) {
-        console.log(err);
       }
     },
 
@@ -304,43 +305,60 @@ export let UserController = {
     ) => {
       const { nickname, password, image } = req.body;
 
-      function getCookie(name: string) {
-        let matches = String(req.headers.cookie).match(
-          new RegExp(
-            "(?:^|; )" +
-              name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
-              "=([^;]*)"
-          )
-        );
+      if (
+        req.headers.authorization &&
+        req.headers.authorization.split(" ")[0] === "Bearer"
+      ) {
+        let authorization: string | undefined = req.headers.authorization;
+        let accessToken: string = authorization.split(" ")[1];
 
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-      }
-      const accessToken = getCookie("accessToken");
-      const decoded = jwt.verify(
-        accessToken as string,
-        process.env.ACCESS_SECRET as jwt.Secret
-      );
+        try {
+          const decoded = jwt.verify(
+            accessToken as string,
+            process.env.ACCESS_SECRET as jwt.Secret
+          );
 
-      try {
-        const findUser = await db
-          .collection("user")
-          .findOne({ user_id: decoded.user_id });
-        await db.collection("user").updateOne(
-          { user_id: decoded.user_id },
+          const findUser = await db
+            .collection("user")
+            .findOne({ user_id: decoded.user_id });
 
-          //바디가 들어온것만 바꿈
-          {
-            $set: {
-              nickname: req.body.nickname || findUser.nickname,
-              image: req.body.image || findUser.image,
-              password: req.body.password || findUser.password,
-            },
-          }
-        );
+          await bcrypt.genSalt(
+            SALT_ROUNDS,
+            function (err: Error, salt: string) {
+              if (err) {
+                console.log("genSalt Error: " + err);
+              } else {
+                console.log("salt", salt);
 
-        return res.status(200).json({ message: "Successfully updated" });
-      } catch {
-        return res.status(400).json({ message: "Bad request" });
+                bcrypt.hash(
+                  req.body.password,
+                  salt,
+                  function (err: Error, hash: string) {
+                    console.log("hash", hash);
+
+                    db.collection("user").updateOne(
+                      { user_id: decoded.user_id },
+                      {
+                        $set: {
+                          nickname: req.body.nickname || findUser.nickname,
+                          image: req.body.image || findUser.image,
+                          password: hash || findUser.password,
+                        },
+                      }
+                    );
+                    return res
+                      .status(200)
+                      .json({ message: "Successfully updated" });
+                  }
+                );
+              }
+            }
+          );
+        } catch {
+          res.status(400).json({ message: "Bad request" });
+        }
+      } else {
+        res.status(400).json({ message: "No token exists" });
       }
     },
   },

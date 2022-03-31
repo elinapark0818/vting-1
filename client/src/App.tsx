@@ -5,9 +5,10 @@ import Delete from "./MyPage/Delete/Delete";
 import Edit from "./MyPage/Edit/Edit";
 import MyPage from "./MyPage/MyPage";
 import Navbar from "./Navbar/Navbar";
+import Voter from "./Voter/Voter";
+import VoterCode from "./Voter/VoterCode";
+import VoterResult from "./Voter/VoterResult";
 import V from "./v/V";
-import VCode from "./v/VCode";
-import VResult from "./v/VResult";
 import NewVote from "./new/new";
 import { Provider } from "react-redux";
 import store from "./store/index";
@@ -30,7 +31,7 @@ function App() {
   const [voteMode, setVoteMode] = useState(false);
 
   useEffect(() => {
-    if (document.location.href.includes("v")) {
+    if (document.location.href.includes("vote")) {
       setVoteMode(true);
     } else {
       setVoteMode(false);
@@ -42,27 +43,11 @@ function App() {
       <Provider store={store}>
         <BrowserRouter>
           <Routes>
-            <Route path="/v" element={<V />}>
-              <Route path="" element={<VCode />} />
-              <Route path=":code" element={<VResult />} />
+            <Route path="/" element={<Voter />}>
+              <Route path="" element={<VoterCode />} />
+              <Route path=":code" element={<VoterResult />} />
             </Route>
           </Routes>
-
-          <Routes>
-            <Route path="/" element={<Home />} />
-
-            <Route path="dashboard" element={<Dashboard />} />
-
-            <Route path="new" element={<NewVote />} />
-
-            <Route path="myPage" element={<MyPage />}>
-              <Route path="" element={<Edit />} />
-              <Route path="delete" element={<Delete />} />
-            </Route>
-
-            <Route path="signIn" element={<SignIn />} />
-          </Routes>
-          {/* <Modal /> */}
         </BrowserRouter>
       </Provider>
     );
@@ -78,6 +63,8 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
 
             <Route path="new" element={<NewVote />} />
+
+            <Route path="v/:code" element={<V />} />
 
             <Route path="myPage" element={<MyPage />}>
               <Route path="" element={<Edit />} />

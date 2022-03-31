@@ -1,4 +1,6 @@
 import { Router } from "express";
+const multer = require("multer");
+// const upload = multer({ dest: "uploads/" });
 import { UserController } from "../controllers/user";
 
 const router = Router();

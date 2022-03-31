@@ -18,6 +18,8 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const user_1 = __importDefault(require("./routes/user"));
 const session_1 = __importDefault(require("./routes/session"));
 const auth_1 = __importDefault(require("./routes/auth"));
+const vote_1 = __importDefault(require("./routes/vote"));
+const voter_1 = __importDefault(require("./routes/voter"));
 const cors_1 = __importDefault(require("cors"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 // import voteRoutes from "./routes/vote";
@@ -74,8 +76,8 @@ app.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 app.use("/user", user_1.default);
 app.use("/session", session_1.default);
 app.use("/auth", auth_1.default);
-// app.use("/vting", voteRoutes);
-// app.use("/voter", voterRoutes);
+app.use("/vting", vote_1.default);
+app.use("/voter", voter_1.default);
 //db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
 // const url = "mongodb://127.0.0.1:27017";
