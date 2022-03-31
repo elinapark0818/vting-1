@@ -24,7 +24,7 @@ interface InOrUp {
   signIn: boolean;
 }
 
-const serverURL: string = "https://test.v-ting.net";
+const serverURL: string = "http://localhost:8000";
 
 function SignIn() {
   const dispatch = useDispatch();
@@ -73,8 +73,9 @@ function SignIn() {
         { withCredentials: true }
       );
       if (res.status === 200) {
-        const userInfo = res.data.data;
+        const userInfo = res.data.data.user_data;
         dispatch(setIsLogin(true));
+        console.log("로그인하면 저장해", userInfo);
         // console.log("res.data.data.user_id 출력===", userInfo.user_id);
         navigate("/");
         dispatch(
@@ -85,49 +86,36 @@ function SignIn() {
             image: userInfo.image,
           })
         );
+
         const token = res.data.data.accessToken;
         localStorage.setItem("accessToken", token);
-        // console.log("token=========", token);
-        // console.log("로그인하자마자회원정보저장", userInfo);
       }
     } catch (err) {
-      // setIsServerOk(false);
+      setIsServerOk(false);
       console.log(err);
     }
   };
 
+  // todo: 이메일로 가입하기 버튼 활성화/비활성화 state 로 관리하고
+  // todo: state 에 따라 조건부 버튼 보여주기 처리를 따로 만들자
+
   // ? 회원가입 서버연동
-  const SignInUser = async () => {
+  const SignUpUser = async () => {
     try {
-      const res = await axios.post(
-        serverURL + "/user"
-        // , {
-        //   user_id: newUser.email,
-        //   nickname: newUser.name,
-        //   password: newUser.password,
-        //   passwordConfirm: newUser.passwordConfirm,
-        //   // image: newUser.image,
-        // }
-      );
-      if (
-        !newUser.email &&
-        !newUser.name &&
-        !newUser.password &&
-        !newUser.passwordConfirm
-      ) {
-        alert("회원정보를 모두 입력해주세요.");
-      }
-      if (
-        res.status === 201 &&
-        newUser.email &&
-        newUser.name &&
-        newUser.password &&
-        newUser.passwordConfirm
-      ) {
-        console.log("회원가입 성공===", res.data);
-        alert("회원가입이 완료되었습니다.");
+      const res = await axios.post(serverURL + "/user", {
+        user_id: newUser.email,
+        nickname: newUser.name,
+        password: newUser.password,
+        // image: newUser.image,
+      });
+
+      if (res.status === 201) {
+        // * 로컬스토리지에 accessToken 넣기
+        localStorage.setItem("accessToken", res.data.data.accessToken);
         // ? 회원가입과 동시에 로그인 처리
         dispatch(setIsLogin(true));
+        alert("회원가입이 완료되었습니다.");
+        console.log("회원가입 성공===", res.data);
         navigate("/");
       }
     } catch (e) {
@@ -379,7 +367,7 @@ function SignIn() {
               )}
 
               <div className="signUp_wrap">
-                <button onClick={() => SignInUser()}>이메일로 가입하기</button>
+                <button onClick={() => SignUpUser()}>이메일로 가입하기</button>
               </div>
 
               <div className="oauth_wrap">
