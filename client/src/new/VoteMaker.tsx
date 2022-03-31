@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setTitle,
-  setType,
   setItems,
   setMultiple,
   setManyTimes,
@@ -143,7 +142,6 @@ function Versus() {
   const newVoteMt = newVote.manytimes;
   const newVoteMp = newVote.multiple;
   const newVoteItems = newVote.items;
-  const newVoteItem = useSelector((state: RootState) => state.makeNewVoteItem);
   const dispatch = useDispatch();
   const [vitem0, setVitem0] = useState(
     newVoteItems[0] ? newVoteItems[0].content : ""

@@ -10,6 +10,13 @@ import axios from "axios";
 const serverURL: string = "http://localhost:8000";
 
 function Navbar() {
+  const location = useLocation();
+  // console.log(location);
+
+  useEffect(() => {
+    console.log("페이지 바뀜");
+  }, [location]);
+
   // * 로그인상태
   let isLoginState = useSelector((state: RootState) => state.isLogin);
   let loginState = isLoginState.login;
