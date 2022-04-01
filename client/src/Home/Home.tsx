@@ -3,7 +3,6 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import "./Home.scss";
-
 import { Link } from "react-router-dom";
 
 axios.defaults.withCredentials = true;
@@ -47,7 +46,6 @@ function Home({ text }: Props) {
             <div className="hotVoteCardFormat">대결형</div>
             <div className="hotVoteCardCount">79명 참여 중</div>
           </div>
-
           <div className="hotVoteCard">
             <div className="hotVoteCardTitle">오늘 점심 메뉴</div>
             <div className="hotVoteCardFormat">바 그래프</div>
