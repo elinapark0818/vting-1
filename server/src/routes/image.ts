@@ -6,6 +6,6 @@ import { ImageController } from "../controllers/image";
 
 // const upload = require("../../modules/multer");
 
-router.post("/", upload.single("image"), ImageController.userInfo.post);
+// router.post("/", upload.single("image"), ImageController.userInfo.post);
 
 export default router;
