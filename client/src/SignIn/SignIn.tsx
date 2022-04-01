@@ -32,6 +32,9 @@ function SignIn() {
 
   const [isMatch, setIsMatch] = useState(false);
 
+  // * 기존 유저정보를 담을 상태
+  const [user, setUser] = useState<User>({ email: "", password: "" });
+
   // * 새로운 유저 정보를 담을 상태
   const [newUser, setNewUser] = useState<CreateUser>({
     email: "",
@@ -55,9 +58,6 @@ function SignIn() {
   // ? 상태에 따라 SignIn 또는 SignUp 화면 보여주기
   const [inOrUp, setInOrUp] = useState<InOrUp>({ signIn: true });
 
-  // ? 기존 유저정보를 담을 상태 => onChange 밸류값이랑 비교해서 로그인처리
-  const [user, setUser] = useState<User>({ email: "", password: "" });
-
   // ? 아직 계정이 없으신가요?  => 클릭 이벤트로 setInOrUp(false) 처리해주기!
   const setSignUp = () => {
     setInOrUp({ signIn: false });
@@ -74,8 +74,8 @@ function SignIn() {
 
   // ! 유저체크 (아이디, 비번)
   // ? false = 미가입 true = 가입
-  const [userCheck, setUserCheck] = useState(false);
-  const [userPasswordCheck, setUserPasswordCheck] = useState(false);
+  const [userCheck, setUserCheck] = useState(true);
+  const [userPasswordCheck, setUserPasswordCheck] = useState(true);
 
   // ? 로그인 서버 연동 => [POST] session
   const LogInUser = async () => {
@@ -106,7 +106,6 @@ function SignIn() {
         const userInfo = res.data.data.user_data;
         setUserCheck(true);
         setUserPasswordCheck(true);
-
         dispatch(setIsLogin(true));
         navigate("/dashboard");
         dispatch(
@@ -117,11 +116,9 @@ function SignIn() {
             image: userInfo.image,
           })
         );
-      } else {
-        setIsServerOk(false);
       }
     } catch (err) {
-      setIsServerOk(false);
+      // setIsServerOk(false);
       console.log(err);
     }
   };
