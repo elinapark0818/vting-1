@@ -9,11 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.VoterController = void 0;
 const jwt = require("jsonwebtoken");
 exports.VoterController = {
     test: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            res.send("voter test");
+            res.send("voter test!");
         }),
     },
     // 유형별 투표하기
