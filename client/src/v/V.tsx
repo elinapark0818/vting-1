@@ -10,11 +10,13 @@ import {
   Provider as AlertProvider,
 } from "react-alert";
 import { AlertTemplate, ImgAlertTemplate } from "./AlertTemplate";
+import axios from "axios";
 
 const imgAlertContext = createContext<any | null>(null);
 
 // 컴포넌트 시작
 function V() {
+  const { code } = useParams();
   const [isRealTime, setIsRealTime] = useState(false);
   const [togglePublic, setTogglePublic] = useState(false);
   const [toggleOngoing, setToggleOngoing] = useState(false);
@@ -25,6 +27,30 @@ function V() {
   const clickedToggleOngoing = () => {
     setToggleOngoing((prev) => !prev);
   };
+
+  const serverURL = "http://localhost:8000";
+
+  useEffect(() => {
+    console.log("시작");
+    let accessToken = localStorage.getItem("accessToken");
+    console.log("토큰", accessToken);
+    const voteResult = async () => {
+      try {
+        const response = await axios.get(`${serverURL}/vting/${code}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        });
+        if (response.status === 200) {
+          console.log(response.data);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    voteResult();
+  }, []);
 
   // Alert Option
   const options: AlertOptions = {

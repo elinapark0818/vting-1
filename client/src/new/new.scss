@@ -106,13 +106,7 @@
   .topMargin10 {
     margin-top: 30px;
   }
-  .answerIdx {
-    background-color: $vting-orange;
-    color: white;
-    width: 30px;
-    text-align: center;
-    line-height: 29.5px;
-  }
+
   label.disabledLabel {
     color: $vting-gray;
   }
@@ -129,23 +123,32 @@
     border: 0;
     border-bottom: 2px solid $vting-orange;
   }
-  .VoteAnswerInput {
-    width: 200px;
-    padding: 5px;
-    border: 0;
-    border: 2px solid $vting-orange;
-  }
+
   .voteAnswers {
     margin-top: 5px;
     display: flex;
     flex-direction: column;
+    .voteAnswer {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      margin: 3px 0;
+      .answerIdx {
+        background-color: $vting-orange;
+        color: white;
+        width: 30px;
+        text-align: center;
+        line-height: 29.5px;
+      }
+      .VoteAnswerInput {
+        width: 200px;
+        padding: 5px;
+        border: 0;
+        border: 2px solid $vting-orange;
+      }
+    }
   }
-  .voteAnswer {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    margin: 3px 0;
-  }
+
   .plusItem {
     background-color: $vting-orange;
     color: white;
@@ -165,6 +168,45 @@
     }
     100% {
       margin-left: 2px;
+    }
+  }
+  .voteOptionItems {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    .voteOptionItem {
+      padding: 5px;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      .fakeCheck {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid $vting-orange;
+        margin-right: 5px;
+        svg {
+          fill: none;
+          stroke: $vting-orange;
+          stroke-width: 3px;
+          animation-name: check;
+          animation-duration: 0.5s;
+        }
+        @keyframes check {
+          0% {
+            stroke: white;
+          }
+          100% {
+            stroke: $vting-orange;
+          }
+        }
+      }
+      .disabled {
+        border: 2px solid $vting-gray;
+      }
+      .disabledText {
+        color: $vting-gray;
+      }
     }
   }
 }
