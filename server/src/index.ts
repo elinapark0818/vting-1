@@ -1,15 +1,11 @@
-import express, {
-  ErrorRequestHandler,
-  Request,
-  Response,
-  NextFunction,
-} from "express";
+import express from "express";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user";
 import sessionRoutes from "./routes/session";
 import authRoutes from "./routes/auth";
 import voteRoutes from "./routes/vote";
 import voterRoutes from "./routes/voter";
+import imageRoutes from "./routes/image";
 import cors from "cors";
 
 dotenv.config();
@@ -27,20 +23,6 @@ const options: cors.CorsOptions = {
 };
 app.use(cors(options));
 
-// app.use(
-//   cors({
-//     origin: true,
-//     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
-//     credentials: true,
-//     cookie: {
-//       maxAge: 24 * 6 * 60 * 10000,
-//       httpOnly: false,
-//       secure: true,
-//       sameSite: "none",
-//     },
-//   })
-// );
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/user", userRoutes);
@@ -48,6 +30,7 @@ app.use("/session", sessionRoutes);
 app.use("/auth", authRoutes);
 app.use("/vting", voteRoutes);
 app.use("/voter", voterRoutes);
+app.use("/image", imageRoutes);
 
 //db 연결 -> 되면 포트 열기
 export const MongoClient = require("mongodb").MongoClient;

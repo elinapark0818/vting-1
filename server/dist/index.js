@@ -10,6 +10,7 @@ const session_1 = __importDefault(require("./routes/session"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const vote_1 = __importDefault(require("./routes/vote"));
 const voter_1 = __importDefault(require("./routes/voter"));
+const image_1 = __importDefault(require("./routes/image"));
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
@@ -22,19 +23,6 @@ const options = {
     maxAge: 24 * 6 * 60 * 10000,
 };
 app.use(cors_1.default(options));
-// app.use(
-//   cors({
-//     origin: true,
-//     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
-//     credentials: true,
-//     cookie: {
-//       maxAge: 24 * 6 * 60 * 10000,
-//       httpOnly: false,
-//       secure: true,
-//       sameSite: "none",
-//     },
-//   })
-// );
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use("/user", user_1.default);
@@ -42,6 +30,7 @@ app.use("/session", session_1.default);
 app.use("/auth", auth_1.default);
 app.use("/vting", vote_1.default);
 app.use("/voter", voter_1.default);
+app.use("/image", image_1.default);
 //db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
 // const url = "mongodb://127.0.0.1:27017";

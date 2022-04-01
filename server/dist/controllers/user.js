@@ -187,6 +187,7 @@ exports.UserController = {
                             const vote = {
                                 title: findUserVote[i].title,
                                 format: findUserVote[i].format,
+                                status: findUserVote[i].status,
                                 undergoing: findUserVote[i].undergoing,
                                 created_at: findUserVote[i].created_at,
                                 url: findUserVote[i].url,
