@@ -11,6 +11,7 @@ import {
 } from "react-alert";
 import { AlertTemplate, ImgAlertTemplate } from "./AlertTemplate";
 import axios from "axios";
+import Vresult from "./Vresult";
 
 const imgAlertContext = createContext<any | null>(null);
 
@@ -18,22 +19,62 @@ const imgAlertContext = createContext<any | null>(null);
 function V() {
   const { code } = useParams();
   const [isRealTime, setIsRealTime] = useState(false);
-  const [togglePublic, setTogglePublic] = useState(false);
-  const [toggleOngoing, setToggleOngoing] = useState(false);
-
-  const clickedTogglePublic = () => {
-    setTogglePublic((prev) => !prev);
-  };
-  const clickedToggleOngoing = () => {
-    setToggleOngoing((prev) => !prev);
-  };
+  const [togglePublic, setTogglePublic] = useState(true);
+  const [toggleOngoing, setToggleOngoing] = useState(true);
+  const [voteTitle, setVoteTitle] = useState("");
 
   const serverURL = "http://localhost:8000";
+  const accessToken = localStorage.getItem("accessToken");
+
+  const clickedTogglePublic = async () => {
+    try {
+      const response = await axios.patch(
+        `${serverURL}/vting/${code}`,
+        {
+          isPublic: "clicked!",
+          isActive: null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        }
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        setTogglePublic(response.data.isPublic);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const clickedToggleOngoing = async () => {
+    try {
+      const response = await axios.patch(
+        `${serverURL}/vting/${code}`,
+        {
+          isPublic: null,
+          isActive: "clicked!",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        }
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        setToggleOngoing(response.data.isActive);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
-    console.log("시작");
-    let accessToken = localStorage.getItem("accessToken");
-    console.log("토큰", accessToken);
     const voteResult = async () => {
       try {
         const response = await axios.get(`${serverURL}/vting/${code}`, {
@@ -43,7 +84,10 @@ function V() {
           },
         });
         if (response.status === 200) {
-          console.log(response.data);
+          console.log(response.data.data);
+          setVoteTitle(response.data.data.title);
+          setToggleOngoing(response.data.data.undergoing);
+          setTogglePublic(response.data.data.isPublic);
         }
       } catch (e) {
         console.log(e);
@@ -76,11 +120,9 @@ function V() {
       >
         <div className="voteResultPageCon">
           <div className="voteResultPage">
-            <div className="voteResultTitle">
-              자신을 한 문장으로 표현한다면?
-            </div>
+            <div className="voteResultTitle">{voteTitle}</div>
             <div className="voteResultContent">
-              {isRealTime ? <RealTime /> : <Howto />}
+              {isRealTime ? <Vresult /> : <Howto />}
             </div>
           </div>
           <div className="voteResultFooter">
@@ -99,22 +141,28 @@ function V() {
               </div>
             </div>
             <div className="options">
-              <button onClick={clickedTogglePublic} className="toggleBtn">
+              <button
+                onClick={() => clickedTogglePublic()}
+                className="toggleBtn"
+              >
                 <div
                   className={
-                    togglePublic ? "toggleCircle toggleOn" : "toggleCircle"
+                    togglePublic ? "toggleCircle" : "toggleCircle toggleOn"
                   }
                 >
-                  {togglePublic ? "비공개" : "공개"}
+                  {togglePublic ? "공개" : "비공개"}
                 </div>
               </button>
-              <button onClick={clickedToggleOngoing} className="toggleBtn">
+              <button
+                onClick={() => clickedToggleOngoing()}
+                className="toggleBtn"
+              >
                 <div
                   className={
-                    toggleOngoing ? "toggleCircle toggleOn" : "toggleCircle"
+                    toggleOngoing ? "toggleCircle" : "toggleCircle toggleOn"
                   }
                 >
-                  {toggleOngoing ? "재시작" : "진행중"}
+                  {toggleOngoing ? "진행중" : "재시작"}
                 </div>
               </button>
             </div>
@@ -246,35 +294,6 @@ function Howto() {
         </div>
       </div>
     </>
-  );
-}
-
-// 실시간 응답보기 컴포넌트
-function RealTime() {
-  const dummyData = [
-    "저는 그야말로 말하는 감자",
-    "나를 한문장에 담을 수 없음",
-    "안녕하세요? 디진다돈까스를 사랑하는 돈까스맨입니다.",
-    "안녕하세요! 낮에는 따사로운 햇살같은 남자입니다.",
-    "이시대의 로맨티스트",
-    "근데 이거 왜 하는거에요?",
-  ];
-
-  return (
-    <div className="realTimeCon">
-      {dummyData.map((el, idx) => (
-        <div
-          className={
-            idx < 4
-              ? `openendIcon border${idx + 1}`
-              : `openendIcon border${idx - 3}`
-          }
-          key={idx}
-        >
-          {el}
-        </div>
-      ))}
-    </div>
   );
 }
 

@@ -221,27 +221,31 @@ function Versus() {
         &#128073; 대결 항목을 입력하세요.
       </div>
       <div className="voteAnswers">
-        <input
-          className="VoteAnswerInput"
-          value={vitem0}
-          onChange={(e) => {
-            setVitem0(e.target.value);
-          }}
-          onBlur={(e) => {
-            dispatch(setVersusItem({ idx: 0, content: vitem0 }));
-          }}
-        ></input>
+        <div className="voteAnswer">
+          <input
+            className="VoteAnswerInput"
+            value={vitem0}
+            onChange={(e) => {
+              setVitem0(e.target.value);
+            }}
+            onBlur={(e) => {
+              dispatch(setVersusItem({ idx: 0, content: vitem0 }));
+            }}
+          ></input>
+        </div>
         <div>vs</div>
-        <input
-          className="VoteAnswerInput"
-          value={vitem1}
-          onChange={(e) => {
-            setVitem1(e.target.value);
-          }}
-          onBlur={(e) => {
-            dispatch(setVersusItem({ idx: 1, content: vitem1 }));
-          }}
-        ></input>
+        <div className="voteAnswer">
+          <input
+            className="VoteAnswerInput"
+            value={vitem1}
+            onChange={(e) => {
+              setVitem1(e.target.value);
+            }}
+            onBlur={(e) => {
+              dispatch(setVersusItem({ idx: 1, content: vitem1 }));
+            }}
+          ></input>
+        </div>
       </div>
       <div className="voteLabel topMargin10">
         &#128073; 설문 옵션을 선택하세요.

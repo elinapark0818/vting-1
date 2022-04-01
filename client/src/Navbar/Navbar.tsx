@@ -15,7 +15,10 @@ function Navbar() {
   let location = useLocation();
 
   useEffect(() => {
-    console.log("페이지 바뀜");
+    if (localStorage.getItem("accessToken")) {
+      console.log("로그인 처리 되어야 함");
+      settingLogin();
+    }
   }, [location]);
 
   // * 로그인상태
@@ -23,9 +26,9 @@ function Navbar() {
   let loginState = isLoginState.login;
 
   // ? 처음 렌더링할때, 로그인상태 useEffect로 토큰여부에 따라 판단한다.
-  useEffect(() => {
-    if (document.cookie.includes("accessToken")) settingLogin();
-  }, []);
+  // useEffect(() => {
+
+  // }, []);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
