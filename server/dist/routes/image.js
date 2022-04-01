@@ -1,1 +1,10 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const router = express_1.Router();
+const multer = require("multer");
+const upload = multer({ dest: "../../uploads" });
+const image_1 = require("../controllers/image");
+// const upload = require("../../modules/multer");
+router.post("/", upload.single("image"), image_1.ImageController.userInfo.post);
+exports.default = router;

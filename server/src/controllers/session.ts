@@ -6,12 +6,9 @@ import express, {
   Response,
   NextFunction,
 } from "express";
-import { IncomingHttpHeaders, request } from "http";
-import { AnyMxRecord } from "dns";
 import dotenv from "dotenv";
-import { isRegExp } from "util/types";
 dotenv.config();
-const SALT_ROUNDS = 6;
+
 const bcrypt = require("bcrypt");
 
 interface UserType {
@@ -52,34 +49,38 @@ export let SessionController = {
           .collection("user")
           .findOne({ user_id: user_id });
 
-        console.log(findUser);
+        if (findUser) {
+          console.log(findUser);
 
-        var check = await bcrypt.compare(password, findUser.password);
+          var check = await bcrypt.compare(password, findUser.password);
 
-        console.log(check);
+          console.log(check);
 
-        if (check) {
-          const accessToken = jwt.sign(
-            { user_id },
-            process.env.ACCESS_SECRET as jwt.Secret,
-            { expiresIn: 60 * 60 * 60 }
-          );
+          if (check) {
+            const accessToken = jwt.sign(
+              { user_id },
+              process.env.ACCESS_SECRET as jwt.Secret,
+              { expiresIn: 60 * 60 * 60 }
+            );
 
-          return res.status(200).json({
-            data: {
-              user_data: {
-                _id: findUser._id,
-                user_id: findUser.user_id,
-                nickname: findUser.nickname,
-                image: findUser.image,
-                vote: findUser.vote,
+            return res.status(200).json({
+              data: {
+                user_data: {
+                  _id: findUser._id,
+                  user_id: findUser.user_id,
+                  nickname: findUser.nickname,
+                  image: findUser.image,
+                  vote: findUser.vote,
+                },
+                accessToken: accessToken,
               },
-              accessToken: accessToken,
-            },
-            message: "Successfully logged in",
-          });
+              message: "Successfully logged in",
+            });
+          } else {
+            return res.status(400).json({ message: "Wrong password" });
+          }
         } else {
-          return res.status(400).json({ message: "Wrong password" });
+          return res.status(400).json({ message: "There's no ID" });
         }
       } catch (err) {
         console.log(err);
@@ -99,22 +100,31 @@ export let SessionController = {
         let accessToken: string = authorization.split(" ")[1];
 
         try {
-          const decoded = jwt.verify(
+          const decoded: any = jwt.verify(
             accessToken as string,
-            process.env.ACCESS_SECRET as jwt.Secret
+            process.env.ACCESS_SECRET as jwt.Secret,
+            (err) => {
+              return res.status(400);
+              console.log(err);
+            }
           );
+          console.log(decoded);
           if (decoded) {
             return res.status(200).json({
               data: { accessToken: "" },
               message: "Successfully logged out",
             });
+          } else if (decoded === undefined) {
+            return res.status(200);
           }
         } catch (err) {
           console.log(err);
           return res.status(400).json({ message: "Failed logged out" });
         }
       } else {
-        res.status(400).json({ message: "No token exists" });
+        res
+          .status(200)
+          .json({ data: { accessToken: "" }, message: "No token exists" });
       }
     },
   },

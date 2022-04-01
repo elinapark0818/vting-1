@@ -7,5 +7,5 @@ const router = express_1.Router();
 router.get("/test", vote_1.VoteController.test.get);
 router.post("/", vote_1.VoteController.create.post);
 router.delete("/:id", vote_1.VoteController.delete.delete);
-router.patch("/:id", vote_1.VoteController.undergoing.patch);
+router.patch("/:id", vote_1.VoteController.undergoingAndPublic.patch);
 exports.default = router;

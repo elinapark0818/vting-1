@@ -6,10 +6,8 @@ import express, {
   Response,
   NextFunction,
 } from "express";
-import { IncomingHttpHeaders, request } from "http";
-import { AnyMxRecord } from "dns";
+
 import dotenv from "dotenv";
-import { isRegExp } from "util/types";
 dotenv.config();
 
 interface AuthController {

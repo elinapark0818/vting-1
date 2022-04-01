@@ -6,13 +6,8 @@ import express, {
   Response,
   NextFunction,
 } from "express";
-import { IncomingHttpHeaders, request } from "http";
-import { AnyMxRecord } from "dns";
+
 import dotenv from "dotenv";
-import { isRegExp } from "util/types";
-import { hash } from "bcryptjs";
-import e from "express";
-import { ObjectId } from "bson";
 dotenv.config();
 
 const SALT_ROUNDS = 6;
@@ -272,6 +267,7 @@ export let UserController = {
               const vote: any = {
                 title: findUserVote[i].title,
                 format: findUserVote[i].format,
+                status: findUserVote[i].status,
                 undergoing: findUserVote[i].undergoing,
                 created_at: findUserVote[i].created_at,
                 url: findUserVote[i].url,

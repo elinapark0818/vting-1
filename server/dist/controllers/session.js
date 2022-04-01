@@ -16,7 +16,6 @@ const __1 = require("..");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const SALT_ROUNDS = 6;
 const bcrypt = require("bcrypt");
 //평문과 hash 된 password 비교  -> 로그인 기능에 사용하기 좋음.
 // bcrypt.compare(
@@ -43,27 +42,32 @@ exports.SessionController = {
                 const findUser = yield __1.db
                     .collection("user")
                     .findOne({ user_id: user_id });
-                console.log(findUser);
-                var check = yield bcrypt.compare(password, findUser.password);
-                console.log(check);
-                if (check) {
-                    const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 * 60 });
-                    return res.status(200).json({
-                        data: {
-                            user_data: {
-                                _id: findUser._id,
-                                user_id: findUser.user_id,
-                                nickname: findUser.nickname,
-                                image: findUser.image,
-                                vote: findUser.vote,
+                if (findUser) {
+                    console.log(findUser);
+                    var check = yield bcrypt.compare(password, findUser.password);
+                    console.log(check);
+                    if (check) {
+                        const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 * 60 });
+                        return res.status(200).json({
+                            data: {
+                                user_data: {
+                                    _id: findUser._id,
+                                    user_id: findUser.user_id,
+                                    nickname: findUser.nickname,
+                                    image: findUser.image,
+                                    vote: findUser.vote,
+                                },
+                                accessToken: accessToken,
                             },
-                            accessToken: accessToken,
-                        },
-                        message: "Successfully logged in",
-                    });
+                            message: "Successfully logged in",
+                        });
+                    }
+                    else {
+                        return res.status(400).json({ message: "Wrong password" });
+                    }
                 }
                 else {
-                    return res.status(400).json({ message: "Wrong password" });
+                    return res.status(400).json({ message: "There's no ID" });
                 }
             }
             catch (err) {
@@ -80,12 +84,19 @@ exports.SessionController = {
                 let authorization = req.headers.authorization;
                 let accessToken = authorization.split(" ")[1];
                 try {
-                    const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+                    const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET, (err) => {
+                        return res.status(400);
+                        console.log(err);
+                    });
+                    console.log(decoded);
                     if (decoded) {
                         return res.status(200).json({
                             data: { accessToken: "" },
                             message: "Successfully logged out",
                         });
+                    }
+                    else if (decoded === undefined) {
+                        return res.status(200);
                     }
                 }
                 catch (err) {
@@ -94,7 +105,9 @@ exports.SessionController = {
                 }
             }
             else {
-                res.status(400).json({ message: "No token exists" });
+                res
+                    .status(200)
+                    .json({ data: { accessToken: "" }, message: "No token exists" });
             }
         }),
     },
