@@ -445,7 +445,11 @@ export let VoteController = {
   // 회원, 비회원 분기해서 보여주기
   show_vote: {
     get: async (req: Request & { params: any }, res: Response) => {
-      const voteId = req.params;
+      // url(req.params.id)로 vote data 가져오기
+      let voteId = await db
+        .collection("vote")
+        .findOne({ url: Number(req.params.accessCode) });
+      voteId = voteId._id;
 
       if (
         req.headers.authorization &&
@@ -457,6 +461,8 @@ export let VoteController = {
           token,
           process.env.ACCESS_SECRET as jwt.Secret,
           async (err, data: any) => {
+            console.log("error data =======================", data);
+            console.log("voteId", voteId);
             await db
               .collection("vote")
               .findOne(
@@ -547,7 +553,11 @@ export let VoteController = {
   // FIXME: Delete Vote
   delete: {
     delete: async (req: Request & { params: any }, res: Response) => {
-      const voteId = req.params.id;
+      // url(req.params.id)로 vote data 가져오기
+      let voteId = await db
+        .collection("vote")
+        .findOne({ url: Number(req.params.accessCode) });
+      voteId = voteId._id;
 
       try {
         //TODO: user data에 해당 vote(배열로 되어있음) 삭제해야됨
@@ -589,7 +599,11 @@ export let VoteController = {
 
   undergoingAndPublic: {
     patch: async (req: Request & { params: any; body: any }, res: Response) => {
-      const voteId = req.params;
+      // url(req.params.id)로 vote data 가져오기
+      let voteId = await db
+        .collection("vote")
+        .findOne({ url: Number(req.params.accessCode) });
+      voteId = voteId._id;
       const reqData = req.body;
 
       try {
