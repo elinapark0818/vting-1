@@ -13,17 +13,15 @@ const serverURL: string = "http://localhost:8000";
 
 function Navbar() {
   let location = useLocation();
-
-  useEffect(() => {
-    if (localStorage.getItem("accessToken")) {
-      console.log("로그인 처리 되어야 함");
-      settingLogin();
-    }
-  }, [location]);
-
   // * 로그인상태
   let isLoginState = useSelector((state: RootState) => state.isLogin);
   let loginState = isLoginState.login;
+
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")) {
+      settingLogin();
+    }
+  }, [location]);
 
   // ? 처음 렌더링할때, 로그인상태 useEffect로 토큰여부에 따라 판단한다.
   // useEffect(() => {
@@ -37,7 +35,7 @@ function Navbar() {
 
   // ? 로그인 핸들링
   const settingLogin = () => {
-    setIsLogin(true);
+    dispatch(setIsLogin(true));
   };
   // ? 로그아웃 핸들링
   const handleLogout = async () => {
