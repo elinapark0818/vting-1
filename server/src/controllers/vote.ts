@@ -11,9 +11,10 @@ import { ObjectId } from "mongodb";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { off } from "process";
+import { ItemSelection } from "aws-sdk/clients/cloudfront";
 dotenv.config();
 
-interface VoteType1 {
+interface VoteType {
   title: string;
   format: string;
   manytimes: string;
@@ -38,7 +39,7 @@ export let VoteController = {
 
   create: {
     post: async (req: Request & { body: any }, res: Response) => {
-      const {
+      let {
         title,
         format,
         manytimes,
@@ -47,11 +48,18 @@ export let VoteController = {
         items,
         response,
         password,
-      }: VoteType1 = req.body;
+      }: VoteType = req.body;
 
       // access code(6-digits) 만들기
       let randomNum: any = Math.random();
       let url = Math.round(randomNum.toFixed(6) * 1000000);
+
+      // items Array에 count: 0 넣어주기
+      if (Array.isArray(items)) {
+        for (let el of items) {
+          el.count = 0;
+        }
+      }
 
       try {
         // 헤더에 token 받아오기
@@ -122,7 +130,6 @@ export let VoteController = {
                 );
                 // FIXME: FORMAT 'open ended'
               } else if (format === "open") {
-                console.log("open ended start");
                 db.collection("vote").insertOne(
                   {
                     user_id: data.user_id,
@@ -445,107 +452,83 @@ export let VoteController = {
   // 회원, 비회원 분기해서 보여주기
   show_vote: {
     get: async (req: Request & { params: any }, res: Response) => {
-      // url(req.params.id)로 vote data 가져오기
-      let voteId = await db
-        .collection("vote")
-        .findOne({ url: Number(req.params.accessCode) });
-      voteId = voteId._id;
+      // 비밀번호의 유무에 따라 회원 비회원을 나눠서 데이터 보내기(because. 로그인되어있는 사람이 비회원으로 만든 vote의 V page로 가게되는경우 토큰이 있어도 들어 갈 수 있어야 한다)
+      // 변경 => 데이터가 저장된 위치가 collection('vote') or collection('non-member') 인지에 따라 분기시켜주기
+      try {
+        const findMemberVote = await db
+          .collection("vote")
+          .findOne({ url: Number(req.params.accessCode) });
 
-      if (
-        req.headers.authorization &&
-        req.headers.authorization.split(" ")[0] === "Bearer"
-      ) {
-        let authorization: string | undefined = req.headers.authorization;
-        let token: string = authorization.split(" ")[1];
-        jwt.verify(
-          token,
-          process.env.ACCESS_SECRET as jwt.Secret,
-          async (err, data: any) => {
-            console.log("error data =======================", data);
-            console.log("voteId", voteId);
-            await db
-              .collection("vote")
-              .findOne(
-                { user_id: data.user_id, _id: new ObjectId(voteId) },
-                (err: Error, data: any) => {
-                  console.log("findVote", data);
-                  if (
-                    data.format === "bar" ||
-                    data.format === "versus" ||
-                    data.format === "word"
-                  ) {
-                    res.status(200).json({
-                      data: {
-                        _id: data._id,
-                        title: data.title,
-                        items: data.items,
-                        isPublic: data.isPublic,
-                        undergoing: data.undergoing,
-                        created_at: data.created_at,
-                        url: data.url,
-                      },
-                    });
-                  } else if (data.format === "open") {
-                    res.status(200).json({
-                      data: {
-                        _id: data._id,
-                        title: data.title,
-                        response: data.response,
-                        isPublic: data.isPublic,
-                        undergoing: data.undergoing,
-                        created_at: data.created_at,
-                        url: data.url,
-                      },
-                    });
+        if (
+          req.headers.authorization &&
+          req.headers.authorization.split(" ")[0] === "Bearer" &&
+          findMemberVote
+        ) {
+          let token: string = req.headers.authorization.split(" ")[1];
+          jwt.verify(
+            token,
+            process.env.ACCESS_SECRET as jwt.Secret,
+            async (err, data: any) => {
+              // url(req.params.id)로 vote data 가져오기(회원일때 collection -> vote )
+              let voteId = await db
+                .collection("vote")
+                .findOne({ url: Number(req.params.accessCode) });
+              voteId = voteId._id;
+
+              // 해당 vote 찾기
+              await db
+                .collection("vote")
+                .findOne(
+                  { user_id: data.user_id, _id: new ObjectId(voteId) },
+                  (err: Error, data: any) => {
+                    // sumCount 넣기 : count의 총 합
+                    let sumCount: number = 0;
+                    for (let el of data.items) {
+                      sumCount += el.count;
+                    }
+                    return res.status(200).json({ data: data, sumCount });
                   }
-                }
-              );
-          }
-        );
-        // 비회원 vote data 보내기(클라에서 비번으로 접근 여부 판단함)
-      } else {
-        await db
-          .collection("non-member")
-          .findOne({ _id: new ObjectId(voteId) }, (err: Error, data: any) => {
-            console.log("findVote", data);
-            // 남은시간(분) 계산해서 보내주기
-            let overtime =
-              (new Date(data.created_at.toString()).getTime() -
-                new Date().getTime()) /
-                (1000 * 60) +
-              60;
-            overtime = Math.round(overtime);
-
-            if (
-              data.format === "bar" ||
-              data.format === "versus" ||
-              data.format === "word"
-            ) {
-              res.status(200).json({
-                data: {
-                  _id: data._id,
-                  title: data.title,
-                  items: data.items,
-                  undergoing: data.undergoing,
-                  overtime,
-                  created_at: data.created_at,
-                  url: data.url,
-                },
-              });
-            } else if (data.format === "open") {
-              res.status(200).json({
-                data: {
-                  _id: data._id,
-                  title: data.title,
-                  response: data.response,
-                  undergoing: data.undergoing,
-                  overtime,
-                  created_at: data.created_at,
-                  url: data.url,
-                },
-              });
+                );
             }
-          });
+          );
+          // 비회원 vote data 보내기(클라에서 비번으로 접근 여부 판단함)
+        } else if (!findMemberVote) {
+          // url(req.params.id)로 vote data 가져오기(회원일때 collection -> non-member )
+          let voteId = await db
+            .collection("non-member")
+            .findOne({ url: Number(req.params.accessCode) });
+          voteId = voteId._id;
+
+          // 해당 vote 찾기
+          await db
+            .collection("non-member")
+            .findOne({ _id: new ObjectId(voteId) }, (err: Error, data: any) => {
+              // 남은시간(분) 계산해서 보내주기
+              let overtime =
+                (new Date(data.created_at.toString()).getTime() -
+                  new Date().getTime()) /
+                  (1000 * 60) +
+                60;
+              overtime = Math.round(overtime);
+
+              // sumCount 넣기 : count의 총 합
+              let sumCount: number = 0;
+              for (let el of data.items) {
+                sumCount += el.count;
+              }
+
+              return res.status(200).json({
+                data: data,
+                overtime,
+                sumCount,
+              });
+            });
+        } else {
+          // 로그인이 풀리는 경우(accessToken 만료 됬을때)
+          return res.status(400).json({ message: "Bad Request" });
+        }
+      } catch {
+        return res.status(400).json({ message: "Bad Request" });
       }
     },
   },
