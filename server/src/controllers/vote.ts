@@ -51,7 +51,7 @@ export let VoteController = {
 
       // access code(6-digits) 만들기
       let randomNum: any = Math.random();
-      let url = randomNum.toFixed(6) * 1000000;
+      let url = Math.round(randomNum.toFixed(6) * 1000000);
 
       try {
         // 헤더에 token 받아오기
