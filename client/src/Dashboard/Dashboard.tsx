@@ -15,25 +15,27 @@ function Dashboard() {
   // todo: "로그인 후 이용가능합니다." 모달 띄워주고 [확인] 버튼 클릭시 로그인 페이지 이동
   // todo: 로그인한 경우, 대시보드 접근하면 자신이 생성한 질문 모아보기
   const isLogin = useSelector((state: RootState) => state.isLogin);
+
   const [signInState, setSignInState] = useState<boolean>(false);
 
-  const [modalState, setModalState] = useState<boolean>(false);
+  // const [modalState, setModalState] = useState<boolean>(false);
 
-  const openModal = () => {
-    setModalState(true);
-  };
+  // const openModal = () => {
+  //   setSignInState(true);
+  // };
 
-  const closeModal = () => {
-    setModalState(false);
-  };
+  // const closeModal = () => {
+  //   setSignInState(false);
+  // };
 
   useEffect(() => {
-    if (!isLogin) {
+    // console.log(signInState);
+    if (!isLogin.login) {
       setSignInState(false);
     } else {
       setSignInState(true);
     }
-  }, []);
+  }, [signInState]);
 
   // todo: Vote Table 에서 설문 생성, 설문 종료, 설문 삭제 기능 구현하기
 
@@ -142,21 +144,29 @@ function Dashboard() {
           </main>
         </div>
       ) : (
-        <div className="deleteModal_container">
-          <div className="deleteModal_background">
-            <div className="deleteModal_modal">
-              <button className="closeBtn" onClick={closeModal}>
+        <div className="dashboardModal_container">
+          <div className="dashboardModal_background">
+            <div className="dashboardModal_modal">
+              <button
+                className="dashboardModal_closeBtn"
+                onClick={() => navigate("/")}
+              >
                 X
               </button>
-              <h3>로그인 후, 이용하실 수 있습니다.</h3>
-              <div className="btnWrap">
+              <div className="dashboardModal_desc">
+                <h3>로그인 후, 이용하실 수 있습니다.</h3>
+              </div>
+              <div className="dashboardModal_btnWrap">
                 <button
-                  className="delete_ok"
+                  className="dashboardModal_ok"
                   onClick={() => navigate("/signIn")}
                 >
                   확인
                 </button>
-                <button className="delete_cancel" onClick={closeModal}>
+                <button
+                  className="dashboardModal_cancel"
+                  onClick={() => navigate("/")}
+                >
                   취소
                 </button>
               </div>

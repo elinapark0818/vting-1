@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setIsLogin, setUserInfo, RootState } from "../store/index";
+import { setIsLogin, setUserInfo } from "../store/index";
 import "./SignIn.scss";
 
 import Logo from "../assets/v-ting_logo_circle.png";
@@ -43,15 +43,16 @@ function SignIn() {
 
   useEffect(() => {
     if (newUser.password === newUser.passwordConfirm) {
-      console.log("매치됨?");
       setIsMatch(true);
     } else {
       setIsMatch(false);
     }
   }, [newUser.password, newUser.passwordConfirm]);
 
-  // * 서버 불안전
+  // ? 서버 불안정 상태의 경우
   const [isServerOk, setIsServerOk] = useState(true);
+
+  // ? 상태에 따라 SignIn 또는 SignUp 화면 보여주기
   const [inOrUp, setInOrUp] = useState<InOrUp>({ signIn: true });
 
   // ? 기존 유저정보를 담을 상태 => onChange 밸류값이랑 비교해서 로그인처리
@@ -71,6 +72,11 @@ function SignIn() {
     navigate(-1);
   };
 
+  // ! 유저체크 (아이디, 비번)
+  // ? false = 미가입 true = 가입
+  const [userCheck, setUserCheck] = useState(false);
+  const [userPasswordCheck, setUserPasswordCheck] = useState(false);
+
   // ? 로그인 서버 연동 => [POST] session
   const LogInUser = async () => {
     try {
@@ -82,13 +88,27 @@ function SignIn() {
         },
         { withCredentials: true }
       );
-      if (res.status === 200) {
-        // setIsServerOk(true);
+      if (res.status === 400 && res.data.message === "There's no ID") {
+        setUserCheck(false);
+        console.log("가입되지 않은 이메일입니다.");
+      } else if (res.status === 400 && res.data.message === "Wrong password") {
+        setUserPasswordCheck(false);
+        console.log("비밀번호가 틀렸습니다.");
+      } else {
+        setIsServerOk(false);
+        console.log("Bad Request");
+      }
+
+      if (res.status === 200 && res.data.message === "Successfully logged in") {
+        const token = res.data.data.accessToken;
+        localStorage.setItem("accessToken", token);
+
         const userInfo = res.data.data.user_data;
+        setUserCheck(true);
+        setUserPasswordCheck(true);
+
         dispatch(setIsLogin(true));
-        console.log("로그인하면 저장해", userInfo);
-        // console.log("res.data.data.user_id 출력===", userInfo.user_id);
-        navigate("/");
+        navigate("/dashboard");
         dispatch(
           setUserInfo({
             _id: userInfo._id,
@@ -97,9 +117,8 @@ function SignIn() {
             image: userInfo.image,
           })
         );
-
-        const token = res.data.data.accessToken;
-        localStorage.setItem("accessToken", token);
+      } else {
+        setIsServerOk(false);
       }
     } catch (err) {
       setIsServerOk(false);
@@ -107,11 +126,7 @@ function SignIn() {
     }
   };
 
-  const [userCheck, setUserCheck] = useState(true);
-
   // ? 회원가입 + 유저체크 핸들링
-  // todo: 가입 전, 이미 가입된 이메일인지 user/check 진행
-  // todo: 가입된 이메일이라면 "이미 가입된 이메일입니다." 알럿 출력
   const SignUpUser = async () => {
     try {
       await axios
@@ -129,12 +144,10 @@ function SignIn() {
               .then((data) => {
                 if (data.status === 201) {
                   const userInfo = data.data.data.user_data;
-                  // * 로컬스토리지에 accessToken 넣기
                   localStorage.setItem(
                     "accessToken",
                     data.data.data.accessToken
                   );
-                  // ? 회원가입과 동시에 로그인 처리
                   dispatch(setIsLogin(true));
                   dispatch(
                     setUserInfo({
@@ -144,13 +157,10 @@ function SignIn() {
                     })
                   );
                   alert("회원가입이 완료되었습니다.");
-                  console.log("회원가입 성공===", data.data);
                   navigate("/");
                 }
               });
-          }
-          // ? 이미 가입된 이메일이라면
-          else if (
+          } else if (
             data.status === 200 &&
             data.data.message === "Success verified"
           ) {
@@ -189,8 +199,6 @@ function SignIn() {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
-    console.log("매개변수 없이 타겟이 잡히고있니?", value);
-
     setNewUser({ ...newUser, [name]: value });
   };
 
@@ -301,6 +309,16 @@ function SignIn() {
                     ! 네트워크 상태가 불안정합니다.
                   </div>
                 )}
+
+                {!userCheck && (
+                  <div className="server Error">
+                    ! 가입되지 않은 이메일입니다.
+                  </div>
+                )}
+
+                {!userPasswordCheck && (
+                  <div className="server Error">! 비밀번호가 틀렸습니다.</div>
+                )}
               </div>
 
               <div className="btn_wrap">
@@ -401,6 +419,10 @@ function SignIn() {
                 <div className="server Error">
                   ! 네트워크 상태가 불안정합니다.
                 </div>
+              )}
+
+              {!userCheck && (
+                <div className="server Error">! 이미 가입된 이메일입니다.</div>
               )}
 
               <div className="signUp_wrap">

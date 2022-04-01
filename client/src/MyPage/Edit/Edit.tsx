@@ -41,7 +41,7 @@ function Edit() {
   // * 프로필, 닉네임, 비밀번호 변경
   const EditUserInfo = async () => {
     let accessToken = localStorage.getItem("accessToken");
-    console.log("에디트 이메일===", userInfo._id);
+    // console.log("에디트 이메일===", userInfo._id);
 
     try {
       const res = await axios.patch(
@@ -107,7 +107,8 @@ function Edit() {
 
         <div className="edit_userInfo">
           <div className="edit_nickname">
-            <h3>닉네임 : "{userInfo.nickname}"</h3>
+            {/* {userInfo.nickname} */}
+            <h3>닉네임 </h3>
             <input
               name="name"
               onChange={edit_onChangeName}
