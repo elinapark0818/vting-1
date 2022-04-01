@@ -12,7 +12,6 @@ import axios from "axios";
 const serverURL: string = "http://localhost:8000";
 
 function Navbar() {
-
   let location = useLocation();
 
   useEffect(() => {
@@ -39,14 +38,19 @@ function Navbar() {
   };
   // ? 로그아웃 핸들링
   const handleLogout = async () => {
-    let accessToken = document.cookie;
+    let accessToken = localStorage.getItem("accessToken");
     try {
       const res = await axios.get(serverURL + "/session", {
-        headers: { Authorization: `Bearer ${accessToken}` },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
       });
       if (res.status === 200) {
+        // console.log("로그아웃성공===");
+        const token = res.data.data.accessToken;
+        localStorage.setItem("accessToken", token);
         dispatch(setIsLogin(false));
-        // console.log("로그아웃됨===", res.data);
         // ? 로그아웃되면 일단 구분하려고 홈으로 이동시킴
         navigate("/");
       }
