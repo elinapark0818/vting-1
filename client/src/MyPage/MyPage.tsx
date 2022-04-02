@@ -75,7 +75,6 @@ function MyPage() {
               name="password"
               onChange={myPage_onChangePassword}
             />
-            {myPagePwd}
             {!myPagePwd && <div>! 비밀번호를 입력하세요.</div>}
           </main>
           <div className="passwordCheck_btnWrap">

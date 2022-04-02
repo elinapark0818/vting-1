@@ -11,9 +11,10 @@ import { ObjectId } from "mongodb";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { off } from "process";
+import { ItemSelection } from "aws-sdk/clients/cloudfront";
 dotenv.config();
 
-interface VoteType1 {
+interface VoteType {
   title: string;
   format: string;
   manytimes: string;
@@ -38,7 +39,7 @@ export let VoteController = {
 
   create: {
     post: async (req: Request & { body: any }, res: Response) => {
-      const {
+      let {
         title,
         format,
         manytimes,
@@ -47,11 +48,25 @@ export let VoteController = {
         items,
         response,
         password,
-      }: VoteType1 = req.body;
+      }: VoteType = req.body;
 
       // access code(6-digits) 만들기
       let randomNum: any = Math.random();
-      let url = randomNum.toFixed(6) * 1000000;
+      let url = Math.round(randomNum.toFixed(6) * 1000000);
+
+      if (items !== undefined) {
+        // items Array에 count: 0 넣어주기
+        if (Array.isArray(items)) {
+          for (let el of items) {
+            el.count = 0;
+          }
+        }
+        // items 아무것도 안보내줄때 빈객체로 셋팅 해놓기
+      } else {
+        items = [];
+      }
+
+      // response 아무것도 안보내줄때 빈객체로 셋팅 해놓기
 
       try {
         // 헤더에 token 받아오기
@@ -86,7 +101,7 @@ export let VoteController = {
                     multiple,
                     manytimes,
                     undergoing: true,
-                    status: "public",
+                    isPublic: true,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -112,17 +127,16 @@ export let VoteController = {
                         _id: madeVote._id,
                         title: madeVote.title,
                         items: madeVote.items,
-                        url,
-                        status: madeVote.status,
+                        isPublic: madeVote.isPublic,
                         undergoing: madeVote.undergoing,
                         created_at: madeVote.created_at,
+                        url,
                       },
                     });
                   }
                 );
                 // FIXME: FORMAT 'open ended'
               } else if (format === "open") {
-                console.log("open ended start");
                 db.collection("vote").insertOne(
                   {
                     user_id: data.user_id,
@@ -132,7 +146,7 @@ export let VoteController = {
                     manytimes,
                     response,
                     undergoing: true,
-                    status: "public",
+                    isPublic: true,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -156,7 +170,7 @@ export let VoteController = {
                         _id: madeVote._id,
                         title: madeVote.title,
                         response: madeVote.response,
-                        status: madeVote.status,
+                        isPublic: madeVote.isPublic,
                         undergoing: madeVote.undergoing,
                         created_at: madeVote.created_at,
                         url,
@@ -175,7 +189,7 @@ export let VoteController = {
                     manytimes,
                     items,
                     undergoing: true,
-                    status: "public",
+                    isPublic: true,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -199,7 +213,7 @@ export let VoteController = {
                         _id: madeVote._id,
                         title: madeVote.title,
                         items: madeVote.items,
-                        status: madeVote.status,
+                        isPublic: madeVote.isPublic,
                         undergoing: madeVote.undergoing,
                         created_at: madeVote.created_at,
                         url,
@@ -218,7 +232,7 @@ export let VoteController = {
                     manytimes,
                     items,
                     undergoing: true,
-                    status: "public",
+                    isPublic: true,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -242,7 +256,7 @@ export let VoteController = {
                         _id: madeVote._id,
                         title: madeVote.title,
                         items: madeVote.items,
-                        status: madeVote.status,
+                        isPublic: madeVote.isPublic,
                         undergoing: madeVote.undergoing,
                         created_at: madeVote.created_at,
                         url,
@@ -441,10 +455,101 @@ export let VoteController = {
       }
     },
   },
+  // FIXME: Show Vote
+  // 회원, 비회원 분기해서 보여주기
+  show_vote: {
+    get: async (req: Request & { params: any }, res: Response) => {
+      // 비밀번호의 유무에 따라 회원 비회원을 나눠서 데이터 보내기(because. 로그인되어있는 사람이 비회원으로 만든 vote의 V page로 가게되는경우 토큰이 있어도 들어 갈 수 있어야 한다)
+      // 변경 => 데이터가 저장된 위치가 collection('vote') or collection('non-member') 인지에 따라 분기시켜주기
+      try {
+        const findMemberVote = await db
+          .collection("vote")
+          .findOne({ url: Number(req.params.accessCode) });
 
+        if (
+          req.headers.authorization &&
+          req.headers.authorization.split(" ")[0] === "Bearer" &&
+          findMemberVote
+        ) {
+          let token: string = req.headers.authorization.split(" ")[1];
+          jwt.verify(
+            token,
+            process.env.ACCESS_SECRET as jwt.Secret,
+            async (err, data: any) => {
+              // url(req.params.id)로 vote data 가져오기(회원일때 collection -> vote )
+              let voteId = await db
+                .collection("vote")
+                .findOne({ url: Number(req.params.accessCode) });
+              voteId = voteId._id;
+
+              // 해당 vote 찾기
+              await db
+                .collection("vote")
+                .findOne(
+                  { user_id: data.user_id, _id: new ObjectId(voteId) },
+                  (err: Error, data: any) => {
+                    console.log("data", data);
+                    if (data.format !== "open") {
+                      let sumCount: number = 0;
+                      for (let el of data.items) {
+                        sumCount += el.count;
+                      }
+                      return res.status(200).json({ data: data, sumCount });
+                    } else {
+                      return res.status(200).json({ data: data });
+                    }
+                  }
+                );
+            }
+          );
+          // 비회원 vote data 보내기(클라에서 비번으로 접근 여부 판단함)
+        } else if (!findMemberVote) {
+          // url(req.params.id)로 vote data 가져오기(회원일때 collection -> non-member )
+          let voteId = await db
+            .collection("non-member")
+            .findOne({ url: Number(req.params.accessCode) });
+          voteId = voteId._id;
+
+          // 해당 vote 찾기
+          await db
+            .collection("non-member")
+            .findOne({ _id: new ObjectId(voteId) }, (err: Error, data: any) => {
+              // 남은시간(분) 계산해서 보내주기
+              let overtime =
+                (new Date(data.created_at.toString()).getTime() -
+                  new Date().getTime()) /
+                  (1000 * 60) +
+                60;
+              overtime = Math.round(overtime);
+
+              if (data.format !== "open") {
+                let sumCount: number = 0;
+                for (let el of data.items) {
+                  sumCount += el.count;
+                }
+                return res.status(200).json({ data: data, overtime, sumCount });
+              } else {
+                return res.status(200).json({ data: data, overtime });
+              }
+            });
+        } else {
+          // 로그인이 풀리는 경우(accessToken 만료 됬을때)
+          return res.status(400).json({ message: "Bad Request" });
+        }
+      } catch {
+        return res.status(400).json({ message: "Bad Request" });
+      }
+    },
+  },
+
+  // FIXME: Delete Vote
   delete: {
     delete: async (req: Request & { params: any }, res: Response) => {
-      const voteId = req.params.id;
+      // url(req.params.id)로 vote data 가져오기
+      let voteId = await db
+        .collection("vote")
+        .findOne({ url: Number(req.params.accessCode) });
+      voteId = voteId._id;
 
       try {
         //TODO: user data에 해당 vote(배열로 되어있음) 삭제해야됨
@@ -486,7 +591,11 @@ export let VoteController = {
 
   undergoingAndPublic: {
     patch: async (req: Request & { params: any; body: any }, res: Response) => {
-      const voteId = req.params;
+      // url(req.params.id)로 vote data 가져오기
+      let voteId = await db
+        .collection("vote")
+        .findOne({ url: Number(req.params.accessCode) });
+      voteId = voteId._id;
       const reqData = req.body;
 
       try {
@@ -506,51 +615,64 @@ export let VoteController = {
                 .collection("vote")
                 .findOne(
                   { _id: new ObjectId(voteId), user_id: data.user_id },
-                  (err: Error, data: any) => {
+                  async (err: Error, data: any) => {
                     // undergoing === true => false
-
-                    console.log("reqData", req.body);
-
-                    if (reqData.isActive !== null && reqData.status === null) {
-                      if (reqData.isActive) {
-                        db.collection("vote").updateOne(
-                          { _id: new ObjectId(voteId) },
-                          { $set: { undergoing: true } },
-                          async (err: Error, data: any) => {
-                            return res.status(200).json({ isActive: true });
-                          }
-                        );
-                      } else {
-                        db.collection("vote").updateOne(
-                          { _id: new ObjectId(voteId) },
-                          { $set: { undergoing: false } },
-                          async (err: Error, data: any) => {
-                            return res.status(200).json({ isActive: false });
-                          }
-                        );
+                    if (
+                      reqData.isActive !== null &&
+                      reqData.isPublic === null
+                    ) {
+                      if (data.undergoing === true) {
+                        await db
+                          .collection("vote")
+                          .updateOne(
+                            { _id: new ObjectId(voteId) },
+                            { $set: { undergoing: false } },
+                            async (err: Error, data: any) => {
+                              return res.status(200).json({
+                                isActive: false,
+                                isPublic: null,
+                              });
+                            }
+                          );
+                        // undergoing === false => true
+                      } else if (data.undergoing === false) {
+                        await db
+                          .collection("vote")
+                          .updateOne(
+                            { _id: new ObjectId(voteId) },
+                            { $set: { undergoing: true } },
+                            async (err: Error, data: any) => {
+                              return res.status(200).json({
+                                isActive: true,
+                                isPublic: null,
+                              });
+                            }
+                          );
                       }
                     } else if (
                       reqData.isActive === null &&
-                      reqData.status !== null
+                      reqData.isPublic !== null
                     ) {
-                      if (reqData.status === "public") {
+                      // isPublic = true ===> false
+                      if (data.isPublic === true) {
                         db.collection("vote").updateOne(
                           { _id: new ObjectId(voteId) },
-                          { $set: { undergoing: "public" } },
+                          { $set: { isPublic: false } },
                           async (err: Error, data: any) => {
                             return res
                               .status(200)
-                              .json({ undergoing: "public" });
+                              .json({ isActive: null, isPublic: false });
                           }
                         );
-                      } else {
+                        // isPublic = false ===> true
+                      } else if (data.isPublic === false) {
                         db.collection("vote").updateOne(
                           { _id: new ObjectId(voteId) },
-                          { $set: { undergoing: "private" } },
+                          { $set: { isPublic: true } },
                           async (err: Error, data: any) => {
                             return res
                               .status(200)
-                              .json({ undergoing: "private" });
+                              .json({ isActive: null, isPublic: true });
                           }
                         );
                       }
@@ -561,23 +683,34 @@ export let VoteController = {
           );
           // 비회원일떄 수정 하기(undergoing만 바꿀 수 있음)
         } else {
-          if (reqData.undergoing === true) {
-            db.collection("vote").updateOne(
+          await db
+            .collection("non-member")
+            .findOne(
               { _id: new ObjectId(voteId) },
-              { $set: { undergoing: true } },
               async (err: Error, data: any) => {
-                return res.status(200).json({ isActive: true });
+                if (data.undergoing === true) {
+                  await db
+                    .collection("non-member")
+                    .updateOne(
+                      { _id: new ObjectId(voteId) },
+                      { $set: { undergoing: false } },
+                      async (err: Error, data: any) => {
+                        return res.status(200).json({ isActive: false });
+                      }
+                    );
+                } else if (data.undergoing === false) {
+                  await db
+                    .collection("non-member")
+                    .updateOne(
+                      { _id: new ObjectId(voteId) },
+                      { $set: { undergoing: true } },
+                      async (err: Error, data: any) => {
+                        return res.status(200).json({ isActive: true });
+                      }
+                    );
+                }
               }
             );
-          } else {
-            db.collection("vote").updateOne(
-              { _id: new ObjectId(voteId) },
-              { $set: { undergoing: false } },
-              async (err: Error, data: any) => {
-                return res.status(200).json({ isActive: false });
-              }
-            );
-          }
         }
       } catch {
         return res.status(400).json({ message: "Bad Request" });

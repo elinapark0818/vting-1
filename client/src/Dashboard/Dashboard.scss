@@ -5,9 +5,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 10em 5em;
+  margin: 5em 5em;
   height: 100%;
-  //   padding: 5em;
   box-shadow: 0 7px 7px -4px $vting-orange;
 }
 
@@ -28,20 +27,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin: 3em;
-  height: 30em;
+  height: 100vh;
 
   & .dashboard_table {
-    width: 40em;
-    // height: 30em;
+    min-width: 30em;
+    width: 100%;
+    padding-top: 5em;
     font-size: 2em;
     text-align: center;
 
     & thead {
-      //   width: 100%;
+      background-color: $vting-gray;
       padding-top: 1em;
       border-bottom: 3px solid gray;
+    }
+
+    & tbody {
+      padding-top: 1em;
     }
 
     & tr {
@@ -56,18 +58,162 @@
   }
 }
 
+.toggleBtn {
+  margin-left: 10px;
+  background-color: $vting-gray;
+  width: 85px;
+  height: 30px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s ease-in-out;
+}
+.toggleCircle {
+  background-color: $vting-orange;
+  width: 38px;
+  height: 38px;
+  border-radius: 50px;
+  position: absolute;
+  left: 5%;
+  transition: all 0.5s ease-in-out;
+  color: white;
+  text-align: center;
+  line-height: 38px;
+  font-size: 16px;
+  font-weight: bold;
+}
+.toggleOn {
+  background-color: #e2e2e2;
+  color: black;
+  transform: translate(38px, 0);
+  transition: all 0.5s ease-in-out;
+}
+
+.dashboard_btn {
+  cursor: pointer;
+  border: none;
+  background-color: $vting-orange;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 8px 8px;
+  transition: all 0.3s ease;
+}
+
 .dashboard_btnWrap {
-  margin-top: 3em;
-  margin-left: 70em;
+  margin-top: 1em;
+  margin-left: 50em;
 }
 
 .dashboard_plusBtn {
   cursor: pointer;
-  font-size: 6em;
+  font-size: 4em;
   color: gray;
   transition: all 0.3s;
 
   & :hover {
     color: $vting-orange;
+  }
+}
+
+// * 모달
+
+.dashboardModal_closeBtn {
+  color: #aaa;
+  background-color: transparent;
+  line-height: 80px;
+  font-size: 20px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 70px;
+  text-decoration: none;
+  &:hover {
+    color: black;
+  }
+}
+
+.dashboardModal_container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  // transform: scale(0);
+}
+
+.dashboardModal_container .dashboardModal_background {
+  display: table-cell;
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.dashboardModal_container .dashboardModal_background .dashboardModal_modal {
+  background: #fff;
+  padding: 50px;
+  margin-bottom: 30px;
+  display: inline-block;
+  border-radius: 3px;
+  position: relative;
+
+  & .dashboardModal_desc {
+    margin-top: 3em;
+    & h3 {
+      font-size: 20px;
+    }
+  }
+}
+
+.dashboardModal_background {
+  & button {
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.dashboardModal_btnWrap {
+  margin-top: 3em;
+}
+
+.dashboardModal_ok {
+  background-color: $vting-gray;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0.5em;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $vting-blue;
+  }
+}
+
+.dashboardModal_cancel {
+  background-color: $vting-gray;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0.5em;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $vting-blue;
   }
 }

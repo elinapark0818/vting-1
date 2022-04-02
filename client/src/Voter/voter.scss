@@ -38,11 +38,13 @@
     font-weight: 400;
     width: 300px;
     text-align: center;
+    border-radius: 40px;
   }
   a {
     text-decoration: none;
   }
   .votingTitle {
+    width: 100%;
     padding: 20px 30px;
     font-size: 20px;
     font-weight: 400;
@@ -50,5 +52,86 @@
     background-color: $vting-blue;
     color: white;
     text-align: center;
+  }
+  .votingCon {
+    width: 80%;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .votingHeader {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-start;
+    .votingProfile {
+      display: flex;
+      align-items: center;
+      .votingProfileImg {
+        width: 50px;
+        margin-right: 10px;
+        img {
+          width: 100%;
+        }
+      }
+    }
+  }
+  .votingBody {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .votingContent {
+      width: 100%;
+      min-height: 200px;
+      background-color: $vting-gray;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .voteAnswers {
+        .voteAnswer {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          margin: 3px 0;
+          .answerIdx {
+            background-color: gray;
+            color: white;
+            width: 30px;
+            text-align: center;
+            line-height: 35.5px;
+          }
+          .clickedIdx {
+            background-color: $vting-orange;
+            animation: shake 0.1s ease alternate;
+          }
+          .VoteAnswerContent {
+            width: 200px;
+            padding: 5px;
+            border: 0;
+            border: 2px solid gray;
+            background-color: white;
+          }
+          .clickedCtn {
+            border: 2px solid $vting-orange;
+            // animation: shake 0.1s linear 0.1s alternate;
+          }
+          @keyframes shake {
+            0% {
+              margin-left: 0px;
+            }
+            100% {
+              margin-left: 2px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .blueButton {
+    margin-top: 20px;
+    background-color: $vting-blue;
   }
 }
