@@ -1,5 +1,5 @@
 import { db } from "..";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import express, {
   ErrorRequestHandler,
   Request,
@@ -94,7 +94,7 @@ export let UserController = {
             let accessToken: string = authorization.split(" ")[1];
 
             try {
-              const decoded = jwt.verify(
+              const decoded: any = jwt.verify(
                 accessToken as string,
                 process.env.ACCESS_SECRET as jwt.Secret
               );
@@ -218,7 +218,7 @@ export let UserController = {
         let accessToken: string = authorization.split(" ")[1];
 
         try {
-          const decoded = jwt.verify(
+          const decoded: any = jwt.verify(
             accessToken as string,
             process.env.ACCESS_SECRET as jwt.Secret
           );
@@ -316,7 +316,7 @@ export let UserController = {
         let accessToken: string = authorization.split(" ")[1];
 
         try {
-          const decoded = jwt.verify(
+          const decoded: any = jwt.verify(
             accessToken as string,
             process.env.ACCESS_SECRET as jwt.Secret
           );
