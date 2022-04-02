@@ -68,7 +68,6 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
 
   const sendNewVote = async () => {
     const sendBody = logoutVoteBody();
-    console.log(sendBody);
 
     try {
       const res = await axios.post(serverURL + "/vting", sendBody, {

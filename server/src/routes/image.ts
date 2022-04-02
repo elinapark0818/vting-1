@@ -6,6 +6,9 @@ import { ImageController } from "../controllers/image";
 
 // const upload = require("../../modules/multer");
 
+
 router.patch("/:id", upload.single("files"), ImageController.userInfo.patch);
+
+
 
 export default router;
