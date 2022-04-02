@@ -481,12 +481,18 @@ export let VoteController = {
                 .findOne(
                   { user_id: data.user_id, _id: new ObjectId(voteId) },
                   (err: Error, data: any) => {
-                    // sumCount 넣기 : count의 총 합
-                    let sumCount: number = 0;
-                    for (let el of data.items) {
-                      sumCount += el.count;
+                    console.log("data", data);
+                    if (data.format !== "open") {
+                      let sumCount: number = 0;
+                      for (let el of data.items) {
+                        sumCount += el.count;
+                      }
+                      return res.status(200).json({ data: data, sumCount });
+                    } else {
+                      return res.status(200).json({ data: data });
                     }
-                    return res.status(200).json({ data: data, sumCount });
+                    // sumCount 넣기 : count의 총 합
+                    console.log("open data", data);
                   }
                 );
             }
@@ -511,17 +517,15 @@ export let VoteController = {
                 60;
               overtime = Math.round(overtime);
 
-              // sumCount 넣기 : count의 총 합
-              let sumCount: number = 0;
-              for (let el of data.items) {
-                sumCount += el.count;
+              if (data.format !== "open") {
+                let sumCount: number = 0;
+                for (let el of data.items) {
+                  sumCount += el.count;
+                }
+                return res.status(200).json({ data: data, overtime, sumCount });
+              } else {
+                return res.status(200).json({ data: data, overtime });
               }
-
-              return res.status(200).json({
-                data: data,
-                overtime,
-                sumCount,
-              });
             });
         } else {
           // 로그인이 풀리는 경우(accessToken 만료 됬을때)
