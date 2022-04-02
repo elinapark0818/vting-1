@@ -22,9 +22,47 @@ function V() {
   const [togglePublic, setTogglePublic] = useState(true);
   const [toggleOngoing, setToggleOngoing] = useState(true);
   const [voteTitle, setVoteTitle] = useState("");
+  const [voteInfo, setVoteInfo] = useState({});
+  const [voteSumCount, setVoteSumCount] = useState(0);
 
   const serverURL = "http://localhost:8000";
   const accessToken = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    const voteResult = async () => {
+      try {
+        const response = await axios.get(`${serverURL}/vting/${code}`, {
+          headers: {
+            Authorization: accessToken ? `Bearer ${accessToken}` : "",
+            withCredentials: true,
+          },
+        });
+
+        // 응답 객체에 password가 있으면 -> 비회원 설문조사임
+        if (response.status === 200 && response.data.data.password) {
+          setVoteInfo(response.data.data);
+          setVoteTitle(response.data.data.title);
+          setToggleOngoing(response.data.data.undergoing);
+          setTogglePublic(response.data.data.isPublic);
+          // 비회원 설문조사 모드 (비밀번호 입력창) 활성화
+        } else if (response.status === 200 && response.data.data.user_id) {
+          setVoteInfo(response.data.data);
+          setVoteTitle(response.data.data.title);
+          setToggleOngoing(response.data.data.undergoing);
+          setTogglePublic(response.data.data.isPublic);
+          console.log("(회원) 설문 생성 후 받아온 데이터 ==>", response.data);
+          // sumCount가 있는 설문이면 가져오기
+          if (response.data.sumCount) setVoteSumCount(response.data.sumCount);
+        } else {
+          console.log("잘못된 요청");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    voteResult();
+  }, []);
 
   const clickedTogglePublic = async () => {
     try {
@@ -74,28 +112,6 @@ function V() {
     }
   };
 
-  useEffect(() => {
-    const voteResult = async () => {
-      try {
-        const response = await axios.get(`${serverURL}/vting/${code}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            withCredentials: true,
-          },
-        });
-        if (response.status === 200) {
-          console.log(response.data.data);
-          setVoteTitle(response.data.data.title);
-          setToggleOngoing(response.data.data.undergoing);
-          setTogglePublic(response.data.data.isPublic);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    voteResult();
-  }, []);
-
   // Alert Option
   const options: AlertOptions = {
     position: positions.TOP_CENTER,
@@ -122,7 +138,11 @@ function V() {
           <div className="voteResultPage">
             <div className="voteResultTitle">{voteTitle}</div>
             <div className="voteResultContent">
-              {isRealTime ? <Vresult /> : <Howto />}
+              {isRealTime ? (
+                <Vresult voteInfo={voteInfo} voteSumCount={voteSumCount} />
+              ) : (
+                <Howto />
+              )}
             </div>
           </div>
           <div className="voteResultFooter">
