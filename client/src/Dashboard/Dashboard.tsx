@@ -11,9 +11,6 @@ const serverURL: string = "http://localhost:8000";
 function Dashboard() {
   const navigate = useNavigate();
 
-  // todo: 로그인하지 않은 유저가 /dashboard 로 접속할 경우
-  // todo: "로그인 후 이용가능합니다." 모달 띄워주고 [확인] 버튼 클릭시 로그인 페이지 이동
-  // todo: 로그인한 경우, 대시보드 접근하면 자신이 생성한 질문 모아보기
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const isLogin = useSelector((state: RootState) => state.isLogin);
 
@@ -53,9 +50,9 @@ function Dashboard() {
     key: index,
     created_at: vote.created_at.toString().split("T")[0],
     format: changeFormat(vote.format),
-    isPublic: vote.isPublic === true ? "진행중" : "종료",
+    isPublic: vote.isPublic === true ? "공개" : "비공개",
     title: vote.title,
-    undergoing: vote.undergoing,
+    undergoing: vote.undergoing === true ? "진행중" : "종료",
     url: parseInt(String(vote.url)),
   }));
 
@@ -66,38 +63,98 @@ function Dashboard() {
     if (type === "versus") return "대결형";
   }
 
+  const getUserInfo = async () => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      const res = await axios.get(`${serverURL}/user/${userInfo._id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
+      });
+      console.log(res);
+      if (res.status === 200) {
+        setUserVote(res.data.data.vote);
+      } else {
+        setUserVote(votes);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     if (!isLogin.login) {
       setSignInState(false);
     } else {
       setSignInState(true);
     }
-    const getUserInfo = async () => {
-      let accessToken = localStorage.getItem("accessToken");
-      try {
-        const res = await axios.get(`${serverURL}/user/${userInfo._id}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            withCredentials: true,
-          },
-        });
-        console.log(res);
-
-        if (res.status === 200) {
-          console.log("보트들===", res.data.data.vote);
-
-          setUserVote(res.data.data.vote);
-        } else {
-          setUserVote(votes);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
     getUserInfo();
   }, []);
 
   // todo: Vote Table 에서 설문 생성, 설문 종료, 설문 삭제 기능 구현하기
+  const DeleteVote = async (url: string) => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      const res = await axios.delete(`${serverURL}/vting/${url}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
+      });
+      if (res.status === 200) {
+        // todo: db 데이터는 삭제되는데 클라에서는 남아있다. 리렌더링
+        getUserInfo();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const [togglePublic, setTogglePublic] = useState(false);
+  const [toggleOngoing, setToggleOngoing] = useState(false);
+
+  const clickedTogglePublic = () => {
+    setTogglePublic((prev) => !prev);
+  };
+  const clickedToggleOngoing = () => {
+    setToggleOngoing((prev) => !prev);
+  };
+
+  const memberActiveOrPublic = async (url: string) => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      const res = await axios.patch(
+        `${serverURL}/vting/${url}`,
+        {
+          isPublic: "clicked!",
+          isActive: null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        }
+      );
+      console.log("응답이무얼까?", res.data);
+      if (res.status === 200) {
+        // * 회원 퍼블릭(공개/비공개)
+        setTogglePublic(res.data.isPublic);
+        console.log("공개설정바뀌니?===", togglePublic);
+
+        // * 회원 종료(종료/재시작)
+        setToggleOngoing(res.data.isActive);
+        console.log("종료!!설정바뀌니?===", toggleOngoing);
+        // * 리렌더링
+        getUserInfo();
+      } else {
+        console.log("Bad Request");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <>
@@ -111,40 +168,70 @@ function Dashboard() {
             <table className="dashboard_table">
               <thead>
                 <tr>
+                  <th>No.</th>
                   <th>제목</th>
                   <th>타입</th>
                   <th>상태</th>
                   <th>생성일</th>
                   <th>코드</th>
+                  <th>공개여부</th>
                   <th>종료</th>
                   <th>삭제</th>
                 </tr>
               </thead>
 
-              {newVotes.map((vote: any) => (
-                <tbody>
+              {newVotes.map((vote: any, index) => (
+                <tbody key={index}>
                   <tr>
+                    <td>{index + 1}</td>
                     <td onClick={() => navigate(`/v/${vote.url}`)}>
                       {vote.title}
                     </td>
                     <td>{vote.format}</td>
-                    <td>{vote.isPublic}</td>
+                    <td>{vote.undergoing}</td>
                     <td>{vote.created_at}</td>
                     <td>{vote.url}</td>
                     <td>
-                      <input
-                        className="dashboard_btn"
-                        type="button"
-                        style={{ width: "100%", height: "100%" }}
-                        value="종료하기"
-                      />
+                      <button
+                        className="toggleBtn"
+                        onClick={() => memberActiveOrPublic(`${vote.url}`)}
+                      >
+                        <div
+                          onClick={clickedTogglePublic}
+                          className={
+                            togglePublic
+                              ? "toggleCircle toggleOn"
+                              : "toggleCircle"
+                          }
+                        >
+                          {togglePublic ? "끄기" : "공개"}
+                        </div>
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        className="toggleBtn"
+                        onClick={() => memberActiveOrPublic(`${vote.url}`)}
+                      >
+                        <div
+                          onClick={clickedToggleOngoing}
+                          className={
+                            toggleOngoing
+                              ? "toggleCircle toggleOn"
+                              : "toggleCircle"
+                          }
+                        >
+                          {toggleOngoing ? "종료" : "진행"}
+                        </div>
+                      </button>
                     </td>
                     <td>
                       <input
                         className="dashboard_btn"
                         type="button"
                         style={{ width: "100%", height: "100%" }}
-                        value="삭제하기"
+                        value="삭제"
+                        onClick={() => DeleteVote(`${vote.url}`)}
                       />
                     </td>
                   </tr>
