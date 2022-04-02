@@ -15,7 +15,7 @@
   & h1 {
     font-size: 2.5rem;
     color: #fff;
-    padding: 0 1em;
+    padding: 0.5em 1em;
   }
 }
 
@@ -67,6 +67,22 @@
   transition: all 0.3s ease;
 }
 
+.deleteModal_closeBtn {
+  color: #aaa;
+  background-color: transparent;
+  line-height: 80px;
+  font-size: 20px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 70px;
+  text-decoration: none;
+  &:hover {
+    color: black;
+  }
+}
+
 // * 회원탈퇴 모달
 
 .deleteModal_container {
@@ -95,8 +111,11 @@
   border-radius: 3px;
   position: relative;
 
-  & h3 {
-    font-size: 20px;
+  & .deleteModal_desc {
+    margin-top: 3em;
+    & h3 {
+      font-size: 20px;
+    }
   }
 }
 

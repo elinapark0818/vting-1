@@ -96,14 +96,16 @@ function Delete() {
         <div className="deleteModal_container">
           <div className="deleteModal_background">
             <div className="deleteModal_modal">
-              <button className="closeBtn" onClick={closeModal}>
+              <button className="deleteModal_closeBtn" onClick={closeModal}>
                 X
               </button>
-              <h3>
-                회원정보가 삭제되면 복구되지 않습니다.
-                <br />
-                회원탈퇴를 진행하시겠습니까?
-              </h3>
+              <div className="deleteModal_desc">
+                <h3>
+                  회원정보가 삭제되면 복구되지 않습니다.
+                  <br />
+                  회원탈퇴를 진행하시겠습니까?
+                </h3>
+              </div>
               <div className="btnWrap">
                 <button className="delete_ok" onClick={() => deleteUser()}>
                   확인

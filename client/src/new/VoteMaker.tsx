@@ -99,23 +99,45 @@ function Bar() {
           </div>
         </div>
       </div>
+
       <div className="voteLabel topMargin10">
         &#128073; 설문 옵션을 선택하세요.
       </div>
-      <label htmlFor="voteMultiple">다중선택 가능</label>
-      <input
-        type="checkbox"
-        name="voteMultiple"
-        checked={newVoteMp}
-        onChange={(e) => dispatch(setMultiple(e.target.checked))}
-      />
-      <label htmlFor="voteManytimes">여러번 응답 가능</label>
-      <input
-        type="checkbox"
-        name="voteManytimes"
-        checked={newVoteMt}
-        onChange={(e) => dispatch(setManyTimes(e.target.checked))}
-      />
+
+      <div className="voteOptionItems">
+        <div className="voteOptionItem">
+          <div
+            className="fakeCheck"
+            onClick={() => {
+              dispatch(setMultiple(!newVoteMp));
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              visibility={newVoteMp ? "visible" : "hidden"}
+            >
+              <polyline points="19 7 10 17 5 12" />
+            </svg>
+          </div>
+          <label htmlFor="voteMultiple">다중선택 가능</label>
+        </div>
+        <div className="voteOptionItem">
+          <div
+            className="fakeCheck"
+            onClick={() => {
+              dispatch(setManyTimes(!newVoteMt));
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              visibility={newVoteMt ? "visible" : "hidden"}
+            >
+              <polyline points="19 7 10 17 5 12" />
+            </svg>
+          </div>
+          <label htmlFor="voteManytimes">여러번 응답 가능</label>
+        </div>
+      </div>
     </div>
   );
 }
@@ -129,28 +151,43 @@ function OpenEnded() {
 
   return (
     <div className="voteMakerCon">
-      <label htmlFor="voteTitle">설문 이름을 입력하세요.</label>
-      <br />
+      <label className="voteLabel" htmlFor="voteTitle">
+        &#128073; 설문 제목을 입력하세요.
+      </label>
       <input
+        className="VotetextInput"
         name="voteTitle"
         value={newVoteTitle}
         onChange={(e) => dispatch(setTitle(e.target.value))}
       ></input>
-      <br />
-      <br />
-      <label htmlFor="voteMultiple" className="disabledLabel">
-        다중선택 가능
-      </label>
-      <input type="checkbox" disabled name="voteMultiple" />
-      <br />
-      <br />
-      <label htmlFor="voteManytimes">여러번 응답 가능</label>
-      <input
-        type="checkbox"
-        name="voteManytimes"
-        checked={newVoteMt}
-        onChange={(e) => dispatch(setManyTimes(e.target.checked))}
-      />
+      <div className="voteLabel topMargin10">
+        &#128073; 설문 옵션을 선택하세요.
+      </div>
+
+      <div className="voteOptionItems">
+        <div className="voteOptionItem">
+          <div className="fakeCheck disabled"></div>
+          <label htmlFor="voteMultiple" className="disabledText">
+            다중선택 가능
+          </label>
+        </div>
+        <div className="voteOptionItem">
+          <div
+            className="fakeCheck"
+            onClick={() => {
+              dispatch(setManyTimes(!newVoteMt));
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              visibility={newVoteMt ? "visible" : "hidden"}
+            >
+              <polyline points="19 7 10 17 5 12" />
+            </svg>
+          </div>
+          <label htmlFor="voteManytimes">여러번 응답 가능</label>
+        </div>
+      </div>
     </div>
   );
 }
@@ -171,52 +208,83 @@ function Versus() {
 
   return (
     <div className="voteMakerCon">
-      <label htmlFor="voteTitle">설문 이름을 입력하세요.</label>
-      <br />
+      <label className="voteLabel" htmlFor="voteTitle">
+        &#128073; 설문 제목을 입력하세요.
+      </label>
       <input
+        className="VotetextInput"
         name="voteTitle"
         value={newVoteTitle}
         onChange={(e) => dispatch(setTitle(e.target.value))}
       ></input>
-      <br />
-      <br />
-      대결 항목을 입력하세요.
-      <input
-        value={vitem0}
-        onChange={(e) => {
-          setVitem0(e.target.value);
-        }}
-        onBlur={(e) => {
-          dispatch(setVersusItem({ idx: 0, content: vitem0 }));
-        }}
-      ></input>
-      <div>vs</div>
-      <input
-        value={vitem1}
-        onChange={(e) => {
-          setVitem1(e.target.value);
-        }}
-        onBlur={(e) => {
-          dispatch(setVersusItem({ idx: 1, content: vitem1 }));
-        }}
-      ></input>
-      <br />
-      <br />
-      <label htmlFor="voteMultiple">다중선택 가능</label>
-      <input
-        type="checkbox"
-        checked={newVoteMp}
-        onChange={(e) => dispatch(setMultiple(e.target.checked))}
-      />
-      <br />
-      <br />
-      <label htmlFor="voteManytimes">여러번 응답 가능</label>
-      <input
-        type="checkbox"
-        name="voteManytimes"
-        checked={newVoteMt}
-        onChange={(e) => dispatch(setManyTimes(e.target.checked))}
-      />
+      <div className="voteLabel topMargin10">
+        &#128073; 대결 항목을 입력하세요.
+      </div>
+      <div className="voteAnswers">
+        <div className="voteAnswer">
+          <input
+            className="VoteAnswerInput"
+            value={vitem0}
+            onChange={(e) => {
+              setVitem0(e.target.value);
+            }}
+            onBlur={(e) => {
+              dispatch(setVersusItem({ idx: 0, content: vitem0 }));
+            }}
+          ></input>
+        </div>
+        <div>vs</div>
+        <div className="voteAnswer">
+          <input
+            className="VoteAnswerInput"
+            value={vitem1}
+            onChange={(e) => {
+              setVitem1(e.target.value);
+            }}
+            onBlur={(e) => {
+              dispatch(setVersusItem({ idx: 1, content: vitem1 }));
+            }}
+          ></input>
+        </div>
+      </div>
+      <div className="voteLabel topMargin10">
+        &#128073; 설문 옵션을 선택하세요.
+      </div>
+
+      <div className="voteOptionItems">
+        <div className="voteOptionItem">
+          <div
+            className="fakeCheck"
+            onClick={() => {
+              dispatch(setMultiple(!newVoteMp));
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              visibility={newVoteMp ? "visible" : "hidden"}
+            >
+              <polyline points="19 7 10 17 5 12" />
+            </svg>
+          </div>
+          <label htmlFor="voteMultiple">다중선택 가능</label>
+        </div>
+        <div className="voteOptionItem">
+          <div
+            className="fakeCheck"
+            onClick={() => {
+              dispatch(setManyTimes(!newVoteMt));
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              visibility={newVoteMt ? "visible" : "hidden"}
+            >
+              <polyline points="19 7 10 17 5 12" />
+            </svg>
+          </div>
+          <label htmlFor="voteManytimes">여러번 응답 가능</label>
+        </div>
+      </div>
     </div>
   );
 }
@@ -230,34 +298,43 @@ function WordCloud() {
 
   return (
     <div className="voteMakerCon">
-      <label htmlFor="voteTitle">설문 이름을 입력하세요.</label>
-      <br />
+      <label className="voteLabel" htmlFor="voteTitle">
+        &#128073; 설문 제목을 입력하세요.
+      </label>
       <input
+        className="VotetextInput"
         name="voteTitle"
         value={newVoteTitle}
         onChange={(e) => dispatch(setTitle(e.target.value))}
       ></input>
-      <br />
-      <br />
-      <label htmlFor="voteMultiple" className="disabledLabel">
-        다중선택 가능
-      </label>
-      <input
-        type="checkbox"
-        disabled
-        name="voteMultiple"
-        checked={newVoteMp}
-        onChange={(e) => dispatch(setMultiple(e.target.checked))}
-      />
-      <br />
-      <br />
-      <label htmlFor="voteManytimes">여러번 응답 가능</label>
-      <input
-        type="checkbox"
-        name="voteManytimes"
-        checked={newVoteMt}
-        onChange={(e) => dispatch(setManyTimes(e.target.checked))}
-      />
+      <div className="voteLabel topMargin10">
+        &#128073; 설문 옵션을 선택하세요.
+      </div>
+
+      <div className="voteOptionItems">
+        <div className="voteOptionItem">
+          <div className="fakeCheck disabled"></div>
+          <label htmlFor="voteMultiple" className="disabledText">
+            다중선택 가능
+          </label>
+        </div>
+        <div className="voteOptionItem">
+          <div
+            className="fakeCheck"
+            onClick={() => {
+              dispatch(setManyTimes(!newVoteMt));
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              visibility={newVoteMt ? "visible" : "hidden"}
+            >
+              <polyline points="19 7 10 17 5 12" />
+            </svg>
+          </div>
+          <label htmlFor="voteManytimes">여러번 응답 가능</label>
+        </div>
+      </div>
     </div>
   );
 }

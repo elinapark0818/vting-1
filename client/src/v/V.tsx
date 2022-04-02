@@ -10,20 +10,106 @@ import {
   Provider as AlertProvider,
 } from "react-alert";
 import { AlertTemplate, ImgAlertTemplate } from "./AlertTemplate";
+import axios from "axios";
+import Vresult from "./Vresult";
 
 const imgAlertContext = createContext<any | null>(null);
 
 // 컴포넌트 시작
 function V() {
+  const { code } = useParams();
   const [isRealTime, setIsRealTime] = useState(false);
-  const [togglePublic, setTogglePublic] = useState(false);
-  const [toggleOngoing, setToggleOngoing] = useState(false);
+  const [togglePublic, setTogglePublic] = useState(true);
+  const [toggleOngoing, setToggleOngoing] = useState(true);
+  const [voteTitle, setVoteTitle] = useState("");
+  const [voteInfo, setVoteInfo] = useState({});
+  const [voteSumCount, setVoteSumCount] = useState(0);
 
-  const clickedTogglePublic = () => {
-    setTogglePublic((prev) => !prev);
+  const serverURL = "http://localhost:8000";
+  const accessToken = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    const voteResult = async () => {
+      try {
+        const response = await axios.get(`${serverURL}/vting/${code}`, {
+          headers: {
+            Authorization: accessToken ? `Bearer ${accessToken}` : "",
+            withCredentials: true,
+          },
+        });
+
+        // 응답 객체에 password가 있으면 -> 비회원 설문조사임
+        if (response.status === 200 && response.data.data.password) {
+          setVoteInfo(response.data.data);
+          setVoteTitle(response.data.data.title);
+          setToggleOngoing(response.data.data.undergoing);
+          setTogglePublic(response.data.data.isPublic);
+          // 비회원 설문조사 모드 (비밀번호 입력창) 활성화
+        } else if (response.status === 200 && response.data.data.user_id) {
+          setVoteInfo(response.data.data);
+          setVoteTitle(response.data.data.title);
+          setToggleOngoing(response.data.data.undergoing);
+          setTogglePublic(response.data.data.isPublic);
+          console.log("(회원) 설문 생성 후 받아온 데이터 ==>", response.data);
+          // sumCount가 있는 설문이면 가져오기
+          if (response.data.sumCount) setVoteSumCount(response.data.sumCount);
+        } else {
+          console.log("잘못된 요청");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    voteResult();
+  }, []);
+
+  const clickedTogglePublic = async () => {
+    try {
+      const response = await axios.patch(
+        `${serverURL}/vting/${code}`,
+        {
+          isPublic: "clicked!",
+          isActive: null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        }
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        setTogglePublic(response.data.isPublic);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
-  const clickedToggleOngoing = () => {
-    setToggleOngoing((prev) => !prev);
+
+  const clickedToggleOngoing = async () => {
+    try {
+      const response = await axios.patch(
+        `${serverURL}/vting/${code}`,
+        {
+          isPublic: null,
+          isActive: "clicked!",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        }
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        setToggleOngoing(response.data.isActive);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   // Alert Option
@@ -50,11 +136,13 @@ function V() {
       >
         <div className="voteResultPageCon">
           <div className="voteResultPage">
-            <div className="voteResultTitle">
-              자신을 한 문장으로 표현한다면?
-            </div>
+            <div className="voteResultTitle">{voteTitle}</div>
             <div className="voteResultContent">
-              {isRealTime ? <RealTime /> : <Howto />}
+              {isRealTime ? (
+                <Vresult voteInfo={voteInfo} voteSumCount={voteSumCount} />
+              ) : (
+                <Howto />
+              )}
             </div>
           </div>
           <div className="voteResultFooter">
@@ -73,22 +161,28 @@ function V() {
               </div>
             </div>
             <div className="options">
-              <button onClick={clickedTogglePublic} className="toggleBtn">
+              <button
+                onClick={() => clickedTogglePublic()}
+                className="toggleBtn"
+              >
                 <div
                   className={
-                    togglePublic ? "toggleCircle toggleOn" : "toggleCircle"
+                    togglePublic ? "toggleCircle" : "toggleCircle toggleOn"
                   }
                 >
-                  {togglePublic ? "비공개" : "공개"}
+                  {togglePublic ? "공개" : "비공개"}
                 </div>
               </button>
-              <button onClick={clickedToggleOngoing} className="toggleBtn">
+              <button
+                onClick={() => clickedToggleOngoing()}
+                className="toggleBtn"
+              >
                 <div
                   className={
-                    toggleOngoing ? "toggleCircle toggleOn" : "toggleCircle"
+                    toggleOngoing ? "toggleCircle" : "toggleCircle toggleOn"
                   }
                 >
-                  {toggleOngoing ? "재시작" : "진행중"}
+                  {toggleOngoing ? "진행중" : "재시작"}
                 </div>
               </button>
             </div>
@@ -220,35 +314,6 @@ function Howto() {
         </div>
       </div>
     </>
-  );
-}
-
-// 실시간 응답보기 컴포넌트
-function RealTime() {
-  const dummyData = [
-    "저는 그야말로 말하는 감자",
-    "나를 한문장에 담을 수 없음",
-    "안녕하세요? 디진다돈까스를 사랑하는 돈까스맨입니다.",
-    "안녕하세요! 낮에는 따사로운 햇살같은 남자입니다.",
-    "이시대의 로맨티스트",
-    "근데 이거 왜 하는거에요?",
-  ];
-
-  return (
-    <div className="realTimeCon">
-      {dummyData.map((el, idx) => (
-        <div
-          className={
-            idx < 4
-              ? `openendIcon border${idx + 1}`
-              : `openendIcon border${idx - 3}`
-          }
-          key={idx}
-        >
-          {el}
-        </div>
-      ))}
-    </div>
   );
 }
 
