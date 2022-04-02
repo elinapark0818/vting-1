@@ -54,12 +54,19 @@ export let VoteController = {
       let randomNum: any = Math.random();
       let url = Math.round(randomNum.toFixed(6) * 1000000);
 
-      // items Array에 count: 0 넣어주기
-      if (Array.isArray(items)) {
-        for (let el of items) {
-          el.count = 0;
+      if (items !== undefined) {
+        // items Array에 count: 0 넣어주기
+        if (Array.isArray(items)) {
+          for (let el of items) {
+            el.count = 0;
+          }
         }
+        // items 아무것도 안보내줄때 빈객체로 셋팅 해놓기
+      } else {
+        items = [];
       }
+
+      // response 아무것도 안보내줄때 빈객체로 셋팅 해놓기
 
       try {
         // 헤더에 token 받아오기
@@ -491,8 +498,6 @@ export let VoteController = {
                     } else {
                       return res.status(200).json({ data: data });
                     }
-                    // sumCount 넣기 : count의 총 합
-                    console.log("open data", data);
                   }
                 );
             }
