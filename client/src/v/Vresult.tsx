@@ -81,122 +81,142 @@ const makeRandomWidth = (num: number, sum: number): React.CSSProperties => {
   return heightProprety;
 };
 
-// 워드클라우드 세팅
-const words = dummyData[4].answer.map((el) => ({
-  text: el.content,
-  value: el.count,
-}));
-const fontSizes = [20, 50] as MinMaxPair;
-const options = {
-  fontSizes: fontSizes,
-};
+interface Item {
+  idx: number;
+  content: string;
+  count?: number;
+}
+
+interface VoteInfo {
+  _id?: string;
+  user_id?: string;
+  password?: string;
+  url?: number;
+  title?: string;
+  format?: string;
+  type?: string;
+  items?: Item[];
+  multiple?: boolean;
+  manytimes?: boolean;
+  undergoing?: boolean;
+  isPublic?: boolean;
+  created_at?: string;
+  overtime?: number;
+}
+
+interface Props {
+  voteInfo: VoteInfo;
+  voteSumCount: number;
+}
 
 // 컴포넌트 시작
-function Vresult() {
+function Vresult({ voteInfo, voteSumCount }: Props) {
   const [data, setData] = useState(-1);
+  const format = voteInfo.format;
+  const type = voteInfo.type;
 
-  switch (data) {
-    case 0:
-      return (
-        <div className="realTimeCon">
-          <div className="votePreviewBack">
-            <div className="votePreview-barVer-con">
-              {dummyData[0].answer.map((el, idx) => (
-                <div key={idx} id="votePreview-barVer-bar">
-                  <div className="barVer-itemName">{el.content}</div>
-                  <div
-                    className="barVer-itemBar"
-                    style={makeRandomHeight(el.count, dummyData[0].sumCount)}
-                  ></div>
-                </div>
-              ))}
+  // 워드클라우드 세팅
+  const words = voteInfo.items
+    ? voteInfo.items.map((el) => ({
+        text: el.content as string,
+        value: el.count as number,
+      }))
+    : [{ text: "", value: 0 }];
+  const fontSizes = [20, 50] as MinMaxPair;
+  const options = {
+    fontSizes: fontSizes,
+  };
+
+  switch (format) {
+    case "bar":
+      if (type === "vertical") {
+        return (
+          <div className="realTimeCon">
+            <div className="votePreviewBack">
+              <div className="votePreview-barVer-con">
+                {voteInfo.items ? (
+                  voteInfo.items.map((el, idx) => (
+                    <div key={idx} id="votePreview-barVer-bar">
+                      <div className="barVer-itemName">{el.content}</div>
+                      <div
+                        className="barVer-itemBar"
+                        style={makeRandomHeight(
+                          el.count as number,
+                          voteSumCount
+                        )}
+                      ></div>
+                    </div>
+                  ))
+                ) : (
+                  <div>설문 정보를 불러올 수 없습니다.</div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      );
-    case 1:
-      return (
-        <div className="realTimeCon">
-          <div className="votePreviewBack">
-            <div className="votePreview-barHor-con">
-              {dummyData[1].answer.map((el, idx) => (
-                <div key={idx} id="votePreview-barHor-bar">
-                  <div className="barHor-itemName">{el.content}</div>
-                  <div
-                    className="barHor-itemBar"
-                    style={makeRandomWidth(el.count, dummyData[1].sumCount)}
-                  ></div>
-                </div>
-              ))}
+        );
+      } else if (type === "horizontal") {
+        return (
+          <div className="realTimeCon">
+            <div className="votePreviewBack">
+              <div className="votePreview-barHor-con">
+                {voteInfo.items ? (
+                  voteInfo.items.map((el, idx) => (
+                    <div key={idx} id="votePreview-barHor-bar">
+                      <div className="barHor-itemName">{el.content}</div>
+                      <div
+                        className="barHor-itemBar"
+                        style={makeRandomWidth(
+                          el.count as number,
+                          voteSumCount
+                        )}
+                      ></div>
+                    </div>
+                  ))
+                ) : (
+                  <div>설문 정보를 불러올 수 없습니다.</div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      );
-    case 2:
+        );
+      }
+      return <></>;
+    case "open":
       return (
         <div className="realTimeCon">
-          {dummyData[2].answer.map((el, idx) => (
-            <div
-              className={
-                idx < 4
-                  ? `openendIcon border${idx + 1}`
-                  : `openendIcon border${idx - 3}`
-              }
-              key={idx}
-            >
-              {el.content}
-            </div>
-          ))}
+          {voteInfo.items ? (
+            voteInfo.items.map((el, idx) => (
+              <div
+                className={
+                  idx < 4
+                    ? `openendIcon border${idx + 1}`
+                    : `openendIcon border${idx - 3}`
+                }
+                key={idx}
+              >
+                {el.content}
+              </div>
+            ))
+          ) : (
+            <div>설문 정보를 불러올 수 없습니다.</div>
+          )}
         </div>
       );
-    case 3:
+    case "versus":
       return (
         <div className="realTimeCon">
           <div className="versusCon">
-            <div>{dummyData[3].answer[0].content}</div>
+            <div>{voteInfo.items ? voteInfo.items[0].content : ""}</div>
             <div>vs</div>
-            <div>{dummyData[3].answer[1].content}</div>
+            <div>{voteInfo.items ? voteInfo.items[1].content : ""}</div>
           </div>
         </div>
       );
-    case 4:
+    case "word":
       return <ReactWordcloud words={words} options={options} />;
     default:
-      return (
-        <div>
-          <button onClick={() => setData(0)}>세로형 바</button>
-          <button onClick={() => setData(1)}>가로형 바</button>
-          <button onClick={() => setData(2)}>대화형</button>
-          <button onClick={() => setData(3)}>대결형</button>
-          <button onClick={() => setData(4)}>말풍선형</button>
-        </div>
-      );
+      return <div>데이터 불러오기 실패</div>;
   }
-
-  //   return (
-  //     <div>
-  //       <button onClick={() => setData(0)}>가로형 바</button>
-  //       <button onClick={() => setData(1)}>세로형 바</button>
-  //       <button onClick={() => setData(2)}>대화형</button>
-  //       <button onClick={() => setData(3)}>대결형</button>
-  //       <button onClick={() => setData(4)}>말풍선형</button>
-
-  //       <div className="realTimeCon">
-  //         {dummyData[data].answer.map((el, idx) => (
-  //           <div
-  //             className={
-  //               idx < 4
-  //                 ? `openendIcon border${idx + 1}`
-  //                 : `openendIcon border${idx - 3}`
-  //             }
-  //             key={idx}
-  //           >
-  //             {el.content}
-  //           </div>
-  //         ))}
-  //       </div>
-  //     </div>
-  //   );
 }
 
 export default Vresult;

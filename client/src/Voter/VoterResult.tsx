@@ -30,29 +30,25 @@ function VoterResult() {
     if (code) setResult(true);
   }, [code]);
 
-  // const serverURL = "http://localhost:8000";
+  const serverURL = "http://localhost:8000";
 
-  // useEffect(() => {
-  //   console.log("시작");
-  //   let accessToken = localStorage.getItem("accessToken");
-  //   console.log("토큰", accessToken);
-  //   const voteResult = async () => {
-  //     try {
-  //       const response = await axios.get(`${serverURL}/vote/${code}`, {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //           withCredentials: true,
-  //         },
-  //       });
-  //       if (response.status === 200) {
-  //         console.log(response.data);
-  //       }
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
-  //   voteResult();
-  // }, []);
+  useEffect(() => {
+    const voteResult = async () => {
+      try {
+        const response = await axios.get(`${serverURL}/vote/${code}`, {
+          headers: {
+            withCredentials: true,
+          },
+        });
+        if (response.status === 200) {
+          console.log(response.data);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    voteResult();
+  }, []);
 
   return (
     <div className="votingCon">
