@@ -8,6 +8,7 @@ import express, {
 } from "express";
 
 import dotenv from "dotenv";
+import { Collection } from "mongodb";
 dotenv.config();
 
 const SALT_ROUNDS = 6;
@@ -247,43 +248,49 @@ export let UserController = {
         let accessToken: string = authorization.split(" ")[1];
 
         try {
-          const decoded = jwt.verify(
+          const decoded: any = jwt.verify(
             accessToken as string,
             process.env.ACCESS_SECRET as jwt.Secret
           );
-          const findUser = await db
-            .collection("user")
-            .findOne({ user_id: decoded.user_id });
+          if (decoded) {
+            const findUser = await db
+              .collection("user")
+              .findOne({ user_id: decoded.user_id });
+            console.log("decoded", decoded);
+            console.log("finduser", findUser);
 
-          const findUserVote: any[] = await db
-            .collection("vote")
-            .find({ user_id: decoded.user_id })
-            .toArray();
+            //여기까지 잘됨
+            const findUserVote: any[] = await db
+              .collection("vote")
+              .find({ user_id: decoded.user_id })
+              .toArray();
 
-          if (findUser && findUserVote) {
-            var voteInfo = [];
+            console.log("findUserVote", findUserVote);
+            if (findUser && findUserVote) {
+              var voteInfo = [];
 
-            for (let i = 0; i < findUserVote.length; i++) {
-              const vote: any = {
-                title: findUserVote[i].title,
-                format: findUserVote[i].format,
-                status: findUserVote[i].status,
-                undergoing: findUserVote[i].undergoing,
-                created_at: findUserVote[i].created_at,
-                url: findUserVote[i].url,
-              };
-              voteInfo.push(vote);
+              for (let i = 0; i < findUserVote.length; i++) {
+                const vote: any = {
+                  title: findUserVote[i].title,
+                  format: findUserVote[i].format,
+                  isPublic: findUserVote[i].isPublic,
+                  undergoing: findUserVote[i].undergoing,
+                  created_at: findUserVote[i].created_at,
+                  url: findUserVote[i].url,
+                };
+                voteInfo.push(vote);
+              }
+
+              return res.status(200).json({
+                data: {
+                  _id: findUser._id,
+                  nickname: findUser.nickname,
+                  user_id: findUser.user_id,
+                  image: findUser.image,
+                  vote: voteInfo,
+                },
+              });
             }
-
-            return res.status(200).json({
-              data: {
-                _id: findUser._id,
-                nickname: findUser.nickname,
-                user_id: findUser.user_id,
-                image: findUser.image,
-                vote: voteInfo,
-              },
-            });
           } else {
             return res.status(400).json({ message: "Bad request" });
           }

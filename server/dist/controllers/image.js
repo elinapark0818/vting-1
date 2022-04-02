@@ -18,14 +18,13 @@ dotenv_1.default.config();
 const multer = require("multer");
 exports.ImageController = {
     userInfo: {
-        post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             // console.log(req);
-            const image = req.file.path;
-            console.log(req.file);
-            if (image === undefined) {
-                return res.status(400).send(util.fail(400, "no image"));
-            }
-            res.status(200).send(util.success(200, "image exists", image));
+            console.log(req);
+            // if (image === undefined) {
+            //   return res.status(400).send(util.fail(400, "no image"));
+            // }
+            // res.status(200).send(util.success(200, "image exists", image));
             //   console.log(req.file);
             //   const image = (req.file as Express.Multer.File).location;
             //   if (image === undefined) {
