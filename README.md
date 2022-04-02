@@ -58,6 +58,8 @@
 
 <img src="https://img.shields.io/badge/bcrypt-1a1958?style=for-the-badge&logo=bcrypt&logoColor=white">
 
+<img src="https://img.shields.io/badge/multer-s3-00b0f0?style=for-the-badge&logo=multer-s3&logoColor=white">
+
 ## Deploy
 
 <img src="https://img.shields.io/badge/DEPLOY-AWS-%23232F3E?style=for-the-badge&logo=Amazon%20AWS" />
