@@ -1,4 +1,10 @@
-import React, { useEffect, useState, createContext } from "react";
+import React, {
+  useEffect,
+  useState,
+  createContext,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { useParams } from "react-router-dom";
 import { BiShareAlt, BiCopy } from "react-icons/bi";
 import "./v.scss";
@@ -12,8 +18,54 @@ import {
 import { AlertTemplate, ImgAlertTemplate } from "./AlertTemplate";
 import axios from "axios";
 import Vresult from "./Vresult";
+import { userInfo } from "os";
 
 const imgAlertContext = createContext<any | null>(null);
+
+interface Item {
+  idx: number;
+  content: string;
+  count?: number;
+}
+
+interface VoteInfo {
+  _id?: string;
+  user_id?: string;
+  password?: string;
+  url?: number;
+  title?: string;
+  format?: string;
+  type?: string;
+  items?: Item[];
+  multiple?: boolean;
+  manytimes?: boolean;
+  undergoing?: boolean;
+  isPublic?: boolean;
+  created_at?: string;
+  overtime?: number;
+}
+
+const dummyVote: VoteInfo = {
+  _id: "",
+  user_id: "",
+  password: "",
+  url: 0,
+  title: "",
+  format: "",
+  type: "",
+  items: [],
+  multiple: false,
+  manytimes: false,
+  undergoing: false,
+  isPublic: false,
+  created_at: "",
+  overtime: 0,
+};
+
+interface Props {
+  setIsNonUser: Dispatch<SetStateAction<boolean>>;
+  votePass: string | undefined;
+}
 
 // 컴포넌트 시작
 function V() {
@@ -22,8 +74,9 @@ function V() {
   const [togglePublic, setTogglePublic] = useState(true);
   const [toggleOngoing, setToggleOngoing] = useState(true);
   const [voteTitle, setVoteTitle] = useState("");
-  const [voteInfo, setVoteInfo] = useState({});
+  const [voteInfo, setVoteInfo] = useState(dummyVote);
   const [voteSumCount, setVoteSumCount] = useState(0);
+  const [isNonUser, setIsNonUser] = useState(false);
 
   const serverURL = "http://localhost:8000";
   const accessToken = localStorage.getItem("accessToken");
@@ -45,6 +98,7 @@ function V() {
           setToggleOngoing(response.data.data.undergoing);
           setTogglePublic(response.data.data.isPublic);
           // 비회원 설문조사 모드 (비밀번호 입력창) 활성화
+          setIsNonUser(true);
         } else if (response.status === 200 && response.data.data.user_id) {
           setVoteInfo(response.data.data);
           setVoteTitle(response.data.data.title);
@@ -89,37 +143,59 @@ function V() {
   };
 
   const clickedToggleOngoing = async () => {
-    try {
-      const response = await axios.patch(
-        `${serverURL}/vting/${code}`,
-        {
-          isPublic: null,
-          isActive: "clicked!",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            withCredentials: true,
+    if (voteInfo.password) {
+      try {
+        const response = await axios.patch(
+          `${serverURL}/vting/${code}`,
+          {
+            isPublic: null,
+            isActive: "clicked!",
           },
+          {
+            headers: {
+              withCredentials: true,
+            },
+          }
+        );
+        console.log(response.data);
+        if (response.status === 200) {
+          setToggleOngoing(response.data.isActive);
         }
-      );
-      console.log(response.data);
-      if (response.status === 200) {
-        setToggleOngoing(response.data.isActive);
+      } catch (e) {
+        console.log(e);
       }
-    } catch (e) {
-      console.log(e);
+    } else {
+      try {
+        const response = await axios.patch(
+          `${serverURL}/vting/${code}`,
+          {
+            isPublic: null,
+            isActive: "clicked!",
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              withCredentials: true,
+            },
+          }
+        );
+        console.log(response.data);
+        if (response.status === 200) {
+          setToggleOngoing(response.data.isActive);
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
-  // Alert Option
+  // Alert Options
   const options: AlertOptions = {
     position: positions.TOP_CENTER,
     timeout: 3000,
     offset: "70px",
     transition: transitions.SCALE,
   };
-
   const imgoptions: AlertOptions = {
     position: positions.MIDDLE,
     // timeout: 3000,
@@ -134,60 +210,92 @@ function V() {
         {...imgoptions}
         context={imgAlertContext}
       >
-        <div className="voteResultPageCon">
-          <div className="voteResultPage">
-            <div className="voteResultTitle">{voteTitle}</div>
-            <div className="voteResultContent">
-              {isRealTime ? (
-                <Vresult voteInfo={voteInfo} voteSumCount={voteSumCount} />
+        {isNonUser ? (
+          <div className="voteResultPageCon">
+            <div className="voteResultPage">
+              <div className="voteResultTitle">비회원 설문 관리 페이지</div>
+              <div className="voteResultContent">
+                <PasswordCheck
+                  setIsNonUser={setIsNonUser}
+                  votePass={voteInfo.password}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="voteResultPageCon">
+            <div className="voteResultPage">
+              <div className="voteResultTitle">{voteTitle}</div>
+              <div className="voteResultContent">
+                {isRealTime ? (
+                  <Vresult voteInfo={voteInfo} voteSumCount={voteSumCount} />
+                ) : (
+                  <Howto />
+                )}
+              </div>
+            </div>
+            <div className="voteResultFooter">
+              <div className="modeChange">
+                <div
+                  className={isRealTime ? "modebtn gray" : "modebtn"}
+                  onClick={() => setIsRealTime(false)}
+                >
+                  Vting 접속 방법
+                </div>
+                <div
+                  className={isRealTime ? "modebtn" : "modebtn gray"}
+                  onClick={() => setIsRealTime(true)}
+                >
+                  실시간 응답 보기
+                </div>
+              </div>
+              {voteInfo.password ? (
+                <div className="options">
+                  <div>설문 자동 종료까지 00 초 남았습니다.</div>
+                  <button
+                    onClick={() => clickedToggleOngoing()}
+                    className="toggleBtn"
+                  >
+                    <div
+                      className={
+                        toggleOngoing ? "toggleCircle" : "toggleCircle toggleOn"
+                      }
+                    >
+                      {toggleOngoing ? "진행중" : "재시작"}
+                    </div>
+                  </button>
+                </div>
               ) : (
-                <Howto />
+                <div className="options">
+                  <button
+                    onClick={() => clickedTogglePublic()}
+                    className="toggleBtn"
+                  >
+                    <div
+                      className={
+                        togglePublic ? "toggleCircle" : "toggleCircle toggleOn"
+                      }
+                    >
+                      {togglePublic ? "공개" : "비공개"}
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => clickedToggleOngoing()}
+                    className="toggleBtn"
+                  >
+                    <div
+                      className={
+                        toggleOngoing ? "toggleCircle" : "toggleCircle toggleOn"
+                      }
+                    >
+                      {toggleOngoing ? "진행중" : "재시작"}
+                    </div>
+                  </button>
+                </div>
               )}
             </div>
           </div>
-          <div className="voteResultFooter">
-            <div className="modeChange">
-              <div
-                className={isRealTime ? "modebtn gray" : "modebtn"}
-                onClick={() => setIsRealTime(false)}
-              >
-                Vting 접속 방법
-              </div>
-              <div
-                className={isRealTime ? "modebtn" : "modebtn gray"}
-                onClick={() => setIsRealTime(true)}
-              >
-                실시간 응답 보기
-              </div>
-            </div>
-            <div className="options">
-              <button
-                onClick={() => clickedTogglePublic()}
-                className="toggleBtn"
-              >
-                <div
-                  className={
-                    togglePublic ? "toggleCircle" : "toggleCircle toggleOn"
-                  }
-                >
-                  {togglePublic ? "공개" : "비공개"}
-                </div>
-              </button>
-              <button
-                onClick={() => clickedToggleOngoing()}
-                className="toggleBtn"
-              >
-                <div
-                  className={
-                    toggleOngoing ? "toggleCircle" : "toggleCircle toggleOn"
-                  }
-                >
-                  {toggleOngoing ? "진행중" : "재시작"}
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
+        )}
       </AlertProvider>
     </AlertProvider>
   );
@@ -314,6 +422,33 @@ function Howto() {
         </div>
       </div>
     </>
+  );
+}
+
+function PasswordCheck({ setIsNonUser, votePass }: Props) {
+  const [password, setPassword] = useState("");
+  const alert = useAlert();
+
+  // 비회원 비밀번호 체크 로직
+  function checkingPassword(password: string) {
+    if (password === votePass) {
+      setIsNonUser(false);
+    } else {
+      alert.show("비밀번호를 다시 확인해주세요.");
+    }
+  }
+
+  return (
+    <div>
+      <div>비회원 설문 관리 페이지에 입장하시려면</div>
+      <div>설문 시 생성한 임시 비밀번호를 입력하세요.</div>
+      <input
+        type="text"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button onClick={() => checkingPassword(password)}>확인</button>
+    </div>
   );
 }
 
