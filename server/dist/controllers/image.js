@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const util = require("../../modules/util");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const multer = require("multer");
@@ -20,7 +19,7 @@ exports.ImageController = {
     userInfo: {
         patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             console.log(req.file);
-            res.status(200).json({ message: "요청 성공 〰️ ", data: req.file.path });
+            res.status(200).json({ message: "Success", data: req.file.location });
         }),
     },
 };

@@ -11,7 +11,6 @@
 
 # production
 /build
-# /config/s3.json
 
 # misc
 .DS_Store
