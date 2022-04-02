@@ -174,35 +174,41 @@ exports.UserController = {
                 let accessToken = authorization.split(" ")[1];
                 try {
                     const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-                    const findUser = yield __1.db
-                        .collection("user")
-                        .findOne({ user_id: decoded.user_id });
-                    const findUserVote = yield __1.db
-                        .collection("vote")
-                        .find({ user_id: decoded.user_id })
-                        .toArray();
-                    if (findUser && findUserVote) {
-                        var voteInfo = [];
-                        for (let i = 0; i < findUserVote.length; i++) {
-                            const vote = {
-                                title: findUserVote[i].title,
-                                format: findUserVote[i].format,
-                                status: findUserVote[i].status,
-                                undergoing: findUserVote[i].undergoing,
-                                created_at: findUserVote[i].created_at,
-                                url: findUserVote[i].url,
-                            };
-                            voteInfo.push(vote);
+                    if (decoded) {
+                        const findUser = yield __1.db
+                            .collection("user")
+                            .findOne({ user_id: decoded.user_id });
+                        console.log("decoded", decoded);
+                        console.log("finduser", findUser);
+                        //여기까지 잘됨
+                        const findUserVote = yield __1.db
+                            .collection("vote")
+                            .find({ user_id: decoded.user_id })
+                            .toArray();
+                        console.log("findUserVote", findUserVote);
+                        if (findUser && findUserVote) {
+                            var voteInfo = [];
+                            for (let i = 0; i < findUserVote.length; i++) {
+                                const vote = {
+                                    title: findUserVote[i].title,
+                                    format: findUserVote[i].format,
+                                    isPublic: findUserVote[i].isPublic,
+                                    undergoing: findUserVote[i].undergoing,
+                                    created_at: findUserVote[i].created_at,
+                                    url: findUserVote[i].url,
+                                };
+                                voteInfo.push(vote);
+                            }
+                            return res.status(200).json({
+                                data: {
+                                    _id: findUser._id,
+                                    nickname: findUser.nickname,
+                                    user_id: findUser.user_id,
+                                    image: findUser.image,
+                                    vote: voteInfo,
+                                },
+                            });
                         }
-                        return res.status(200).json({
-                            data: {
-                                _id: findUser._id,
-                                nickname: findUser.nickname,
-                                user_id: findUser.user_id,
-                                image: findUser.image,
-                                vote: voteInfo,
-                            },
-                        });
                     }
                     else {
                         return res.status(400).json({ message: "Bad request" });
