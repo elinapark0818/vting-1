@@ -109,6 +109,20 @@
   .voteLabel {
     font-weight: 500;
   }
+  .voteTitle {
+    color: red;
+    display: none;
+  }
+  .voteTitleErr {
+    display: block;
+  }
+  .voteItem {
+    color: red;
+    display: none;
+  }
+  .voteItemErr {
+    display: block;
+  }
   .topMargin10 {
     margin-top: 30px;
   }
@@ -166,7 +180,7 @@
     cursor: pointer;
   }
   .shakeIt {
-    animation: shake 0.1s linear 0.1s infinite alternate;
+    animation: shake 0.1s linear 0.1s 5 alternate;
   }
   @keyframes shake {
     0% {
@@ -380,6 +394,7 @@
 }
 
 .vtingButtonGray {
+  cursor: help;
   font-size: 15px;
   font-weight: 400;
   width: 80%;

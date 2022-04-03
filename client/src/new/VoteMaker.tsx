@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setTitle,
   setItems,
   setMultiple,
   setManyTimes,
+  deleteItems,
   RootState,
 } from "../store/index";
 import vtinglogo from "../assets/vt_logo_2.png";
@@ -35,31 +36,31 @@ function VoteMaker() {
 
 // 바 그래프
 function Bar() {
+  const dispatch = useDispatch();
   const newVote = useSelector((state: RootState) => state.makeNewVote);
-  const newVoteTitle = newVote.title;
   const newVoteMt = newVote.manytimes;
   const newVoteMp = newVote.multiple;
   const newVoteItems = newVote.items;
-  const dispatch = useDispatch();
   const [isShake, setIsShake] = useState(false);
   const [typedItem, setTypedItem] = useState(
     newVoteItems[newVoteItems.length]
       ? newVoteItems[newVoteItems.length].content
       : ""
   );
+  const [titleShake, setTitleShake] = useState(false);
+  const [everytingIsOk, setEverythingIsOk] = useState(false);
+  const [itemShake, setItemShake] = useState(false);
+
+  useEffect(() => {
+    if (newVote.title) setTitleShake(false);
+    if (newVote.items.length > 1) setItemShake(false);
+    if (newVote.title && newVote.items.length > 1) setEverythingIsOk(true);
+  }, [newVote.title, newVote.items]);
 
   const plusTriger = () => {
     if (typedItem) {
       dispatch(setItems({ idx: newVoteItems.length, content: typedItem }));
       setTypedItem("");
-      // dispatch(
-      //   setItems({
-      //     idx: newVoteItems.length,
-      //     content: e.target.value,
-      //   })
-      // );
-      // dispatch(setIndex(newVoteItems.length));
-      // dispatch(setItem(""));
     } else {
       setIsShake(true);
       setTimeout(function () {
@@ -68,18 +69,33 @@ function Bar() {
     }
   };
 
+  const minusTriger = (num: number) => {
+    dispatch(deleteItems(num));
+  };
+
   return (
     <div className="voteMakerCon">
-      <label className="voteLabel" htmlFor="voteTitle">
+      <label
+        className={titleShake ? "voteLabel shakeIt" : "voteLabel"}
+        htmlFor="voteTitle"
+      >
         &#128073; 설문 제목을 입력하세요.
       </label>
       <input
         className="VotetextInput"
         name="voteTitle"
-        value={newVoteTitle}
+        value={newVote.title}
         onChange={(e) => dispatch(setTitle(e.target.value))}
       ></input>
-      <div className="voteLabel topMargin10">
+      <div className={titleShake ? "voteTitleErr voteTitle" : "voteTitle"}>
+        ! 설문 제목은 필수 항목입니다.
+      </div>
+
+      <div
+        className={
+          titleShake ? "voteLabel topMargin10 shakeIt" : "voteLabel topMargin10"
+        }
+      >
         &#128073; 객관식 응답을 입력하세요.
       </div>
       <div className="voteAnswers">
@@ -93,6 +109,9 @@ function Bar() {
                 dispatch(setItems({ idx: el.idx, content: e.target.value }))
               }
             ></input>
+            <div className="plusItem" onClick={() => minusTriger(el.idx)}>
+              -
+            </div>
           </div>
         ))}
         <div className={isShake ? "voteAnswer shakeIt" : "voteAnswer"}>
@@ -100,6 +119,7 @@ function Bar() {
           <input
             className="VoteAnswerInput"
             value={typedItem}
+            placeholder="이곳에 항목을 입력하고 + 버튼으로 추가하세요."
             onChange={(e) => {
               setTypedItem(e.target.value);
             }}
@@ -108,6 +128,9 @@ function Bar() {
             +
           </div>
         </div>
+      </div>
+      <div className={itemShake ? "voteItemErr voteItem" : "voteItem"}>
+        ! 최소 두 개 이상의 응답 항목이 필요합니다.
       </div>
 
       <div className="voteLabel topMargin10">
@@ -148,7 +171,11 @@ function Bar() {
           <label htmlFor="voteManytimes">여러번 응답 가능</label>
         </div>
       </div>
-      <VoteButton />
+      <VoteButton
+        everytingIsOk={everytingIsOk}
+        setTitleShake={setTitleShake}
+        setItemShake={setItemShake}
+      />
     </div>
   );
 }
@@ -159,9 +186,24 @@ function OpenEnded() {
   const newVoteMt = newVote.manytimes;
   const dispatch = useDispatch();
 
+  const [titleShake, setTitleShake] = useState(false);
+  const [everytingIsOk, setEverythingIsOk] = useState(false);
+
+  useEffect(() => {
+    if (newVote.title) {
+      setTitleShake(false);
+      setEverythingIsOk(true);
+    } else {
+      setEverythingIsOk(false);
+    }
+  }, [newVote.title]);
+
   return (
     <div className="voteMakerCon">
-      <label className="voteLabel" htmlFor="voteTitle">
+      <label
+        className={titleShake ? "voteLabel shakeIt" : "voteLabel"}
+        htmlFor="voteTitle"
+      >
         &#128073; 설문 제목을 입력하세요.
       </label>
       <input
@@ -170,6 +212,10 @@ function OpenEnded() {
         value={newVoteTitle}
         onChange={(e) => dispatch(setTitle(e.target.value))}
       ></input>
+      <div className={titleShake ? "voteTitleErr voteTitle" : "voteTitle"}>
+        ! 설문 제목은 필수 항목입니다.
+      </div>
+
       <div className="voteLabel topMargin10">
         &#128073; 설문 옵션을 선택하세요.
       </div>
@@ -198,7 +244,7 @@ function OpenEnded() {
           <label htmlFor="voteManytimes">여러번 응답 가능</label>
         </div>
       </div>
-      <VoteButton />
+      <VoteButton everytingIsOk={everytingIsOk} setTitleShake={setTitleShake} />
     </div>
   );
 }
@@ -211,9 +257,22 @@ function Versus() {
   const newVoteItems = newVote.items;
   const dispatch = useDispatch();
 
+  const [titleShake, setTitleShake] = useState(false);
+  const [everytingIsOk, setEverythingIsOk] = useState(false);
+  const [itemShake, setItemShake] = useState(false);
+
+  useEffect(() => {
+    if (newVote.title) setTitleShake(false);
+    if (newVote.items.length > 1) setItemShake(false);
+    if (newVote.title && newVote.items.length > 1) setEverythingIsOk(true);
+  }, [newVote.title, newVote.items]);
+
   return (
     <div className="voteMakerCon">
-      <label className="voteLabel" htmlFor="voteTitle">
+      <label
+        className={titleShake ? "voteLabel shakeIt" : "voteLabel"}
+        htmlFor="voteTitle"
+      >
         &#128073; 설문 제목을 입력하세요.
       </label>
       <input
@@ -222,6 +281,10 @@ function Versus() {
         value={newVoteTitle}
         onChange={(e) => dispatch(setTitle(e.target.value))}
       ></input>
+      <div className={titleShake ? "voteTitleErr voteTitle" : "voteTitle"}>
+        ! 설문 제목은 필수 항목입니다.
+      </div>
+
       <div className="voteLabel topMargin10">
         &#128073; 대결 항목을 입력하세요.
       </div>
@@ -246,10 +309,13 @@ function Versus() {
           ></input>
         </div>
       </div>
+      <div className={itemShake ? "voteItemErr voteItem" : "voteItem"}>
+        ! 두 개의 대결항목이 모두 필요합니다.
+      </div>
+
       <div className="voteLabel topMargin10">
         &#128073; 설문 옵션을 선택하세요.
       </div>
-
       <div className="voteOptionItems">
         <div className="voteOptionItem">
           <div
@@ -284,7 +350,11 @@ function Versus() {
           <label htmlFor="voteManytimes">여러번 응답 가능</label>
         </div>
       </div>
-      <VoteButton />
+      <VoteButton
+        everytingIsOk={everytingIsOk}
+        setTitleShake={setTitleShake}
+        setItemShake={setItemShake}
+      />
     </div>
   );
 }
@@ -295,9 +365,24 @@ function WordCloud() {
   const newVoteMt = newVote.manytimes;
   const dispatch = useDispatch();
 
+  const [titleShake, setTitleShake] = useState(false);
+  const [everytingIsOk, setEverythingIsOk] = useState(false);
+
+  useEffect(() => {
+    if (newVote.title) {
+      setTitleShake(false);
+      setEverythingIsOk(true);
+    } else {
+      setEverythingIsOk(false);
+    }
+  }, [newVote.title]);
+
   return (
     <div className="voteMakerCon">
-      <label className="voteLabel" htmlFor="voteTitle">
+      <label
+        className={titleShake ? "voteLabel shakeIt" : "voteLabel"}
+        htmlFor="voteTitle"
+      >
         &#128073; 설문 제목을 입력하세요.
       </label>
       <input
@@ -306,6 +391,10 @@ function WordCloud() {
         value={newVoteTitle}
         onChange={(e) => dispatch(setTitle(e.target.value))}
       ></input>
+      <div className={titleShake ? "voteTitleErr voteTitle" : "voteTitle"}>
+        ! 설문 제목은 필수 항목입니다.
+      </div>
+
       <div className="voteLabel topMargin10">
         &#128073; 설문 옵션을 선택하세요.
       </div>
@@ -334,7 +423,7 @@ function WordCloud() {
           <label htmlFor="voteManytimes">여러번 응답 가능</label>
         </div>
       </div>
-      <VoteButton />
+      <VoteButton everytingIsOk={everytingIsOk} setTitleShake={setTitleShake} />
     </div>
   );
 }
