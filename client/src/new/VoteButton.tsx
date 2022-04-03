@@ -1,11 +1,17 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "react-alert";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, setRestart } from "../store/index";
 
-function VoteButton() {
+interface Props {
+  everytingIsOk: boolean;
+  setTitleShake: Dispatch<SetStateAction<boolean>>;
+  setItemShake?: Dispatch<SetStateAction<boolean>>;
+}
+
+function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
   const navigate = useNavigate();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const isLogin = useSelector((state: RootState) => state.isLogin);
@@ -18,27 +24,32 @@ function VoteButton() {
   const serverURL = "http://localhost:8000";
 
   const sendNewVote = async () => {
-    if (isLogin.login) {
-      const sendBody = loginVoteBody();
-      const accessToken = localStorage.getItem("accessToken");
-
-      try {
-        const res = await axios.post(serverURL + "/vting", sendBody, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            withCredentials: true,
-          },
-        });
-        if (res.status === 201) {
-          dispatch(setRestart("delete all!!"));
-          console.log(newVote);
-          navigate(`/v/${res.data.data.url}`);
-        }
-      } catch (e) {
-        console.log(e);
-      }
+    if (!everytingIsOk) {
+      if (!newVote.title) setTitleShake(true);
+      if (setItemShake && newVote.items.length < 2) setItemShake(true);
     } else {
-      alert.show();
+      if (isLogin.login) {
+        const sendBody = loginVoteBody();
+        const accessToken = localStorage.getItem("accessToken");
+
+        try {
+          const res = await axios.post(serverURL + "/vting", sendBody, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              withCredentials: true,
+            },
+          });
+          if (res.status === 201) {
+            dispatch(setRestart("delete all!!"));
+            console.log(newVote);
+            navigate(`/v/${res.data.data.url}`);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        alert.show();
+      }
     }
   };
 
@@ -91,7 +102,12 @@ function VoteButton() {
 
   return (
     <div className="vote-button">
-      <button className="vtingButton" onClick={() => sendNewVote()}>
+      <button
+        className={
+          everytingIsOk ? "vtingButton" : "vtingButton vtingButtonGray"
+        }
+        onClick={() => sendNewVote()}
+      >
         투표 생성하기
       </button>
     </div>

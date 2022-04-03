@@ -130,11 +130,14 @@ const newVoteSlice = createSlice({
       if (state.items[idx]) state.items[idx].content = action.payload.content;
       else state.items = [...state.items, action.payload];
     },
-    setVersusItem(state, action: PayloadAction<VoteItems>) {
-      if (action.payload.idx === 0)
-        state.items[0].content = action.payload.content;
-      else if (action.payload.idx === 1)
-        state.items[1].content = action.payload.content;
+    deleteItems(state, action: PayloadAction<number>) {
+      state.items = [
+        ...state.items.slice(0, action.payload),
+        ...state.items.slice(action.payload + 1),
+      ];
+      for (let i = 0; i < state.items.length; i++) {
+        state.items[i].idx = i;
+      }
     },
     setMultiple(state, action: PayloadAction<boolean>) {
       state.multiple = action.payload;
@@ -174,6 +177,7 @@ export const {
   setManyTimes,
   setPassword,
   setRestart,
+  deleteItems,
 } = newVoteSlice.actions;
 
 export default store;
