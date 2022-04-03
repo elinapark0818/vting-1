@@ -15,11 +15,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const multer = require("multer");
+const multerS3 = require("multer-s3");
 exports.ImageController = {
     userInfo: {
         patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             console.log(req.file);
-            res.status(200).json({ message: "Success", data: req.file.location });
+            res
+                .status(200)
+                .json({
+                message: "Success",
+                data: req.file.location,
+            });
         }),
     },
 };
