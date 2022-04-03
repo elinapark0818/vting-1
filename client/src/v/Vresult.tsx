@@ -1,75 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./v.scss";
 import ReactWordcloud, { MinMaxPair } from "react-wordcloud";
 import "tippy.js/dist/tippy.css";
 import "tippy.js/animations/scale.css";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
-const dummyData = [
-  {
-    form: "bar",
-    type: "vertical",
-    answer: [
-      { idx: 1, content: "짜장면", count: 10 },
-      { idx: 2, content: "짬뽕", count: 8 },
-      { idx: 3, content: "울면", count: 0 },
-      { idx: 4, content: "볶음밥", count: 5 },
-      { idx: 5, content: "잡채밥", count: 11 },
-    ],
-    sumCount: 34,
-  },
-  {
-    form: "bar",
-    type: "horizontal",
-    answer: [
-      { idx: 1, content: "짜장면", count: 10 },
-      { idx: 2, content: "짬뽕", count: 8 },
-      { idx: 3, content: "울면", count: 0 },
-      { idx: 4, content: "볶음밥", count: 5 },
-      { idx: 5, content: "잡채밥", count: 11 },
-    ],
-    sumCount: 34,
-  },
-  {
-    form: "open",
-    answer: [
-      { idx: 1, content: "저는 그야말로 말하는 감자", count: 0 },
-      { idx: 2, content: "나를 한문장에 담을 수 없음", count: 0 },
-      {
-        idx: 3,
-        content: "안녕하세요? 디진다돈까스를 사랑하는 돈까스맨입니다.",
-        count: 0,
-      },
-      {
-        idx: 4,
-        content: "안녕하세요! 낮에는 따사로운 햇살같은 남자입니다.",
-        count: 0,
-      },
-      { idx: 5, content: "이시대의 로맨티스트", count: 0 },
-      { idx: 6, content: "근데 이거 왜 하는거에요?", count: 0 },
-    ],
-    sumCount: 0,
-  },
-  {
-    form: "versus",
-    answer: [
-      { idx: 1, content: "엄마", count: 56 },
-      { idx: 2, content: "아빠", count: 32 },
-    ],
-    sumCount: 88,
-  },
-  {
-    form: "word",
-    answer: [
-      { idx: 1, content: "감자", count: 5 },
-      { idx: 2, content: "고구마", count: 2 },
-      { idx: 3, content: "호랑나비", count: 7 },
-      { idx: 4, content: "고양이", count: 10 },
-      { idx: 5, content: "탄산수", count: 4 },
-      { idx: 6, content: "문장형이 갑자기 들어오면", count: 6 },
-    ],
-    sumCount: 34,
-  },
-];
+type IntervalFunction = () => unknown | void;
+
+function useInterval(callback: IntervalFunction, delay: number) {
+  const savedCallback = useRef<IntervalFunction | null>(null);
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  });
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick() {
+      if (savedCallback.current !== null) {
+        savedCallback.current();
+      }
+    }
+    const id = setInterval(tick, delay);
+    return () => clearInterval(id);
+  }, [delay]);
+}
 
 // 랜덤길이(너비) 생성 관련
 const makeRandomHeight = (num: number, sum: number): React.CSSProperties => {
@@ -111,13 +68,14 @@ interface Props {
 
 // 컴포넌트 시작
 function Vresult({ voteInfo, voteSumCount }: Props) {
-  const [data, setData] = useState(-1);
-  const format = voteInfo.format;
-  const type = voteInfo.type;
+  const { code } = useParams();
+  const [voteInfoH, setVoteInfoH] = useState(voteInfo);
+  const format = voteInfoH.format;
+  const type = voteInfoH.type;
 
   // 워드클라우드 세팅
-  const words = voteInfo.items
-    ? voteInfo.items.map((el) => ({
+  const words = voteInfoH.items
+    ? voteInfoH.items.map((el) => ({
         text: el.content as string,
         value: el.count as number,
       }))
@@ -127,15 +85,32 @@ function Vresult({ voteInfo, voteSumCount }: Props) {
     fontSizes: fontSizes,
   };
 
+  const serverURL = "http://localhost:8000";
+  const accessToken = localStorage.getItem("accessToken");
+
+  // 5초에 한 번씩 ajax 요청 (응답 덮어쓰기)
+  useInterval(async () => {
+    const response = await axios.get(`${serverURL}/vting/${code}`, {
+      headers: {
+        Authorization: accessToken ? `Bearer ${accessToken}` : "",
+        withCredentials: true,
+      },
+    });
+    if (response.status === 200) {
+      console.log(response.data.data.items);
+      // console.log("그냥 로그만");
+    }
+  }, 5000);
+
   switch (format) {
     case "bar":
       if (type === "vertical") {
         return (
           <div className="realTimeCon">
-            <div className="votePreviewBack">
+            <div className="votePreviewBack vResult">
               <div className="votePreview-barVer-con">
-                {voteInfo.items ? (
-                  voteInfo.items.map((el, idx) => (
+                {voteInfoH.items ? (
+                  voteInfoH.items.map((el, idx) => (
                     <div key={idx} id="votePreview-barVer-bar">
                       <div className="barVer-itemName">{el.content}</div>
                       <div
@@ -159,8 +134,8 @@ function Vresult({ voteInfo, voteSumCount }: Props) {
           <div className="realTimeCon">
             <div className="votePreviewBack">
               <div className="votePreview-barHor-con">
-                {voteInfo.items ? (
-                  voteInfo.items.map((el, idx) => (
+                {voteInfoH.items ? (
+                  voteInfoH.items.map((el, idx) => (
                     <div key={idx} id="votePreview-barHor-bar">
                       <div className="barHor-itemName">{el.content}</div>
                       <div
@@ -184,8 +159,8 @@ function Vresult({ voteInfo, voteSumCount }: Props) {
     case "open":
       return (
         <div className="realTimeCon">
-          {voteInfo.items ? (
-            voteInfo.items.map((el, idx) => (
+          {voteInfoH.items ? (
+            voteInfoH.items.map((el, idx) => (
               <div
                 className={
                   idx < 4
@@ -206,9 +181,9 @@ function Vresult({ voteInfo, voteSumCount }: Props) {
       return (
         <div className="realTimeCon">
           <div className="versusCon">
-            <div>{voteInfo.items ? voteInfo.items[0].content : ""}</div>
+            <div>{voteInfoH.items ? voteInfoH.items[0].content : ""}</div>
             <div>vs</div>
-            <div>{voteInfo.items ? voteInfo.items[1].content : ""}</div>
+            <div>{voteInfoH.items ? voteInfoH.items[1].content : ""}</div>
           </div>
         </div>
       );

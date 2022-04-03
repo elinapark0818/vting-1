@@ -3,6 +3,10 @@ const { useState, useEffect, useRef } = React;
 
 type IntervalFunction = () => unknown | void;
 
+interface Props {
+  overtime: number;
+}
+
 function useInterval(callback: IntervalFunction, delay: number) {
   const savedCallback = useRef<IntervalFunction | null>(null);
 
@@ -23,12 +27,19 @@ function useInterval(callback: IntervalFunction, delay: number) {
   }, [delay]);
 }
 
-function Counter() {
-  const [time, setTime] = useState(60);
+function Counter({ overtime }: Props) {
+  const [time, setTime] = useState(overtime || 0);
+  console.log(overtime);
   useInterval(() => {
     if (time > 0) setTime(time - 1);
-  }, 1000);
-  return <div>{time}</div>;
+  }, 60000);
+  return (
+    <div>
+      {overtime
+        ? `설문 자동 종료까지 ${time}분 남았습니다.`
+        : "만료된 설문입니다."}
+    </div>
+  );
 }
 
 export default Counter;

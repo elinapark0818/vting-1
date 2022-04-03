@@ -18,7 +18,8 @@ import {
 import { AlertTemplate, ImgAlertTemplate } from "./AlertTemplate";
 import axios from "axios";
 import Vresult from "./Vresult";
-import { userInfo } from "os";
+import Counter from "../Voter/Counter";
+import vtCry from "../assets/vt_cry.png";
 
 const imgAlertContext = createContext<any | null>(null);
 
@@ -42,7 +43,6 @@ interface VoteInfo {
   undergoing?: boolean;
   isPublic?: boolean;
   created_at?: string;
-  overtime?: number;
 }
 
 const dummyVote: VoteInfo = {
@@ -59,7 +59,6 @@ const dummyVote: VoteInfo = {
   undergoing: false,
   isPublic: false,
   created_at: "",
-  overtime: 0,
 };
 
 interface Props {
@@ -77,6 +76,8 @@ function V() {
   const [voteInfo, setVoteInfo] = useState(dummyVote);
   const [voteSumCount, setVoteSumCount] = useState(0);
   const [isNonUser, setIsNonUser] = useState(false);
+  const [overtime, setOvertime] = useState(0);
+  const [somethingWrong, setSometingWrong] = useState(false);
 
   const serverURL = "http://localhost:8000";
   const accessToken = localStorage.getItem("accessToken");
@@ -97,6 +98,7 @@ function V() {
           setVoteTitle(response.data.data.title);
           setToggleOngoing(response.data.data.undergoing);
           setTogglePublic(response.data.data.isPublic);
+          setOvertime(response.data.overtime);
           // 비회원 설문조사 모드 (비밀번호 입력창) 활성화
           setIsNonUser(true);
         } else if (response.status === 200 && response.data.data.user_id) {
@@ -108,10 +110,10 @@ function V() {
           // sumCount가 있는 설문이면 가져오기
           if (response.data.sumCount) setVoteSumCount(response.data.sumCount);
         } else {
-          console.log("잘못된 요청");
+          setSometingWrong(true);
         }
       } catch (e) {
-        console.log(e);
+        setSometingWrong(true);
       }
     };
 
@@ -210,7 +212,29 @@ function V() {
         {...imgoptions}
         context={imgAlertContext}
       >
-        {isNonUser ? (
+        {somethingWrong ? (
+          <div className="voteResultPageCon">
+            <div className="voteResultPage">
+              <div className="voteResultTitle">잘못된 접근입니다.</div>
+              <div className="voteResultContent">
+                <div className="errorCon">
+                  <div className="imgCon">
+                    <img src={vtCry} alt="somethingw wrong" />
+                  </div>
+                  <div>
+                    <span className="errorTitle">
+                      Ooooops... Something went wrong.
+                    </span>
+                    <br />
+                    해당 코드를 가진 설문이 없거나 만료된 설문입니다.
+                    <br />
+                    설문 코드를 다시 확인해주시기 바랍니다. <br />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : isNonUser ? (
           <div className="voteResultPageCon">
             <div className="voteResultPage">
               <div className="voteResultTitle">비회원 설문 관리 페이지</div>
@@ -251,7 +275,9 @@ function V() {
               </div>
               {voteInfo.password ? (
                 <div className="options">
-                  <div>설문 자동 종료까지 00 초 남았습니다.</div>
+                  <div>
+                    <Counter overtime={overtime} />
+                  </div>
                   <button
                     onClick={() => clickedToggleOngoing()}
                     className="toggleBtn"

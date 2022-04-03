@@ -16,7 +16,6 @@ interface ImageController {
 }
 
 export let ImageController = {
-
   userInfo: {
     patch: async (req: Request, res: Response) => {
       console.log(req.file);
@@ -60,5 +59,4 @@ export let ImageController = {
   // },
   // },
   // },
-
 };

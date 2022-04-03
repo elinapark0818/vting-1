@@ -2,18 +2,19 @@
 
 .newVoteCon {
   min-height: 500px;
-  padding: 50px 100px;
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-areas: ". icon body body body body .";
+  margin-top: 100px;
 }
 
 .vote-body {
-  display: flex;
-  flex: 5 1 auto;
-  flex-direction: column;
+  grid-area: body;
+  display: grid;
+  grid-template-columns: minmax(400px, 1fr) minmax(400px, 1fr);
 
   .vote-info {
     width: 300px;
+    height: 80px;
     padding: 20px;
     background-color: $vting-green;
     border-radius: 5px;
@@ -40,18 +41,24 @@
   }
 
   .vote-making {
-    min-height: 400px;
+    min-height: 500px;
     display: flex;
     flex-direction: row;
   }
   .vote-button {
     display: flex;
     justify-content: center;
+    .vtingButton {
+      width: 200px;
+      height: 40px;
+    }
   }
 }
 
 .voteFormatsCon {
-  flex: 1 1 0;
+  grid-area: icon;
+  display: flex;
+  justify-content: flex-start;
   ul {
     margin-top: 0;
   }
@@ -95,10 +102,9 @@
 }
 
 .voteMakerCon {
-  flex: 2 2 0;
-  display: flex;
-  flex-direction: column;
-  text-align: left;
+  display: grid;
+  justify-content: center;
+  align-items: start;
   padding: 10px;
   .voteLabel {
     font-weight: 500;
@@ -212,7 +218,9 @@
 }
 
 .votePreviewCon {
-  flex: 2 2 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   text-align: center;
   img.vting-logo {
     width: 40%;
@@ -221,9 +229,6 @@
   div {
     justify-content: center;
   }
-  .votePreview {
-    max-width: 300px;
-  }
   .votePreviewTitle {
     padding: 10px;
     min-height: 24px;
@@ -231,9 +236,12 @@
     background-color: $vting-blue;
     color: white;
   }
+  .wordTitle {
+    max-width: 250px;
+  }
   .votePreviewBack {
     padding: 20px 0;
-    min-height: 250px;
+    height: 300px;
     background-color: $vting-gray;
 
     .votePreview-barVer-con {
@@ -249,9 +257,6 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      .barVer-itemName {
-        // width: 100%;
-      }
       .barVer-itemBar {
         width: 100%;
         animation-name: barVerAnimation;
@@ -279,9 +284,6 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      .barHor-itemName {
-        // width: 100%;
-      }
       .barHor-itemBar {
         height: 100%;
         animation-name: barAnimation;
@@ -294,6 +296,12 @@
         }
       }
     }
+  }
+  .wordBack {
+    max-width: 250px;
+  }
+  .vResult {
+    height: 100%;
   }
 }
 
