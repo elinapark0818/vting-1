@@ -15,12 +15,11 @@ interface ImageController {
 }
 
 export let ImageController = {
-
   userInfo: {
     patch: async (req: Request, res: Response) => {
       console.log(req.file);
 
-      res.status(200).json({ message: "Success", data: req.file.location });
+      // res.status(200).json({ message: "Success", data: req.file.location });
     },
   },
 
@@ -54,5 +53,4 @@ export let ImageController = {
   // },
   // },
   // },
-
 };

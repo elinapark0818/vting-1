@@ -5,12 +5,10 @@ import {
   setItems,
   setMultiple,
   setManyTimes,
-  setItem,
-  setIndex,
-  setVersusItem,
   RootState,
 } from "../store/index";
 import vtinglogo from "../assets/vt_logo_2.png";
+import VoteButton from "./VoteButton";
 
 function VoteMaker() {
   const newVoteFormat = useSelector(
@@ -42,15 +40,26 @@ function Bar() {
   const newVoteMt = newVote.manytimes;
   const newVoteMp = newVote.multiple;
   const newVoteItems = newVote.items;
-  const newVoteItem = useSelector((state: RootState) => state.makeNewVoteItem);
   const dispatch = useDispatch();
   const [isShake, setIsShake] = useState(false);
+  const [typedItem, setTypedItem] = useState(
+    newVoteItems[newVoteItems.length]
+      ? newVoteItems[newVoteItems.length].content
+      : ""
+  );
 
   const plusTriger = () => {
-    if (newVoteItem.content) {
-      dispatch(setItems(newVoteItem));
-      dispatch(setIndex(newVoteItems.length));
-      dispatch(setItem(""));
+    if (typedItem) {
+      dispatch(setItems({ idx: newVoteItems.length, content: typedItem }));
+      setTypedItem("");
+      // dispatch(
+      //   setItems({
+      //     idx: newVoteItems.length,
+      //     content: e.target.value,
+      //   })
+      // );
+      // dispatch(setIndex(newVoteItems.length));
+      // dispatch(setItem(""));
     } else {
       setIsShake(true);
       setTimeout(function () {
@@ -76,12 +85,13 @@ function Bar() {
       <div className="voteAnswers">
         {newVoteItems?.map((el, idx) => (
           <div key={idx} className="voteAnswer">
-            <div className="answerIdx">{idx + 1}</div>
+            <div className="answerIdx">{el.idx + 1}</div>
             <input
               className="VoteAnswerInput"
               value={el.content}
-              readOnly
-              // onChange={(e) => dispatch(setItem(e.target.value))}
+              onChange={(e) =>
+                dispatch(setItems({ idx: el.idx, content: e.target.value }))
+              }
             ></input>
           </div>
         ))}
@@ -89,9 +99,9 @@ function Bar() {
           <div className="answerIdx">{newVoteItems.length + 1}</div>
           <input
             className="VoteAnswerInput"
-            value={newVoteItem.content}
+            value={typedItem}
             onChange={(e) => {
-              dispatch(setItem(e.target.value));
+              setTypedItem(e.target.value);
             }}
           ></input>
           <div className="plusItem" onClick={() => plusTriger()}>
@@ -138,6 +148,7 @@ function Bar() {
           <label htmlFor="voteManytimes">여러번 응답 가능</label>
         </div>
       </div>
+      <VoteButton />
     </div>
   );
 }
@@ -146,7 +157,6 @@ function OpenEnded() {
   const newVote = useSelector((state: RootState) => state.makeNewVote);
   const newVoteTitle = newVote.title;
   const newVoteMt = newVote.manytimes;
-  const newVoteItems = newVote.items;
   const dispatch = useDispatch();
 
   return (
@@ -188,6 +198,7 @@ function OpenEnded() {
           <label htmlFor="voteManytimes">여러번 응답 가능</label>
         </div>
       </div>
+      <VoteButton />
     </div>
   );
 }
@@ -199,12 +210,6 @@ function Versus() {
   const newVoteMp = newVote.multiple;
   const newVoteItems = newVote.items;
   const dispatch = useDispatch();
-  const [vitem0, setVitem0] = useState(
-    newVoteItems[0] ? newVoteItems[0].content : ""
-  );
-  const [vitem1, setVitem1] = useState(
-    newVoteItems[1] ? newVoteItems[1].content : ""
-  );
 
   return (
     <div className="voteMakerCon">
@@ -224,12 +229,9 @@ function Versus() {
         <div className="voteAnswer">
           <input
             className="VoteAnswerInput"
-            value={vitem0}
+            value={newVoteItems[0] ? newVoteItems[0].content : ""}
             onChange={(e) => {
-              setVitem0(e.target.value);
-            }}
-            onBlur={(e) => {
-              dispatch(setVersusItem({ idx: 0, content: vitem0 }));
+              dispatch(setItems({ idx: 0, content: e.target.value }));
             }}
           ></input>
         </div>
@@ -237,12 +239,9 @@ function Versus() {
         <div className="voteAnswer">
           <input
             className="VoteAnswerInput"
-            value={vitem1}
+            value={newVoteItems[1] ? newVoteItems[1].content : ""}
             onChange={(e) => {
-              setVitem1(e.target.value);
-            }}
-            onBlur={(e) => {
-              dispatch(setVersusItem({ idx: 1, content: vitem1 }));
+              dispatch(setItems({ idx: 1, content: e.target.value }));
             }}
           ></input>
         </div>
@@ -285,6 +284,7 @@ function Versus() {
           <label htmlFor="voteManytimes">여러번 응답 가능</label>
         </div>
       </div>
+      <VoteButton />
     </div>
   );
 }
@@ -293,7 +293,6 @@ function WordCloud() {
   const newVote = useSelector((state: RootState) => state.makeNewVote);
   const newVoteTitle = newVote.title;
   const newVoteMt = newVote.manytimes;
-  const newVoteMp = newVote.multiple;
   const dispatch = useDispatch();
 
   return (
@@ -335,6 +334,7 @@ function WordCloud() {
           <label htmlFor="voteManytimes">여러번 응답 가능</label>
         </div>
       </div>
+      <VoteButton />
     </div>
   );
 }

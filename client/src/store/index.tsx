@@ -93,16 +93,6 @@ export interface NewVote {
   password?: string;
 }
 
-export interface VersusPayload {
-  idx: number;
-  content: string;
-}
-
-const initialVoteItemState = {
-  idx: 0,
-  content: "",
-};
-
 const initialVoteState: NewVote = {
   format: "",
   title: "",
@@ -113,23 +103,19 @@ const initialVoteState: NewVote = {
   password: "",
 };
 
-const newVoteItemSlice = createSlice({
-  name: "newVoteItem",
-  initialState: initialVoteItemState,
-  reducers: {
-    setItem(state, action: PayloadAction<string>) {
-      state.content = action.payload;
-    },
-    setIndex(state, action: PayloadAction<number>) {
-      state.idx = action.payload + 1;
-    },
-  },
-});
-
 const newVoteSlice = createSlice({
   name: "newVote",
   initialState: initialVoteState,
   reducers: {
+    setRestart(state, action: PayloadAction<string>) {
+      state.format = "";
+      state.title = "";
+      state.type = "";
+      state.items = [];
+      state.multiple = false;
+      state.manytimes = false;
+      state.password = "";
+    },
     setFormat(state, action: PayloadAction<string>) {
       state.format = action.payload;
     },
@@ -140,12 +126,15 @@ const newVoteSlice = createSlice({
       state.type = action.payload;
     },
     setItems(state, action: PayloadAction<VoteItems>) {
-      state.items = [...state.items, action.payload];
+      let idx = action.payload.idx;
+      if (state.items[idx]) state.items[idx].content = action.payload.content;
+      else state.items = [...state.items, action.payload];
     },
-    setVersusItem(state, action: PayloadAction<VersusPayload>) {
-      if (action.payload.idx === 0) state.items = [action.payload];
+    setVersusItem(state, action: PayloadAction<VoteItems>) {
+      if (action.payload.idx === 0)
+        state.items[0].content = action.payload.content;
       else if (action.payload.idx === 1)
-        state.items = [state.items[0], action.payload];
+        state.items[1].content = action.payload.content;
     },
     setMultiple(state, action: PayloadAction<boolean>) {
       state.multiple = action.payload;
@@ -164,8 +153,6 @@ const store = configureStore({
     isOpenModal: isModalSlice.reducer,
     isLogin: isLogInSlice.reducer,
     makeNewVote: newVoteSlice.reducer,
-    makeNewVoteItem: newVoteItemSlice.reducer,
-
     userInfo: UserInfoSlice.reducer,
   },
 });
@@ -185,10 +172,8 @@ export const {
   setItems,
   setMultiple,
   setManyTimes,
-  setVersusItem,
   setPassword,
+  setRestart,
 } = newVoteSlice.actions;
-
-export const { setItem, setIndex } = newVoteItemSlice.actions;
 
 export default store;

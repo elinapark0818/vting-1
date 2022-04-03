@@ -36,10 +36,14 @@ function Bar() {
 
   const [randomNums, setRandomNums] = useState<number[]>([90]);
 
-  const rand_0_99 = Math.floor(Math.random() * 100);
   useEffect(() => {
-    setRandomNums([...randomNums, rand_0_99]);
+    let newNums: number[] = [];
+    for (let i = 0; i < voteItems.length; i++) {
+      newNums.push(Math.floor(Math.random() * 100));
+    }
+    setRandomNums(newNums);
   }, [voteItems]);
+
   const makeRandomHeight = (idx: number): React.CSSProperties => {
     let heightProprety = { height: randomNums[idx] + "%" };
     return heightProprety;
@@ -64,7 +68,7 @@ function Bar() {
                     <div className="barVer-itemName">{el.content}</div>
                     <div
                       className="barVer-itemBar"
-                      style={makeRandomHeight(idx)}
+                      style={makeRandomHeight(el.idx)}
                     ></div>
                   </div>
                 ))}
@@ -159,8 +163,10 @@ function WordCloud() {
 
   return (
     <div className="votePreviewCon">
-      <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
-      <div className="votePreviewBack">
+      <div className="votePreviewTitle wordTitle">
+        {newVote.title || "설문 제목"}
+      </div>
+      <div className="votePreviewBack wordBack">
         <ReactWordcloud words={words} options={options} />
       </div>
     </div>
