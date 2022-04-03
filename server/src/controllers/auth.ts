@@ -25,7 +25,7 @@ export let AuthController = {
         let accessToken: string = authorization.split(" ")[1];
 
         try {
-          const decoded = jwt.verify(
+          const decoded: any = jwt.verify(
             accessToken as string,
             process.env.ACCESS_SECRET as jwt.Secret
           );
