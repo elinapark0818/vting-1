@@ -10,9 +10,8 @@ const serverURL: string = "http://localhost:8000";
 
 function Dashboard() {
   const navigate = useNavigate();
-
   const isLogin = useSelector((state: RootState) => state.isLogin);
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  // const userInfo = useSelector((state: RootState) => state.userInfo);
 
   const [signInState, setSignInState] = useState<boolean>(false);
 
@@ -63,20 +62,26 @@ function Dashboard() {
     if (type === "versus") return "대결형";
   }
 
+  // * 페이지네이션
+  const [userVoteCount, setUserVoteCount] = useState(1);
+
+  // todo: 첫번째 페이지 (10개가 넘어갈 경우)
+  let Page = 1;
+
+  // * 보트들의 정보 조회하기
+  // todo: 페이지네이션을 어떻게 할 것인가?
   const getUserInfo = async () => {
     let accessToken = localStorage.getItem("accessToken");
     try {
-      const res = await axios.get(`${serverURL}/user/${userInfo._id}`, {
+      const res = await axios.get(`${serverURL}/user?q=${Page}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           withCredentials: true,
         },
       });
       if (res.status === 200) {
-        // setLoading(false);
-        setUserVote(res.data.data.vote);
-        // setPosts(res.data.data.vote);
-        // console.log(posts);
+        setUserVote(res.data.vote);
+        console.log("페이지별 보트들(10ea)===", userVote);
       } else {
         setUserVote(votes);
       }
@@ -85,21 +90,37 @@ function Dashboard() {
     }
   };
 
-  // * 페이지네이션
-  // const [posts, setPosts] = useState([]);
-  // const [loading, setLoading] = useState(false);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [postPerPage, setPostPerPage] = useState(10);
+  // * 보트의 총 개수만 조회하기
+  const getVoteCount = async () => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      const res = await axios.get(`${serverURL}/user`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
+      });
+      if (res.status === 200) {
+        // todo: 보트들 개수 저장해두기
+        setUserVoteCount(res.data.data.voteCount);
+        console.log("총 보트 몇개===", userVoteCount);
+      } else {
+        setUserVote(userVote);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
-    // setLoading(true);
     if (!isLogin.login) {
       setSignInState(false);
     } else {
       setSignInState(true);
     }
     getUserInfo();
-  }, [isLogin.login]);
+    getVoteCount();
+  }, []);
 
   // todo: Vote Table 에서 설문 생성, 설문 종료, 설문 삭제 기능 구현하기
   const DeleteVote = async (url: string) => {
@@ -112,22 +133,12 @@ function Dashboard() {
         },
       });
       if (res.status === 200) {
-        // todo: db 데이터는 삭제되는데 클라에서는 남아있다. 리렌더링
         getUserInfo();
       }
     } catch (err) {
       console.log(err);
     }
   };
-
-  // ? isPublic
-  // todo: db에서 불러와야한다
-  // const [togglePublic, setTogglePublic] = useState(false);
-  // const isPublicState = () => setTogglePublic(!togglePublic);
-
-  // ? isUndergoing
-  // const [toggleOngoing, setToggleOngoing] = useState(false);
-  // const isActiveState = () => setToggleOngoing(!toggleOngoing);
 
   // * 퍼블릭 패치
   const memberPublic = async (url: string) => {
@@ -146,11 +157,7 @@ function Dashboard() {
           },
         }
       );
-      // console.log("코드번호가===", url);
       if (res.status === 200) {
-        // setTogglePublic(res.data.isPublic);
-        // isPublicState();
-        // console.log("공개상태===", res.data.isPublic);
         getUserInfo();
       } else {
         console.log("Bad Request");
@@ -177,11 +184,7 @@ function Dashboard() {
           },
         }
       );
-      console.log("코드번호가===", url);
       if (res.status === 200) {
-        // * 회원 (종료/진행중)
-        console.log("진행상태===", res.data.isActive);
-
         getUserInfo();
       } else {
         console.log("Bad Request");

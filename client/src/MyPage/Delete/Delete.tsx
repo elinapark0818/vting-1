@@ -17,7 +17,7 @@ function Delete() {
     const getUserInfo = async () => {
       let accessToken = localStorage.getItem("accessToken");
       try {
-        const res = await axios.get(`${serverURL}/user/${userInfo._id}`, {
+        const res = await axios.get(`${serverURL}/user`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             withCredentials: true,

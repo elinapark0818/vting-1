@@ -5,7 +5,6 @@ import { RootState, setUserInfo } from "../../store/index";
 import axios from "axios";
 
 interface PatchUser {
-  image: string;
   name: string;
   password: string;
 }
@@ -18,7 +17,6 @@ function Edit() {
 
   //* 닉네임 프로필 변경
   const [patchUserInfo, setPatchUserInfo] = useState<PatchUser>({
-    image: "",
     name: "",
     password: "",
   });
@@ -28,28 +26,86 @@ function Edit() {
     setPatchUserInfo({ ...patchUserInfo, [name]: value });
   };
 
-  const edit_onChangeProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setPatchUserInfo({ ...patchUserInfo, [name]: value });
-  };
-
   const edit_onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPatchUserInfo({ ...patchUserInfo, [name]: value });
   };
 
-  // * 프로필, 닉네임, 비밀번호 변경
-  const EditUserInfo = async () => {
+  // * 닉네임, 비밀번호 변경
+  // ! Cannot PATCH => `${serverURL}/user` 요거로 바뀐거임!
+  // ! 심각한 오류 => 비밀번호를 비워두고 닉네임만 바꾸면 비번을 찾을 수가 없음..
+  // todo: 방안 1. 닉네임 변경 / 비밀번호 변경 분기하기
+  const EditUserName = async () => {
     let accessToken = localStorage.getItem("accessToken");
-    // console.log("에디트 이메일===", userInfo._id);
-
     try {
-      const res = await axios.patch(
-        `${serverURL}/user/${userInfo._id}`,
+      await axios
+        .patch(
+          `${serverURL}/user`,
+          {
+            nickname: patchUserInfo.name || userInfo.nickname,
+            password: patchUserInfo.password,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              withCredentials: true,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 200) {
+            dispatch(
+              setUserInfo({
+                _id: String(userInfo._id),
+                nickname: patchUserInfo.name || userInfo.nickname,
+              })
+            );
+            alert("회원정보가 수정되었습니다.");
+          } else {
+            console.log("Bad Request 입니다. 400에러");
+          }
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const EditUserPassword = async () => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      await axios
+        .patch(
+          `${serverURL}/user`,
+          {
+            password: patchUserInfo.password,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              withCredentials: true,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 200) {
+            alert("비밀번호가 변경되었습니다.");
+          } else {
+            console.log("Bad Request 입니다. 400에러");
+          }
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // * 비밀번호를 불러오기 위해 user/check 를 쓸 수 있으려나..?
+  const userPasswordCheck = async () => {
+    let accessToken = localStorage.getItem("accessToken");
+    axios
+      .post(
+        `${serverURL}/user/check`,
         {
-          nickname: patchUserInfo.name,
           password: patchUserInfo.password,
-          image: patchUserInfo.image,
         },
         {
           headers: {
@@ -57,25 +113,14 @@ function Edit() {
             withCredentials: true,
           },
         }
-      );
-      if (res.status === 200) {
-        console.log("데이타", res.data);
-
-        dispatch(
-          setUserInfo({
-            _id: String(userInfo._id),
-            nickname: patchUserInfo.name || userInfo.nickname,
-            email: userInfo.email,
-            image: patchUserInfo.image || userInfo.image,
-          })
-        );
-        alert("회원정보가 수정되었습니다.");
-      } else {
-        console.log("Bad Request 입니다. 400에러");
-      }
-    } catch (err) {
-      console.log(err);
-    }
+      )
+      .then((res) => {
+        if (res.status === 200) {
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -87,9 +132,7 @@ function Edit() {
       <main className="edit_wrap">
         <div className="edit_userProfile">
           <div className="edit_profile">
-            <h3>프로필</h3>
-
-            <img alt="profile_img" src={patchUserInfo.image} />
+            {/* <h3>프로필</h3> */}
 
             <label htmlFor="file" className="edit_btn">
               업로드
@@ -97,7 +140,6 @@ function Edit() {
             <input
               id="file"
               name="profile"
-              onChange={edit_onChangeProfile}
               type="file"
               accept="image/*"
               style={{ display: "none" }}
@@ -107,7 +149,6 @@ function Edit() {
 
         <div className="edit_userInfo">
           <div className="edit_nickname">
-            {/* {userInfo.nickname} */}
             <h3>닉네임 </h3>
             <input
               name="name"
@@ -129,8 +170,11 @@ function Edit() {
         </div>
       </main>
       <div className="edit_btnWrap">
-        <button className="edit_btn" onClick={() => EditUserInfo()}>
-          수정하기
+        <button className="edit_btn" onClick={() => EditUserPassword()}>
+          비밀번호 변경
+        </button>
+        <button className="edit_btn" onClick={() => EditUserName()}>
+          닉네임 변경
         </button>
       </div>
     </div>
