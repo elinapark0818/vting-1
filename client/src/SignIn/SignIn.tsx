@@ -8,6 +8,7 @@ import "./SignIn.scss";
 import Logo from "../assets/v-ting_logo_circle.png";
 import { SiGithub } from "react-icons/si";
 import Google from "../assets/google-oauth-logo.png";
+import { BiErrorCircle } from "react-icons/bi";
 
 interface User {
   email: string;
@@ -74,53 +75,52 @@ function SignIn() {
 
   // ! 유저체크 (아이디, 비번)
   // ? false = 미가입 true = 가입
-  const [userCheck, setUserCheck] = useState(true);
+  const [userCheck, setUserCheck] = useState(false);
+  const [alreadyUser, setAlreadyUser] = useState(false);
   const [userPasswordCheck, setUserPasswordCheck] = useState(true);
 
   // ? 로그인 서버 연동 => [POST] session
+  // todo: 400에러로 메시지 분기가 안된다. => 초록님과 얘기하기
+  // ! server/session
   const LogInUser = async () => {
-    try {
-      const res = await axios.post(
-        serverURL + "/session",
-        {
-          user_id: user.email,
-          password: user.password,
-        },
-        { withCredentials: true }
-      );
-      if (res.status === 400 && res.data.message === "There's no ID") {
-        setUserCheck(false);
-        console.log("가입되지 않은 이메일입니다.");
-      } else if (res.status === 400 && res.data.message === "Wrong password") {
-        setUserPasswordCheck(false);
-        console.log("비밀번호가 틀렸습니다.");
-      } else {
-        setIsServerOk(false);
-        console.log("Bad Request");
-      }
-
-      if (res.status === 200 && res.data.message === "Successfully logged in") {
-        const token = res.data.data.accessToken;
-        localStorage.setItem("accessToken", token);
-
-        const userInfo = res.data.data.user_data;
-        setUserCheck(true);
-        setUserPasswordCheck(true);
-        dispatch(setIsLogin(true));
-        navigate("/dashboard");
-        dispatch(
-          setUserInfo({
-            _id: userInfo._id,
-            nickname: userInfo.nickname,
-            email: userInfo.user_id,
-            image: userInfo.image,
-          })
-        );
-      }
-    } catch (err) {
-      // setIsServerOk(false);
-      console.log(err);
-    }
+    await axios
+      .post(serverURL + "/session", {
+        user_id: user.email,
+        password: user.password,
+      })
+      .then((res) => {
+        console.log("로그인성공res===", res);
+        if (
+          res.status === 200 &&
+          res.data.message === "Successfully logged in"
+        ) {
+          const userInfo = res.data.data.user_data;
+          setUserCheck(true);
+          setUserPasswordCheck(true);
+          dispatch(setIsLogin(true));
+          navigate(-1);
+          dispatch(
+            setUserInfo({
+              _id: userInfo._id,
+              nickname: userInfo.nickname,
+              email: userInfo.user_id,
+            })
+          );
+        }
+      })
+      .catch((err) => {
+        console.log("에러상태===", err.response);
+        if (err.response.data.message === "There's no ID") {
+          setUserCheck(false);
+          console.log("가입되지 않은 이메일입니다.");
+        } else if (err.response.data.message === "Wrong password") {
+          setUserPasswordCheck(false);
+          console.log("비밀번호가 틀렸습니다.");
+        } else {
+          setIsServerOk(false);
+          console.log("네트워크 상태가 불안정합니다.");
+        }
+      });
   };
 
   // ? 회원가입 + 유저체크 핸들링
@@ -131,6 +131,11 @@ function SignIn() {
           user_id: newUser.email,
         })
         .then((data) => {
+          if (data.status === 200 && data.data.message === "Success verified") {
+            // * 이미 가입된 이메일의 경우
+            console.log("이미 가입된 이메일입니다");
+            setAlreadyUser(true);
+          }
           if (data.status === 200 && data.data.message === "It doesn't match") {
             axios
               .post(serverURL + "/user", {
@@ -154,15 +159,16 @@ function SignIn() {
                     })
                   );
                   alert("회원가입이 완료되었습니다.");
-                  navigate("/");
+                  navigate(-1);
                 }
               });
-          } else if (
-            data.status === 200 &&
-            data.data.message === "Success verified"
-          ) {
-            setUserCheck(false);
           }
+          // else if (
+          //   data.status === 200 &&
+          //   data.data.message === "Success verified"
+          // ) {
+          //   setUserCheck(false);
+          // }
         });
     } catch (err) {
       setIsServerOk(false);
@@ -418,7 +424,7 @@ function SignIn() {
                 </div>
               )}
 
-              {!userCheck && (
+              {alreadyUser && (
                 <div className="server Error">! 이미 가입된 이메일입니다.</div>
               )}
 
