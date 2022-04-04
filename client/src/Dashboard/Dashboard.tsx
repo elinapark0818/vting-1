@@ -134,6 +134,7 @@ function Dashboard() {
       });
       if (res.status === 200) {
         getUserInfo();
+        closeModal();
       }
     } catch (err) {
       console.log(err);
@@ -192,6 +193,18 @@ function Dashboard() {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  // * 삭제 모달
+
+  const [openModal, setOpenModal] = useState<boolean>(false);
+
+  const isOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const closeModal = () => {
+    setOpenModal(false);
   };
 
   return (
@@ -261,8 +274,42 @@ function Dashboard() {
                         className="dashboard_deleteBtn"
                         type="button"
                         value="삭제"
-                        onClick={() => DeleteVote(`${vote.url}`)}
+                        onClick={isOpenModal}
                       />
+                      {openModal && (
+                        <div className="dashboard_deleteModal_container">
+                          <div className="dashboard_deleteModal_background">
+                            <div className="dashboard_deleteModal_modal">
+                              <button
+                                className="deleteModal_closeBtn"
+                                onClick={closeModal}
+                              >
+                                X
+                              </button>
+                              <div className="dashboard_deleteModal_desc">
+                                <h3>
+                                  삭제시, 복구되지 않습니다.
+                                  <br /> 정말로 삭제하시겠습니까?
+                                </h3>
+                              </div>
+                              <div className="btnWrap">
+                                <button
+                                  className="dashboard_delete_ok"
+                                  onClick={() => DeleteVote(`${vote.url}`)}
+                                >
+                                  확인
+                                </button>
+                                <button
+                                  className="dashboard_delete_cancel"
+                                  onClick={closeModal}
+                                >
+                                  취소
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 </tbody>
