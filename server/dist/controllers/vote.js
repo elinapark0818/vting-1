@@ -29,10 +29,23 @@ exports.VoteController = {
     },
     create: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            const { title, format, manytimes, multiple, type, items, response, password, } = req.body;
+            let { title, format, manytimes, multiple, type, items, response, password, } = req.body;
             // access code(6-digits) 만들기
             let randomNum = Math.random();
-            let url = randomNum.toFixed(6) * 1000000;
+            let url = Math.round(randomNum.toFixed(6) * 1000000);
+            if (items !== undefined) {
+                // items Array에 count: 0 넣어주기
+                if (Array.isArray(items)) {
+                    for (let el of items) {
+                        el.count = 0;
+                    }
+                }
+                // items 아무것도 안보내줄때 빈객체로 셋팅 해놓기
+            }
+            else {
+                items = [];
+            }
+            // response 아무것도 안보내줄때 빈객체로 셋팅 해놓기
             try {
                 // 헤더에 token 받아오기
                 let userId;
@@ -58,7 +71,7 @@ exports.VoteController = {
                                 multiple,
                                 manytimes,
                                 undergoing: true,
-                                status: "public",
+                                isPublic: true,
                                 created_at: new Date(),
                             }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                                 // random url(6digit) 만들어 주기
@@ -77,17 +90,16 @@ exports.VoteController = {
                                         _id: madeVote._id,
                                         title: madeVote.title,
                                         items: madeVote.items,
-                                        url,
-                                        status: madeVote.status,
+                                        isPublic: madeVote.isPublic,
                                         undergoing: madeVote.undergoing,
                                         created_at: madeVote.created_at,
+                                        url,
                                     },
                                 });
                             }));
                             // FIXME: FORMAT 'open ended'
                         }
                         else if (format === "open") {
-                            console.log("open ended start");
                             __1.db.collection("vote").insertOne({
                                 user_id: data.user_id,
                                 url,
@@ -96,7 +108,7 @@ exports.VoteController = {
                                 manytimes,
                                 response,
                                 undergoing: true,
-                                status: "public",
+                                isPublic: true,
                                 created_at: new Date(),
                             }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                                 // 방금 만든 objectId 보내주기
@@ -114,7 +126,7 @@ exports.VoteController = {
                                         _id: madeVote._id,
                                         title: madeVote.title,
                                         response: madeVote.response,
-                                        status: madeVote.status,
+                                        isPublic: madeVote.isPublic,
                                         undergoing: madeVote.undergoing,
                                         created_at: madeVote.created_at,
                                         url,
@@ -132,7 +144,7 @@ exports.VoteController = {
                                 manytimes,
                                 items,
                                 undergoing: true,
-                                status: "public",
+                                isPublic: true,
                                 created_at: new Date(),
                             }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                                 // 방금 만든 objectId 보내주기
@@ -150,7 +162,7 @@ exports.VoteController = {
                                         _id: madeVote._id,
                                         title: madeVote.title,
                                         items: madeVote.items,
-                                        status: madeVote.status,
+                                        isPublic: madeVote.isPublic,
                                         undergoing: madeVote.undergoing,
                                         created_at: madeVote.created_at,
                                         url,
@@ -168,7 +180,7 @@ exports.VoteController = {
                                 manytimes,
                                 items,
                                 undergoing: true,
-                                status: "public",
+                                isPublic: true,
                                 created_at: new Date(),
                             }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                                 // 방금 만든 objectId 보내주기
@@ -186,7 +198,7 @@ exports.VoteController = {
                                         _id: madeVote._id,
                                         title: madeVote.title,
                                         items: madeVote.items,
-                                        status: madeVote.status,
+                                        isPublic: madeVote.isPublic,
                                         undergoing: madeVote.undergoing,
                                         created_at: madeVote.created_at,
                                         url,
@@ -361,9 +373,91 @@ exports.VoteController = {
             }
         }),
     },
+    // FIXME: Show Vote
+    // 회원, 비회원 분기해서 보여주기
+    show_vote: {
+        get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+            // 비밀번호의 유무에 따라 회원 비회원을 나눠서 데이터 보내기(because. 로그인되어있는 사람이 비회원으로 만든 vote의 V page로 가게되는경우 토큰이 있어도 들어 갈 수 있어야 한다)
+            // 변경 => 데이터가 저장된 위치가 collection('vote') or collection('non-member') 인지에 따라 분기시켜주기
+            try {
+                const findMemberVote = yield __1.db
+                    .collection("vote")
+                    .findOne({ url: Number(req.params.accessCode) });
+                if (req.headers.authorization &&
+                    req.headers.authorization.split(" ")[0] === "Bearer" &&
+                    findMemberVote) {
+                    let token = req.headers.authorization.split(" ")[1];
+                    jsonwebtoken_1.default.verify(token, process.env.ACCESS_SECRET, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+                        // url(req.params.id)로 vote data 가져오기(회원일때 collection -> vote )
+                        let voteId = yield __1.db
+                            .collection("vote")
+                            .findOne({ url: Number(req.params.accessCode) });
+                        voteId = voteId._id;
+                        // 해당 vote 찾기
+                        yield __1.db
+                            .collection("vote")
+                            .findOne({ user_id: data.user_id, _id: new mongodb_1.ObjectId(voteId) }, (err, data) => {
+                            console.log("data", data);
+                            if (data.format !== "open") {
+                                let sumCount = 0;
+                                for (let el of data.items) {
+                                    sumCount += el.count;
+                                }
+                                return res.status(200).json({ data: data, sumCount });
+                            }
+                            else {
+                                return res.status(200).json({ data: data });
+                            }
+                        });
+                    }));
+                    // 비회원 vote data 보내기(클라에서 비번으로 접근 여부 판단함)
+                }
+                else if (!findMemberVote) {
+                    // url(req.params.id)로 vote data 가져오기(회원일때 collection -> non-member )
+                    let voteId = yield __1.db
+                        .collection("non-member")
+                        .findOne({ url: Number(req.params.accessCode) });
+                    voteId = voteId._id;
+                    // 해당 vote 찾기
+                    yield __1.db
+                        .collection("non-member")
+                        .findOne({ _id: new mongodb_1.ObjectId(voteId) }, (err, data) => {
+                        // 남은시간(분) 계산해서 보내주기
+                        let overtime = (new Date(data.created_at.toString()).getTime() -
+                            new Date().getTime()) /
+                            (1000 * 60) +
+                            60;
+                        overtime = Math.round(overtime);
+                        if (data.format !== "open") {
+                            let sumCount = 0;
+                            for (let el of data.items) {
+                                sumCount += el.count;
+                            }
+                            return res.status(200).json({ data: data, overtime, sumCount });
+                        }
+                        else {
+                            return res.status(200).json({ data: data, overtime });
+                        }
+                    });
+                }
+                else {
+                    // 로그인이 풀리는 경우(accessToken 만료 됬을때)
+                    return res.status(400).json({ message: "Bad Request" });
+                }
+            }
+            catch (_b) {
+                return res.status(400).json({ message: "Bad Request" });
+            }
+        }),
+    },
+    // FIXME: Delete Vote
     delete: {
         delete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            const voteId = req.params.id;
+            // url(req.params.id)로 vote data 가져오기
+            let voteId = yield __1.db
+                .collection("vote")
+                .findOne({ url: Number(req.params.accessCode) });
+            voteId = voteId._id;
             try {
                 //TODO: user data에 해당 vote(배열로 되어있음) 삭제해야됨
                 // 만약 유저가 여러가지 vote를 만들었다면 vote삭제시 user의 vote array에서 해당 vote를 삭제해야 된다.
@@ -387,14 +481,18 @@ exports.VoteController = {
                     }));
                 }
             }
-            catch (_b) {
+            catch (_c) {
                 return res.status(400).json({ message: "Bad Request" });
             }
         }),
     },
     undergoingAndPublic: {
         patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            const voteId = req.params;
+            // url(req.params.id)로 vote data 가져오기
+            let voteId = yield __1.db
+                .collection("vote")
+                .findOne({ url: Number(req.params.accessCode) });
+            voteId = voteId._id;
             const reqData = req.body;
             try {
                 // 회원인 경우 token 확인 후 내 vote를 수정하기
@@ -406,56 +504,77 @@ exports.VoteController = {
                         // 토큰이 확인되면 vote collection에서 해당유저가 만들었던 vote중 요청된 보트가 일치하면 patch 가능
                         yield __1.db
                             .collection("vote")
-                            .findOne({ _id: new mongodb_1.ObjectId(voteId), user_id: data.user_id }, (err, data) => {
+                            .findOne({ _id: new mongodb_1.ObjectId(voteId), user_id: data.user_id }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                             // undergoing === true => false
-                            console.log("reqData", req.body);
-                            if (reqData.isActive !== null && reqData.status === null) {
-                                if (reqData.isActive) {
-                                    __1.db.collection("vote").updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { undergoing: true } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
-                                        return res.status(200).json({ isActive: true });
+                            if (reqData.isActive !== null &&
+                                reqData.isPublic === null) {
+                                if (data.undergoing === true) {
+                                    yield __1.db
+                                        .collection("vote")
+                                        .updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { undergoing: false } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+                                        return res.status(200).json({
+                                            isActive: false,
+                                            isPublic: null,
+                                        });
                                     }));
+                                    // undergoing === false => true
                                 }
-                                else {
-                                    __1.db.collection("vote").updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { undergoing: false } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
-                                        return res.status(200).json({ isActive: false });
+                                else if (data.undergoing === false) {
+                                    yield __1.db
+                                        .collection("vote")
+                                        .updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { undergoing: true } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+                                        return res.status(200).json({
+                                            isActive: true,
+                                            isPublic: null,
+                                        });
                                     }));
                                 }
                             }
                             else if (reqData.isActive === null &&
-                                reqData.status !== null) {
-                                if (reqData.status === "public") {
-                                    __1.db.collection("vote").updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { undergoing: "public" } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+                                reqData.isPublic !== null) {
+                                // isPublic = true ===> false
+                                if (data.isPublic === true) {
+                                    __1.db.collection("vote").updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { isPublic: false } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                                         return res
                                             .status(200)
-                                            .json({ undergoing: "public" });
+                                            .json({ isActive: null, isPublic: false });
                                     }));
+                                    // isPublic = false ===> true
                                 }
-                                else {
-                                    __1.db.collection("vote").updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { undergoing: "private" } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+                                else if (data.isPublic === false) {
+                                    __1.db.collection("vote").updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { isPublic: true } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                                         return res
                                             .status(200)
-                                            .json({ undergoing: "private" });
+                                            .json({ isActive: null, isPublic: true });
                                     }));
                                 }
                             }
-                        });
+                        }));
                     }));
                     // 비회원일떄 수정 하기(undergoing만 바꿀 수 있음)
                 }
                 else {
-                    if (reqData.undergoing === true) {
-                        __1.db.collection("vote").updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { undergoing: true } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
-                            return res.status(200).json({ isActive: true });
-                        }));
-                    }
-                    else {
-                        __1.db.collection("vote").updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { undergoing: false } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
-                            return res.status(200).json({ isActive: false });
-                        }));
-                    }
+                    yield __1.db
+                        .collection("non-member")
+                        .findOne({ _id: new mongodb_1.ObjectId(voteId) }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+                        if (data.undergoing === true) {
+                            yield __1.db
+                                .collection("non-member")
+                                .updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { undergoing: false } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+                                return res.status(200).json({ isActive: false });
+                            }));
+                        }
+                        else if (data.undergoing === false) {
+                            yield __1.db
+                                .collection("non-member")
+                                .updateOne({ _id: new mongodb_1.ObjectId(voteId) }, { $set: { undergoing: true } }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+                                return res.status(200).json({ isActive: true });
+                            }));
+                        }
+                    }));
                 }
             }
-            catch (_c) {
+            catch (_d) {
                 return res.status(400).json({ message: "Bad Request" });
             }
         }),
