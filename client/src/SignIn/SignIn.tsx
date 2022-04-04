@@ -225,15 +225,24 @@ function SignIn() {
   };
 
   // * 이메일 유효성검사
+  // ? 숫자 (0~9) or 알파벳 (a~z, A~Z) 으로 시작하며 중간에 -_. 문자가 있을 수 있으며
+  // ? 그 후 숫자 (0~9) or 알파벳 (a~z, A~Z)이 올 수도 있고 연달아 올 수도 있고 없을 수도 있다.
+  // ? @ 는 반드시 존재하며 . 도 반드시 존재하고 a~z, A~Z 의 문자가 2,3개 존재하고 i = 대소문자 구분 안한다.
   const [emailValid, setEmailValid] = useState(false);
   const [isEmailBlur, setIsEmailBlur] = useState(false);
 
   const emailBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsEmailBlur(true);
-    if (newUser.email.match(/^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/i)) {
+    if (
+      newUser.email.match(
+        /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i
+      )
+    ) {
       setEmailValid(true);
     } else if (
-      user.email.match(/^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/i)
+      user.email.match(
+        /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i
+      )
     ) {
       setEmailValid(true);
     } else {
