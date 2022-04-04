@@ -1,4 +1,4 @@
-import React, { useState, Dispatch, SetStateAction } from "react";
+import React, { useState, Dispatch, SetStateAction, useEffect } from "react";
 
 const voteDummy = {
   vote_data: {
@@ -76,7 +76,7 @@ interface Options {
 
 function VoterAnswer({ setAnswerMode, code }: Props) {
   const [format, setFormat] = useState("");
-  const [multiple, setMultiple] = useState(true);
+  const [multiple, setMultiple] = useState(false);
 
   switch (format) {
     case "bar":
@@ -130,7 +130,9 @@ function VoterAnswer({ setAnswerMode, code }: Props) {
 
 function Bar({ multiple, setAnswerMode }: Options) {
   const [clicked, setClicked] = useState(-1);
-  const [mulipleMode, setMultipleMode] = useState(multiple);
+  const [multipleMode, setMultipleMode] = useState(multiple);
+  const [error, setError] = useState(false);
+  const [isEverythingOk, setIsEverythingOk] = useState(false);
   const [multiClicked, setMultiClicked] = useState(
     voteDummy.vote_data.items.map((el) => ({
       idx: el.idx,
@@ -139,11 +141,40 @@ function Bar({ multiple, setAnswerMode }: Options) {
     }))
   );
 
-  function toResult() {
-    // 1. 선택된(혹은 주관식일 경우 작성된) 응답을 axios로 보낸다.
+  useEffect(() => {
+    if (multipleMode && countAnswers()) {
+      setIsEverythingOk(true);
+    } else if (!multipleMode && clicked >= 0) {
+      setIsEverythingOk(true);
+    }
+  }, [clicked, multiClicked]);
 
-    // 2. 응답이 제대로 전달되었으면, 결과보기 모드를 활성화한다.
-    setAnswerMode(false);
+  function countAnswers() {
+    let result = 0;
+    for (let item of multiClicked) {
+      if (item.clicked) result++;
+    }
+    return result;
+  }
+
+  function toResult() {
+    console.log(countAnswers());
+    if (multipleMode && !countAnswers()) {
+      setError(true);
+      setTimeout(function () {
+        setError(false);
+      }, 1000);
+    } else if (!multipleMode && clicked < 0) {
+      setError(true);
+      setTimeout(function () {
+        setError(false);
+      }, 1000);
+    } else {
+      // 1. 선택된(혹은 주관식일 경우 작성된) 응답을 axios로 보낸다.
+
+      // 2. 응답이 제대로 전달되었으면, 결과보기 모드를 활성화한다.
+      setAnswerMode(false);
+    }
   }
 
   function handleMClicked(idx: number) {
@@ -163,7 +194,7 @@ function Bar({ multiple, setAnswerMode }: Options) {
     <div className="votingBody">
       <div className="votingContent">
         <div className="voteAnswers">
-          {mulipleMode
+          {multipleMode
             ? multiClicked.map((el, idx) => (
                 <div
                   className="voteAnswer"
@@ -215,9 +246,16 @@ function Bar({ multiple, setAnswerMode }: Options) {
                 </div>
               ))}
         </div>
+        <div className={error ? "errorAlert displayBlock" : "errorAlert"}>
+          ! 최소 한 개 이상의 선택지를 선택하셔야 합니다.
+        </div>
       </div>
       <div
-        className="voteCodeButton vtingButton blueButton"
+        className={
+          isEverythingOk
+            ? "voteCodeButton vtingButton blueButton"
+            : "voteCodeButton vtingButton grayButton"
+        }
         onClick={() => toResult()}
       >
         응답 결정
