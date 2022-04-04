@@ -11,8 +11,8 @@ const serverURL: string = "http://localhost:8000";
 function Dashboard() {
   const navigate = useNavigate();
 
-  const userInfo = useSelector((state: RootState) => state.userInfo);
   const isLogin = useSelector((state: RootState) => state.isLogin);
+  const userInfo = useSelector((state: RootState) => state.userInfo);
 
   const [signInState, setSignInState] = useState<boolean>(false);
 
@@ -22,7 +22,7 @@ function Dashboard() {
       created_at: "2022-03-11T10:23:49.027Z",
       format: "bar",
       isPublic: true,
-      title: "더미1",
+      title: "막대그래프 예시",
       undergoing: true,
       url: 123456,
     },
@@ -30,7 +30,7 @@ function Dashboard() {
       created_at: "2022-03-19T13:13:09.463Z",
       format: "open",
       isPublic: true,
-      title: "더미2",
+      title: "오픈 예시",
       undergoing: true,
       url: 234567,
     },
@@ -38,7 +38,7 @@ function Dashboard() {
       created_at: "2022-03-31T13:13:22.078Z",
       format: "word",
       isPublic: false,
-      title: "더미3",
+      title: "워드클라우드 예시",
       undergoing: false,
       url: 345678,
     },
@@ -52,8 +52,8 @@ function Dashboard() {
     format: changeFormat(vote.format),
     isPublic: vote.isPublic === true ? "공개" : "비공개",
     title: vote.title,
-    undergoing: vote.undergoing === true ? "진행중" : "종료",
-    url: parseInt(String(vote.url)),
+    undergoing: vote.undergoing === true ? "종료" : "재시작",
+    url: vote.url,
   }));
 
   function changeFormat(type: string) {
@@ -72,9 +72,11 @@ function Dashboard() {
           withCredentials: true,
         },
       });
-      console.log(res);
       if (res.status === 200) {
+        // setLoading(false);
         setUserVote(res.data.data.vote);
+        // setPosts(res.data.data.vote);
+        // console.log(posts);
       } else {
         setUserVote(votes);
       }
@@ -83,14 +85,21 @@ function Dashboard() {
     }
   };
 
+  // * 페이지네이션
+  // const [posts, setPosts] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [postPerPage, setPostPerPage] = useState(10);
+
   useEffect(() => {
+    // setLoading(true);
     if (!isLogin.login) {
       setSignInState(false);
     } else {
       setSignInState(true);
     }
     getUserInfo();
-  }, []);
+  }, [isLogin.login]);
 
   // todo: Vote Table 에서 설문 생성, 설문 종료, 설문 삭제 기능 구현하기
   const DeleteVote = async (url: string) => {
@@ -111,17 +120,17 @@ function Dashboard() {
     }
   };
 
-  const [togglePublic, setTogglePublic] = useState(false);
-  const [toggleOngoing, setToggleOngoing] = useState(false);
+  // ? isPublic
+  // todo: db에서 불러와야한다
+  // const [togglePublic, setTogglePublic] = useState(false);
+  // const isPublicState = () => setTogglePublic(!togglePublic);
 
-  const clickedTogglePublic = () => {
-    setTogglePublic((prev) => !prev);
-  };
-  const clickedToggleOngoing = () => {
-    setToggleOngoing((prev) => !prev);
-  };
+  // ? isUndergoing
+  // const [toggleOngoing, setToggleOngoing] = useState(false);
+  // const isActiveState = () => setToggleOngoing(!toggleOngoing);
 
-  const memberActiveOrPublic = async (url: string) => {
+  // * 퍼블릭 패치
+  const memberPublic = async (url: string) => {
     let accessToken = localStorage.getItem("accessToken");
     try {
       const res = await axios.patch(
@@ -137,16 +146,42 @@ function Dashboard() {
           },
         }
       );
-      console.log("응답이무얼까?", res.data);
+      // console.log("코드번호가===", url);
       if (res.status === 200) {
-        // * 회원 퍼블릭(공개/비공개)
-        setTogglePublic(res.data.isPublic);
-        console.log("공개설정바뀌니?===", togglePublic);
+        // setTogglePublic(res.data.isPublic);
+        // isPublicState();
+        // console.log("공개상태===", res.data.isPublic);
+        getUserInfo();
+      } else {
+        console.log("Bad Request");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-        // * 회원 종료(종료/재시작)
-        setToggleOngoing(res.data.isActive);
-        console.log("종료!!설정바뀌니?===", toggleOngoing);
-        // * 리렌더링
+  // * 액티브 패치
+  const memberActive = async (url: string) => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      const res = await axios.patch(
+        `${serverURL}/vting/${url}`,
+        {
+          isPublic: null,
+          isActive: "clicked!",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        }
+      );
+      console.log("코드번호가===", url);
+      if (res.status === 200) {
+        // * 회원 (종료/진행중)
+        console.log("진행상태===", res.data.isActive);
+
         getUserInfo();
       } else {
         console.log("Bad Request");
@@ -171,11 +206,10 @@ function Dashboard() {
                   <th>No.</th>
                   <th>제목</th>
                   <th>타입</th>
-                  <th>상태</th>
                   <th>생성일</th>
                   <th>코드</th>
-                  <th>공개여부</th>
-                  <th>종료</th>
+                  <th>공개</th>
+                  <th>진행</th>
                   <th>삭제</th>
                 </tr>
               </thead>
@@ -184,52 +218,45 @@ function Dashboard() {
                 <tbody key={index}>
                   <tr>
                     <td>{index + 1}</td>
-                    <td onClick={() => navigate(`/v/${vote.url}`)}>
+                    <td
+                      onClick={() => navigate(`/v/${vote.url}`)}
+                      className="td_title"
+                    >
                       {vote.title}
                     </td>
                     <td>{vote.format}</td>
-                    <td>{vote.undergoing}</td>
                     <td>{vote.created_at}</td>
                     <td>{vote.url}</td>
-                    <td>
-                      <button
-                        className="toggleBtn"
-                        onClick={() => memberActiveOrPublic(`${vote.url}`)}
-                      >
+                    <td onClick={() => memberPublic(`${vote.url}`)}>
+                      <button className="toggleBtn">
                         <div
-                          onClick={clickedTogglePublic}
                           className={
-                            togglePublic
-                              ? "toggleCircle toggleOn"
-                              : "toggleCircle"
+                            vote.isPublic === "공개"
+                              ? "toggleCircle"
+                              : "toggleCircle toggleOn"
                           }
                         >
-                          {togglePublic ? "끄기" : "공개"}
+                          {/* {vote.isPublic} */}
                         </div>
                       </button>
                     </td>
-                    <td>
-                      <button
-                        className="toggleBtn"
-                        onClick={() => memberActiveOrPublic(`${vote.url}`)}
-                      >
+                    <td onClick={() => memberActive(`${vote.url}`)}>
+                      <button className="toggleBtn">
                         <div
-                          onClick={clickedToggleOngoing}
                           className={
-                            toggleOngoing
-                              ? "toggleCircle toggleOn"
-                              : "toggleCircle"
+                            vote.undergoing === "종료"
+                              ? "toggleCircle"
+                              : "toggleCircle toggleOn"
                           }
                         >
-                          {toggleOngoing ? "종료" : "진행"}
+                          {/* {vote.undergoing} */}
                         </div>
                       </button>
                     </td>
                     <td>
                       <input
-                        className="dashboard_btn"
+                        className="dashboard_deleteBtn"
                         type="button"
-                        style={{ width: "100%", height: "100%" }}
                         value="삭제"
                         onClick={() => DeleteVote(`${vote.url}`)}
                       />

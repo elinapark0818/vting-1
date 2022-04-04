@@ -27,17 +27,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
+  margin: 3em;
 
   & .dashboard_table {
     min-width: 30em;
     width: 100%;
     padding-top: 5em;
     font-size: 2em;
-    text-align: center;
 
     & thead {
-      background-color: $vting-gray;
+      background-color: rgb(252, 205, 165);
       padding-top: 1em;
       border-bottom: 3px solid gray;
     }
@@ -50,16 +49,22 @@
       border-bottom: 1px solid $vting-gray;
     }
 
+    & th {
+      padding: 0.5em 1em;
+    }
+
     & td {
-      padding: 20px;
-      padding-right: 10px;
+      padding: 0.5em 1em;
       border-bottom: 1px solid $vting-gray;
     }
   }
 }
+.td_title {
+  cursor: pointer;
+}
 
 .toggleBtn {
-  margin-left: 10px;
+  margin-left: 25px;
   background-color: $vting-gray;
   width: 85px;
   height: 30px;
@@ -73,7 +78,7 @@
   transition: all 0.5s ease-in-out;
 }
 .toggleCircle {
-  background-color: $vting-orange;
+  background-color: rgb(184, 52, 52);
   width: 38px;
   height: 38px;
   border-radius: 50px;
@@ -93,10 +98,11 @@
   transition: all 0.5s ease-in-out;
 }
 
-.dashboard_btn {
+.dashboard_deleteBtn {
+  margin-left: 10px;
   cursor: pointer;
   border: none;
-  background-color: $vting-orange;
+  background-color: rgb(184, 52, 52);
   color: #fff;
   font-size: 16px;
   font-weight: bold;
@@ -106,8 +112,8 @@
 }
 
 .dashboard_btnWrap {
-  margin-top: 1em;
-  margin-left: 50em;
+  margin-top: 3em;
+  margin-left: 90em;
 }
 
 .dashboard_plusBtn {
@@ -117,7 +123,7 @@
   transition: all 0.3s;
 
   & :hover {
-    color: $vting-orange;
+    color: rgb(184, 52, 52);
   }
 }
 
