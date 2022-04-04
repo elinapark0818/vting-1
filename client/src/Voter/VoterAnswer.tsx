@@ -1,145 +1,74 @@
+import axios from "axios";
 import React, { useState, Dispatch, SetStateAction, useEffect } from "react";
-
-const voteDummy = {
-  vote_data: {
-    _id: "624710c297d85d682cc2e3c2",
-    user_id: "testyb@yof.com",
-    url: 659914,
-    title: "123",
-    format: "bar",
-    type: "vertical",
-    items: [
-      {
-        idx: 0,
-        content: "짜장면",
-        count: 2,
-      },
-      {
-        idx: 1,
-        content: "짬뽕",
-        count: 5,
-      },
-      {
-        idx: 2,
-        content: "울면",
-        count: 5,
-      },
-      {
-        idx: 3,
-        content: "기스면",
-        count: 7,
-      },
-      {
-        idx: 4,
-        content: "볶음밥",
-        count: 3,
-      },
-    ],
-    response: [
-      {
-        idx: 0,
-        content: "1231",
-      },
-      {
-        idx: 1,
-        content: "1233",
-      },
-    ],
-    // (if format is 'open' : items -> response([{ "idx": 1, "content": '123' }])
-    multiple: false,
-    manytimes: false,
-    undergoing: true,
-    isPublic: true,
-    created_at: "2022-04-01T14:48:34.453Z",
-  },
-  sumCount: 22,
-  overtiem: 23,
-  user_data: {
-    uuid: "ObjectId",
-    user_id: "bin11788@gamil.com",
-    nickname: "overflowbin",
-    image: null,
-    vote: null,
-  },
-};
+import { useParams } from "react-router-dom";
 
 interface Props {
   code: string | undefined;
   answerMode?: boolean;
   setAnswerMode: Dispatch<SetStateAction<boolean>>;
+  voteData: any;
 }
 
 interface Options {
   multiple?: boolean;
   setAnswerMode: Dispatch<SetStateAction<boolean>>;
+  voteData: any;
 }
 
-function VoterAnswer({ setAnswerMode, code }: Props) {
-  const [format, setFormat] = useState("");
-  const [multiple, setMultiple] = useState(false);
+const serverURL = "http://localhost:8000";
+
+function VoterAnswer({ setAnswerMode, code, voteData }: Props) {
+  const [format, setFormat] = useState(voteData.format);
+  const [multiple, setMultiple] = useState(voteData.mutiple);
+
+  useEffect(() => {
+    setFormat(voteData.format);
+    setMultiple(voteData.multiple);
+  }, [voteData]);
 
   switch (format) {
     case "bar":
     case "versus":
-      return <Bar multiple={multiple} setAnswerMode={setAnswerMode} />;
+      return (
+        <Bar
+          multiple={multiple}
+          setAnswerMode={setAnswerMode}
+          voteData={voteData}
+        />
+      );
     case "open":
     case "word":
-      return <Open setAnswerMode={setAnswerMode} />;
+      return <Open setAnswerMode={setAnswerMode} voteData={voteData} />;
     default:
-      return (
-        <>
-          <button
-            onClick={() => {
-              setFormat("bar");
-            }}
-          >
-            1.세로 바
-          </button>
-          <button
-            onClick={() => {
-              setFormat("bar");
-            }}
-          >
-            2.가로 바
-          </button>
-          <button
-            onClick={() => {
-              setFormat("open");
-            }}
-          >
-            3.대화형
-          </button>
-          <button
-            onClick={() => {
-              setFormat("versus");
-            }}
-          >
-            4.대결형
-          </button>
-          <button
-            onClick={() => {
-              setFormat("word");
-            }}
-          >
-            5.말풍선형
-          </button>
-        </>
-      );
+      return <>Ooooops!</>;
   }
 }
 
-function Bar({ multiple, setAnswerMode }: Options) {
+interface Item {
+  idx: number;
+  content: string;
+  clicked?: boolean;
+}
+
+function Bar({ multiple, setAnswerMode, voteData }: Options) {
+  const { code } = useParams();
   const [clicked, setClicked] = useState(-1);
   const [multipleMode, setMultipleMode] = useState(multiple);
   const [error, setError] = useState(false);
   const [isEverythingOk, setIsEverythingOk] = useState(false);
   const [multiClicked, setMultiClicked] = useState(
-    voteDummy.vote_data.items.map((el) => ({
+    voteData.items.map((el: Item) => ({
       idx: el.idx,
       content: el.content,
       clicked: false,
     }))
   );
+
+  useEffect(() => {
+    setMultipleMode(voteData.multiple);
+  }, []);
+
+  console.log(multiClicked);
 
   useEffect(() => {
     if (multipleMode && countAnswers()) {
@@ -157,8 +86,7 @@ function Bar({ multiple, setAnswerMode }: Options) {
     return result;
   }
 
-  function toResult() {
-    console.log(countAnswers());
+  async function toResult() {
     if (multipleMode && !countAnswers()) {
       setError(true);
       setTimeout(function () {
@@ -170,10 +98,26 @@ function Bar({ multiple, setAnswerMode }: Options) {
         setError(false);
       }, 1000);
     } else {
-      // 1. 선택된(혹은 주관식일 경우 작성된) 응답을 axios로 보낸다.
-
-      // 2. 응답이 제대로 전달되었으면, 결과보기 모드를 활성화한다.
-      setAnswerMode(false);
+      const reqBodyIdx = [];
+      if (multipleMode) {
+        for (let vote of multiClicked) {
+          if (vote.clicked) reqBodyIdx.push(vote.idx);
+        }
+      } else {
+        reqBodyIdx.push(clicked);
+      }
+      console.log(reqBodyIdx);
+      try {
+        const response = await axios.patch(`${serverURL}/voter/${code}`, {
+          idx: reqBodyIdx,
+        });
+        console.log(response);
+        if (response.status === 200) {
+          setAnswerMode(false);
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 
@@ -195,7 +139,7 @@ function Bar({ multiple, setAnswerMode }: Options) {
       <div className="votingContent">
         <div className="voteAnswers">
           {multipleMode
-            ? multiClicked.map((el, idx) => (
+            ? multiClicked.map((el: Item, idx: number) => (
                 <div
                   className="voteAnswer"
                   onClick={() => handleMClicked(el.idx)}
@@ -221,7 +165,7 @@ function Bar({ multiple, setAnswerMode }: Options) {
                   </div>
                 </div>
               ))
-            : voteDummy.vote_data.items.map((el, idx) => (
+            : voteData.items.map((el: Item, idx: number) => (
                 <div
                   className="voteAnswer"
                   onClick={() => setClicked(el.idx)}
@@ -264,21 +208,28 @@ function Bar({ multiple, setAnswerMode }: Options) {
   );
 }
 
-function Open({ setAnswerMode }: Options) {
+function Open({ setAnswerMode, voteData }: Options) {
+  const { code } = useParams();
   const [subAnswer, setSubAnswer] = useState("");
   const [shake, setShake] = useState(false);
-  function toResult() {
+  async function toResult() {
     if (!subAnswer.length) {
       setShake(true);
       setTimeout(function () {
         setShake(false);
       }, 1000);
     } else {
-      setAnswerMode(false);
+      try {
+        const response = await axios.patch(`${serverURL}/voter/${code}`, {
+          content: subAnswer,
+        });
+        if (response.status === 200) {
+          setAnswerMode(false);
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }
-    // 1. 선택된(혹은 주관식일 경우 작성된) 응답을 axios로 보낸다.
-
-    // 2. 응답이 제대로 전달되었으면, 결과보기 모드를 활성화한다.
   }
 
   return (
