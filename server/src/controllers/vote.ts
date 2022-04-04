@@ -65,6 +65,8 @@ export let VoteController = {
       } else {
         items = [];
       }
+      // response 빈객체로 셋팅 해놓기
+      response = [];
 
       // response 아무것도 안보내줄때 빈객체로 셋팅 해놓기
 
@@ -591,18 +593,18 @@ export let VoteController = {
 
   undergoingAndPublic: {
     patch: async (req: Request & { params: any; body: any }, res: Response) => {
-      // url(req.params.id)로 vote data 가져오기
-      let voteId = await db
+      const reqData = req.body;
+
+      const findMemberVote = await db
         .collection("vote")
         .findOne({ url: Number(req.params.accessCode) });
-      voteId = voteId._id;
-      const reqData = req.body;
 
       try {
         // 회원인 경우 token 확인 후 내 vote를 수정하기
         if (
           req.headers.authorization &&
-          req.headers.authorization.split(" ")[0] === "Bearer"
+          req.headers.authorization.split(" ")[0] === "Bearer" &&
+          findMemberVote
         ) {
           let authorization: string | undefined = req.headers.authorization;
           let token: string = authorization.split(" ")[1];
@@ -610,6 +612,12 @@ export let VoteController = {
             token,
             process.env.ACCESS_SECRET as jwt.Secret,
             async (err, data: any) => {
+              // url(req.params.id)로 vote data 가져오기
+              let voteId = await db
+                .collection("vote")
+                .findOne({ url: Number(req.params.accessCode) });
+              voteId = voteId._id;
+
               // 토큰이 확인되면 vote collection에서 해당유저가 만들었던 vote중 요청된 보트가 일치하면 patch 가능
               await db
                 .collection("vote")
@@ -682,7 +690,13 @@ export let VoteController = {
             }
           );
           // 비회원일떄 수정 하기(undergoing만 바꿀 수 있음)
-        } else {
+        } else if (!findMemberVote) {
+          // url(req.params.id)로 vote data 가져오기
+          let voteId = await db
+            .collection("non-member")
+            .findOne({ url: Number(req.params.accessCode) });
+          voteId = voteId._id;
+
           await db
             .collection("non-member")
             .findOne(
@@ -711,6 +725,8 @@ export let VoteController = {
                 }
               }
             );
+        } else {
+          return res.status(400).json({ message: "Bad Request" });
         }
       } catch {
         return res.status(400).json({ message: "Bad Request" });
