@@ -15,7 +15,11 @@ const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
 const app = express_1.default();
-const allowedOrigins = ["http://localhost:3000", "v-ting.net"];
+const allowedOrigins = [
+    "http://localhost:3000",
+    "http://vote.localhost:3000",
+    "v-ting.net",
+];
 const options = {
     origin: allowedOrigins,
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],

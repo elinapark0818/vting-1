@@ -9,6 +9,9 @@ import express, {
 
 import dotenv from "dotenv";
 import { Collection } from "mongodb";
+import { decode } from "punycode";
+import { dateType } from "aws-sdk/clients/iam";
+import { ObjectID } from "bson";
 dotenv.config();
 
 const SALT_ROUNDS = 6;
@@ -252,45 +255,70 @@ export let UserController = {
             accessToken as string,
             process.env.ACCESS_SECRET as jwt.Secret
           );
-          if (decoded) {
+          if (decoded && !req.query.q) {
             const findUser = await db
               .collection("user")
               .findOne({ user_id: decoded.user_id });
             console.log("decoded", decoded);
             console.log("finduser", findUser);
 
-            //여기까지 잘됨
-            const findUserVote: any[] = await db
+            const countUserVote = await db
+              .collection("vote")
+              .find({ user_id: decoded.user_id })
+              .count();
+
+            console.log(countUserVote);
+
+            return res.status(200).json({
+              data: {
+                _id: findUser._id,
+                nickname: findUser.nickname,
+                user_id: findUser.user_id,
+                image: findUser.image,
+                voteCount: countUserVote,
+              },
+            });
+          } else if (req.query) {
+            var q: any = req.query.q;
+
+            interface Vote {
+              _id: ObjectID;
+              user_id: string;
+              url: number;
+              title: string;
+              format: string;
+              manytimes: Boolean;
+              items: any[];
+              undergoing: Boolean;
+              isPublic: Boolean;
+              created_at: dateType;
+            }
+
+            const findUserVote: Vote[] = await db
               .collection("vote")
               .find({ user_id: decoded.user_id })
               .toArray();
 
-            console.log("findUserVote", findUserVote);
-            if (findUser && findUserVote) {
-              var voteInfo = [];
+            // console.log("findUserVote", findUserVote);
 
-              for (let i = 0; i < findUserVote.length; i++) {
-                const vote: any = {
-                  title: findUserVote[i].title,
-                  format: findUserVote[i].format,
-                  isPublic: findUserVote[i].isPublic,
-                  undergoing: findUserVote[i].undergoing,
-                  created_at: findUserVote[i].created_at,
-                  url: findUserVote[i].url,
-                };
-                voteInfo.push(vote);
-              }
-
-              return res.status(200).json({
-                data: {
-                  _id: findUser._id,
-                  nickname: findUser.nickname,
-                  user_id: findUser.user_id,
-                  image: findUser.image,
-                  vote: voteInfo,
-                },
-              });
+            var voteInfo = [];
+            //q=1 일때 0~9까지 q=2일때 10~19까지 q=3일때 20~29까지
+            for (let i = (q - 1) * 10; i < q * 10; i++) {
+              if (findUserVote[i] === undefined) break;
+              const vote: any = {
+                title: findUserVote[i].title,
+                format: findUserVote[i].format,
+                isPublic: findUserVote[i].isPublic,
+                undergoing: findUserVote[i].undergoing,
+                created_at: findUserVote[i].created_at,
+                url: findUserVote[i].url,
+              };
+              voteInfo.push(vote);
             }
+
+            return res.status(200).json({
+              vote: voteInfo,
+            });
           } else {
             return res.status(400).json({ message: "Bad request" });
           }
