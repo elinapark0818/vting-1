@@ -51,8 +51,10 @@ export let VoteController = {
       }: VoteType = req.body;
 
       // access code(6-digits) 만들기
-      let randomNum: any = Math.random();
-      let url = Math.round(randomNum.toFixed(6) * 1000000);
+      let url = 0;
+      while (String(url).length < 6) {
+        url = Math.ceil(Math.random() * 1000000);
+      }
 
       if (items !== undefined) {
         // items Array에 count: 0 넣어주기
