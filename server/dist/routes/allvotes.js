@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const auth_1 = require("../controllers/auth");
+const allvotes_1 = require("../controllers/allvotes");
 const router = (0, express_1.Router)();
-router.get("/", auth_1.AuthController.navBar.get);
+// router.post("/", controller.post);
+router.get("/", allvotes_1.allVoteController.get);
 exports.default = router;

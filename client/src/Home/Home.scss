@@ -6,97 +6,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  .hotVotesTitle {
-    margin-top: 50px;
-    font-size: 20px;
-    font-weight: 400;
-    padding: 20px 50px;
-    border: 3px solid $vting-orange;
-    #newVoteFilter {
-      height: auto;
-      line-height: normal;
-      padding: 0.8em 0.5em;
-      padding-right: 3em;
-      background: url("../assets/drop_arr.png") no-repeat 90%/10%;
-      // background-color: $vting-green;
-      border: 1px solid $vting-green;
-      border-radius: 0;
-      appearance: none;
-      font-weight: 500;
-      font-size: 18px;
-    }
-  }
-  .hotVotes {
-    padding: 30px;
-    .hotVotesContents {
-      margin: 30px 0;
-      display: flex;
-      flex-direction: row;
-      background-color: $vting-gray;
-      .hotVoteCard {
-        width: 200px;
-        overflow: hidden;
-        padding: 0 10px;
-        display: flex;
-        flex-direction: column;
-        background-color: white;
-        .hotVoteCardTitle {
-          display: inline-block;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          text-align: center;
-          font-weight: 400;
-          background-color: $vting-blue;
-          padding: 20px;
-          color: white;
-        }
-        .hotVoteCardFormat {
-          padding-top: 10px;
-          background-color: $vting-gray;
-          text-align: center;
-          font-weight: 400;
-        }
-        .hotVoteCardCount {
-          padding: 10px 0;
-          background-color: $vting-gray;
-          text-align: center;
-          font-weight: 400;
-          font-size: 20px;
-        }
-      }
-    }
-  }
 
   .services {
+    min-height: 500px;
     text-align: center;
     padding: 50px;
-  }
-
-  .vtingButton {
-    font-size: 15px;
-    font-weight: 400;
-
-    background-color: $vting-orange;
-    color: white;
-    padding: 10px;
-
-    border-style: none;
-    margin-top: 10px;
-    outline: 0;
-    cursor: pointer;
-    box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
-  }
-  .newVoteBtn {
-    text-align: center;
-    width: 300px;
-    padding: 20px;
-    border-radius: 40px;
-    font-size: 20px;
-    font-weight: 500;
-  }
-
-  a {
-    text-decoration: none;
   }
 }
