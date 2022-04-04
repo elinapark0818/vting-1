@@ -5,7 +5,7 @@ const router = Router();
 
 // router.post("/", controller.post);
 
-router.get("/test", VoterController.test.get);
+router.get("/:accessCode", VoterController.show_vote.get);
 router.patch("/:accessCode", VoterController.vote.patch);
 
 // router.delete("/:id", VoterController.delete.delete);
