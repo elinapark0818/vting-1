@@ -13,7 +13,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 interface PatchVote {
-  idx: number;
+  idx?: number[];
   content?: string;
 }
 
@@ -38,15 +38,47 @@ export let VoterController = {
           .collection("user")
           .findOne({ user_id: memberVoteData.user_id });
 
-        return res
-          .status(200)
-          .json({ vote_data: memberVoteData, user_data: userData });
+        if (memberVoteData.format !== "open") {
+          let sumCount: number = 0;
+          for (let el of memberVoteData.items) {
+            sumCount += el.count;
+          }
+          return res
+            .status(200)
+            .json({ vote_data: memberVoteData, user_data: userData, sumCount });
+        } else {
+          return res
+            .status(200)
+            .json({ vote_data: memberVoteData, user_data: userData });
+        }
       } else if (!memberVoteData) {
         const nonmemberVoteData = await db
           .collection("non-member")
           .findOne({ url: Number(req.params.accessCode) });
 
-        return res.status(200).json({ vote_data: nonmemberVoteData });
+        // 남은시간(분) 계산해서 보내주기
+        let overtime =
+          (new Date(nonmemberVoteData.created_at.toString()).getTime() -
+            new Date().getTime()) /
+            (1000 * 60) +
+          60;
+        overtime = Math.round(overtime);
+
+        if (nonmemberVoteData.format !== "open") {
+          let sumCount: number = 0;
+          for (let el of nonmemberVoteData.items) {
+            sumCount += el.count;
+          }
+          return res
+            .status(200)
+            .json({ vote_data: nonmemberVoteData, sumCount, overtime });
+        } else {
+          return res
+            .status(200)
+            .json({ vote_data: nonmemberVoteData, overtime });
+        }
+
+        // return res.status(200).json({ vote_data: nonmemberVoteData, overtime });
       }
     },
   },
@@ -56,6 +88,7 @@ export let VoterController = {
   vote: {
     patch: async (req: Request & { body: any }, res: Response) => {
       const { idx, content }: PatchVote = req.body;
+      console.log();
 
       try {
         const findMemberVote = await db
@@ -69,14 +102,18 @@ export let VoterController = {
             findMemberVote.format === "bar" ||
             findMemberVote.format === "versus"
           ) {
-            // vote 데이터 upload
-            await db.collection("vote").updateOne(
-              {
-                url: Number(req.params.accessCode),
-                "items.idx": idx,
-              },
-              { $inc: { "items.$.count": 1 } }
-            );
+            if (idx) {
+              for (let el of idx) {
+                // vote 데이터 upload
+                await db.collection("vote").updateOne(
+                  {
+                    url: Number(req.params.accessCode),
+                    "items.idx": el,
+                  },
+                  { $inc: { "items.$.count": 1 } }
+                );
+              }
+            }
 
             return res.status(200).json({ message: "Successfully reflected" });
 
@@ -154,13 +191,18 @@ export let VoterController = {
           ) {
             // vote 데이터 upload
             // idx가 잘못들어도 updateOne에서 오류가 안생기고 넘어감.....
-            await db.collection("non-member").updateOne(
-              {
-                url: Number(req.params.accessCode),
-                "items.idx": idx,
-              },
-              { $inc: { "items.$.count": 1 } }
-            );
+            if (idx) {
+              for (let el of idx) {
+                // vote 데이터 upload
+                await db.collection("non-member").updateOne(
+                  {
+                    url: Number(req.params.accessCode),
+                    "items.idx": el,
+                  },
+                  { $inc: { "items.$.count": 1 } }
+                );
+              }
+            }
 
             return res.status(200).json({ message: "Successfully reflected" });
 
