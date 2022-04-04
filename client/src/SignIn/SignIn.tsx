@@ -75,7 +75,7 @@ function SignIn() {
 
   // ! 유저체크 (아이디, 비번)
   // ? false = 미가입 true = 가입
-  const [userCheck, setUserCheck] = useState(false);
+  const [userCheck, setUserCheck] = useState(true);
   const [alreadyUser, setAlreadyUser] = useState(false);
   const [userPasswordCheck, setUserPasswordCheck] = useState(true);
 
@@ -94,6 +94,7 @@ function SignIn() {
           res.status === 200 &&
           res.data.message === "Successfully logged in"
         ) {
+          localStorage.setItem("accessToken", res.data.data.accessToken);
           const userInfo = res.data.data.user_data;
           setUserCheck(true);
           setUserPasswordCheck(true);
@@ -109,14 +110,14 @@ function SignIn() {
         }
       })
       .catch((err) => {
-        console.log("에러상태===", err.response);
+        console.log("에러상태===", err.response.data.message);
         if (err.response.data.message === "There's no ID") {
           setUserCheck(false);
           console.log("가입되지 않은 이메일입니다.");
         } else if (err.response.data.message === "Wrong password") {
           setUserPasswordCheck(false);
           console.log("비밀번호가 틀렸습니다.");
-        } else {
+        } else if (err.response.data.status === 400) {
           setIsServerOk(false);
           console.log("네트워크 상태가 불안정합니다.");
         }
@@ -287,6 +288,12 @@ function SignIn() {
                     ! 이메일을 정확히 입력해주세요.
                   </div>
                 )}
+
+                {!userCheck && (
+                  <div className={userCheck ? "" : "server Error"}>
+                    ! 가입되지 않은 이메일입니다.
+                  </div>
+                )}
               </div>
 
               <div className="password_wrap">
@@ -310,12 +317,6 @@ function SignIn() {
                 {!isServerOk && (
                   <div className="server Error">
                     ! 네트워크 상태가 불안정합니다.
-                  </div>
-                )}
-
-                {!userCheck && (
-                  <div className="server Error">
-                    ! 가입되지 않은 이메일입니다.
                   </div>
                 )}
 
