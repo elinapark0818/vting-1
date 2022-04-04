@@ -8,7 +8,6 @@ import "./SignIn.scss";
 import Logo from "../assets/v-ting_logo_circle.png";
 import { SiGithub } from "react-icons/si";
 import Google from "../assets/google-oauth-logo.png";
-import { BiErrorCircle } from "react-icons/bi";
 
 interface User {
   email: string;
@@ -51,24 +50,35 @@ function SignIn() {
     } else {
       setIsMatch(false);
     }
-  }, [newUser.password, newUser.passwordConfirm]);
+    // ? 인풋창에 내용물이 없어지면 안내메시지 없애기
+    if (!user.email.length) {
+      setUserCheck(true);
+    }
+    if (!user.password.length) {
+      setUserPasswordCheck(true);
+    }
+    if (!newUser.email.length) {
+      setAlreadyUser(false);
+    }
+  }, [
+    newUser.password,
+    newUser.passwordConfirm,
+    user.email,
+    newUser.email,
+    user.password,
+  ]);
 
-  // ? 서버 불안정 상태의 경우
   const [isServerOk, setIsServerOk] = useState(true);
-
-  // ? 상태에 따라 SignIn 또는 SignUp 화면 보여주기
   const [inOrUp, setInOrUp] = useState<InOrUp>({ signIn: true });
 
-  // ? 아직 계정이 없으신가요?  => 클릭 이벤트로 setInOrUp(false) 처리해주기!
   const setSignUp = () => {
     setInOrUp({ signIn: false });
   };
-  // ? 로그인 화면으로 돌아가기 클릭 이벤트로 setInOrUp(true) 처리해주기!
+
   const setSignIn = () => {
     setInOrUp({ signIn: true });
   };
 
-  // ? 모달 끄기 핸들링 : 이전 화면 보여주는거니까 그냥 뒤로가기로..ㅎㅎ
   const isCloseModal = () => {
     navigate(-1);
   };
@@ -80,7 +90,6 @@ function SignIn() {
   const [userPasswordCheck, setUserPasswordCheck] = useState(true);
 
   // ? 로그인 서버 연동 => [POST] session
-  // todo: 400에러로 메시지 분기가 안된다. => 초록님과 얘기하기
   // ! server/session
   const LogInUser = async () => {
     await axios
@@ -164,12 +173,6 @@ function SignIn() {
                 }
               });
           }
-          // else if (
-          //   data.status === 200 &&
-          //   data.data.message === "Success verified"
-          // ) {
-          //   setUserCheck(false);
-          // }
         });
     } catch (err) {
       setIsServerOk(false);
@@ -238,8 +241,8 @@ function SignIn() {
     }
   };
 
-  // * 비밀번호 유효성검사
-  const [passwordValid, setPasswordValid] = useState(false);
+  // *  로그인 비밀번호 유효성검사
+  const [passwordValid, setPasswordValid] = useState(true);
   const [isPasswordBlur, setIsPasswordBlur] = useState(false);
 
   const passwordBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -258,6 +261,23 @@ function SignIn() {
       setPasswordValid(true);
     } else {
       setPasswordValid(false);
+    }
+  };
+
+  // * 회원가입 비밀번호 유효성검사
+  const [newPasswordValid, setNewPasswordValid] = useState(true);
+  const [newPasswordBlur, setNewPasswordBlur] = useState(false);
+
+  const newPassword = (e: React.FocusEvent<HTMLInputElement>) => {
+    setNewPasswordBlur(true);
+    if (
+      newUser.password.match(
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/i
+      )
+    ) {
+      setNewPasswordValid(true);
+    } else {
+      setNewPasswordValid(false);
     }
   };
 
@@ -290,7 +310,7 @@ function SignIn() {
                 )}
 
                 {!userCheck && (
-                  <div className={userCheck ? "" : "server Error"}>
+                  <div className="server Error">
                     ! 가입되지 않은 이메일입니다.
                   </div>
                 )}
@@ -319,7 +339,6 @@ function SignIn() {
                     ! 네트워크 상태가 불안정합니다.
                   </div>
                 )}
-
                 {!userPasswordCheck && (
                   <div className="server Error">! 비밀번호가 틀렸습니다.</div>
                 )}
@@ -379,6 +398,11 @@ function SignIn() {
                     ! 이메일을 정확히 입력해주세요.
                   </div>
                 )}
+                {alreadyUser && (
+                  <div className="server Error">
+                    ! 이미 가입된 이메일입니다.
+                  </div>
+                )}
                 {isEmailBlur && emailValid && (
                   <div className="email Success"></div>
                 )}
@@ -386,7 +410,7 @@ function SignIn() {
 
               <div className="password_wrap">
                 <input
-                  onBlur={passwordBlur}
+                  onBlur={newPassword}
                   value={newUser.password}
                   placeholder="비밀번호"
                   type="password"
@@ -394,12 +418,12 @@ function SignIn() {
                   id="password"
                   onChange={signUp_onChangePassword}
                 />
-                {isPasswordBlur && !passwordValid && (
+                {newPasswordBlur && !newPasswordValid && (
                   <div className="password Error">
                     ! 영문, 숫자, 특수문자 포함 8자리이상 입력해주세요.
                   </div>
                 )}
-                {isPasswordBlur && passwordValid && (
+                {newPasswordBlur && newPasswordValid && (
                   <div className="password Success"></div>
                 )}
               </div>
@@ -423,10 +447,6 @@ function SignIn() {
                 <div className="server Error">
                   ! 네트워크 상태가 불안정합니다.
                 </div>
-              )}
-
-              {alreadyUser && (
-                <div className="server Error">! 이미 가입된 이메일입니다.</div>
               )}
 
               <div className="signUp_wrap">
