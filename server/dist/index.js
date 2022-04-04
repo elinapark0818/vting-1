@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.db = exports.MongoClient = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const user_1 = __importDefault(require("./routes/user"));
@@ -11,10 +12,11 @@ const auth_1 = __importDefault(require("./routes/auth"));
 const vote_1 = __importDefault(require("./routes/vote"));
 const voter_1 = __importDefault(require("./routes/voter"));
 const image_1 = __importDefault(require("./routes/image"));
+const allvotes_1 = __importDefault(require("./routes/allvotes"));
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
-const app = express_1.default();
+const app = (0, express_1.default)();
 const allowedOrigins = [
     "http://localhost:3000",
     "http://vote.localhost:3000",
@@ -26,7 +28,7 @@ const options = {
     credentials: true,
     maxAge: 24 * 6 * 60 * 10000,
 };
-app.use(cors_1.default(options));
+app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use("/user", user_1.default);
@@ -35,6 +37,7 @@ app.use("/auth", auth_1.default);
 app.use("/vting", vote_1.default);
 app.use("/voter", voter_1.default);
 app.use("/image", image_1.default);
+app.use("/allvotes", allvotes_1.default);
 //db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
 // const url = "mongodb://127.0.0.1:27017";
