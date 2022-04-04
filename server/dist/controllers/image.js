@@ -12,6 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const __1 = require("..");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const multer = require("multer");
@@ -19,13 +21,25 @@ const multerS3 = require("multer-s3");
 exports.ImageController = {
     userInfo: {
         patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log(req.file);
-            res
-                .status(200)
-                .json({
-                message: "Success",
-                data: req.file.location,
-            });
+            if (req.headers.authorization &&
+                req.headers.authorization.split(" ")[0] === "Bearer") {
+                let authorization = req.headers.authorization;
+                let accessToken = authorization.split(" ")[1];
+                try {
+                    const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+                    __1.db.collection("user").updateOne({ user_id: decoded.user_id }, {
+                        $set: {
+                            image: req.file.location,
+                        },
+                    });
+                    res.status(200).json({
+                        message: "Image successfully updated ",
+                    });
+                }
+                catch (_a) {
+                    return res.status(400).json({ message: "Bad request" });
+                }
+            }
         }),
     },
 };
