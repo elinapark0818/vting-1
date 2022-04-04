@@ -4,6 +4,8 @@ import express, {
   Response,
   NextFunction,
 } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { db } from "..";
 import dotenv from "dotenv";
 dotenv.config();
 const multer = require("multer");
@@ -18,14 +20,35 @@ interface ImageController {
 export let ImageController = {
   userInfo: {
     patch: async (req: Request, res: Response) => {
-      console.log(req.file);
+      if (
+        req.headers.authorization &&
+        req.headers.authorization.split(" ")[0] === "Bearer"
+      ) {
+        let authorization: string | undefined = req.headers.authorization;
+        let accessToken: string = authorization.split(" ")[1];
 
-      res
-        .status(200)
-        .json({
-          message: "Success",
-          data: (req.file as Express.MulterS3.File).location,
-        });
+        try {
+          const decoded: any = jwt.verify(
+            accessToken as string,
+            process.env.ACCESS_SECRET as jwt.Secret
+          );
+
+          db.collection("user").updateOne(
+            { user_id: decoded.user_id },
+            {
+              $set: {
+                image: (req.file as Express.MulterS3.File).location,
+              },
+            }
+          );
+
+          res.status(200).json({
+            message: "Image successfully updated ",
+          });
+        } catch {
+          return res.status(400).json({ message: "Bad request" });
+        }
+      }
     },
   },
 
