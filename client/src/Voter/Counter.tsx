@@ -29,7 +29,9 @@ function useInterval(callback: IntervalFunction, delay: number) {
 
 function Counter({ overtime }: Props) {
   const [time, setTime] = useState(overtime || 0);
-  console.log(overtime);
+  useEffect(() => {
+    setTime(overtime);
+  }, [overtime]);
   useInterval(() => {
     if (time > 0) setTime(time - 1);
   }, 60000);

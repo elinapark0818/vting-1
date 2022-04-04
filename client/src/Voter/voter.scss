@@ -196,3 +196,310 @@
     }
   }
 }
+
+.voteResultPageCon {
+  width: 80%;
+  margin: 50px 10%;
+  .voteResultPage {
+    border: 1px solid $vting-gray;
+    background-color: white;
+    filter: drop-shadow(3px 3px 0 $vting-gray);
+    display: flex;
+    flex-direction: column;
+    // align-items: center;
+    // justify-content: center;
+    .voteResultTitle {
+      background-color: $vting-orange;
+      color: white;
+      padding: 20px 30px;
+      width: 100%;
+      font-size: 20px;
+      font-weight: 400;
+      box-sizing: border-box;
+    }
+  }
+  .voteResultContent {
+    height: 500px;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    .errorCon {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+      .errorTitle {
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 80px;
+        background-color: $vting-gray;
+        padding: 10px 20px;
+      }
+    }
+    .voteResultChild {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      .voteResultChildTitle {
+        font-size: 20px;
+        font-weight: 400;
+        text-align: center;
+      }
+      .voteResultChildContent {
+        width: 180px;
+        height: 100px;
+        padding: 10px;
+        background-color: $vting-gray;
+        font-size: 20px;
+        font-weight: 500;
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      .voteResultChildQr {
+        background-color: white;
+        img {
+          width: 80%;
+        }
+      }
+      .voteResultChildShare {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        .copy,
+        .sns {
+          margin: 10px;
+          background-color: $vting-blue;
+          color: white;
+          width: 50px;
+          height: 50px;
+          padding: 10px;
+          border-radius: 50px;
+          font-size: 30px;
+          text-align: center;
+          line-height: 40px;
+          cursor: pointer;
+        }
+      }
+      .voteResultChildEx {
+        width: 200px;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+    }
+    .hrVer {
+      height: 200px;
+      border-left: 1px solid black;
+    }
+
+    .imgCon {
+      width: 200px;
+      img {
+        width: 100%;
+      }
+    }
+  }
+  .voteResultFooter {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .modeChange {
+      display: flex;
+      flex-direction: row;
+      .modebtn {
+        cursor: pointer;
+        padding: 10px 20px;
+        background-color: $vting-orange;
+        color: white;
+      }
+      .gray {
+        background-color: $vting-gray;
+        color: black;
+      }
+    }
+    .options {
+      display: flex;
+      flex-direction: row;
+      .toggleBtn {
+        margin-left: 10px;
+        background-color: $vting-gray;
+        width: 85px;
+        height: 30px;
+        border-radius: 30px;
+        border: none;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.5s ease-in-out;
+      }
+      .toggleCircle {
+        background-color: $vting-orange;
+        width: 38px;
+        height: 38px;
+        border-radius: 50px;
+        position: absolute;
+        left: 5%;
+        transition: all 0.5s ease-in-out;
+        color: white;
+        text-align: center;
+        line-height: 38px;
+        font-size: 12px;
+      }
+      .toggleOn {
+        background-color: #e2e2e2;
+        color: black;
+        transform: translate(38px, 0);
+        transition: all 0.5s ease-in-out;
+      }
+    }
+  }
+}
+
+.copyAlert {
+  background-color: $vting-green;
+  color: black;
+  padding: 10px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.03);
+  font-family: Arial;
+  width: 300px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.imgAlert {
+  background-color: white;
+  color: black;
+  padding: 10px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.03);
+  font-family: Arial;
+  box-sizing: border-box;
+  text-align: center;
+  margin-top: -150px;
+  img {
+    width: 250px;
+  }
+  .imgAlertBtn {
+    border: none;
+    font-size: 20px;
+    font-weight: 400;
+    background-color: $vting-blue;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 60px;
+  }
+}
+
+.versusCon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+// 여기부터 실시간 응답보기 관련 css
+.realTimeCon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  .openendIcon {
+    min-width: 100px;
+    padding: 15px;
+    margin: 10px;
+    background-color: #f7f7f7;
+    border: 1px solid black;
+  }
+  .border1 {
+    border: 1px solid $vting-orange;
+  }
+  .border2 {
+    border: 1px solid $vting-blue;
+  }
+  .border3 {
+    border: 1px solid $vting-green;
+  }
+  .border4 {
+    border: 1px solid $vting-yellow;
+  }
+  .votePreviewBack {
+    width: 100%;
+    height: 100%;
+    padding: 20px 0;
+    min-height: 250px;
+    background-color: $vting-gray;
+
+    .votePreview-barVer-con {
+      padding: 10%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+    #votePreview-barVer-bar {
+      margin: 0 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      .barVer-itemBar {
+        width: 100%;
+        animation-name: barVerAnimation;
+        animation-duration: 1s;
+        background-color: $vting-blue;
+      }
+      @keyframes barVerAnimation {
+        0% {
+          height: 0;
+        }
+      }
+    }
+
+    .votePreview-barHor-con {
+      width: 100%;
+      height: 100%;
+      padding: 10%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+    #votePreview-barHor-bar {
+      flex: 1 1 auto;
+      margin: 10px 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .barHor-itemBar {
+        height: 100%;
+        animation-name: barAnimation;
+        animation-duration: 1s;
+        background-color: $vting-blue;
+      }
+      @keyframes barAnimation {
+        0% {
+          width: 0;
+        }
+      }
+    }
+  }
+}
