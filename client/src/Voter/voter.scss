@@ -89,6 +89,7 @@
       min-height: 200px;
       background-color: $vting-gray;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       .voteAnswers {
@@ -157,9 +158,13 @@
         color: red;
         display: none;
       }
-      .displayBlock {
-        display: block;
-      }
+    }
+    .errorAlert {
+      color: red;
+      display: none;
+    }
+    .displayBlock {
+      display: block;
     }
   }
   .blueButton {
