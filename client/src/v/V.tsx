@@ -328,7 +328,7 @@ function V() {
 }
 
 function Howto() {
-  const [url, setUrl] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
   const { code } = useParams();
   const alert = useAlert();
   const imgAlert = useAlert(imgAlertContext);
@@ -343,14 +343,14 @@ function Howto() {
   const QRCode = require("qrcode");
   useEffect(() => {
     QRCode.toDataURL(shortUrl, function (err: Error, url: string) {
-      setUrl(url);
+      setImgUrl(url);
     });
   }, [shortUrl]);
 
   // 클립보드에 복사
   function shortUrlClip() {
     try {
-      navigator.clipboard.writeText(url);
+      navigator.clipboard.writeText(shortUrl);
       alert.show("접속주소가 클립보드에 복사되었습니다.");
     } catch (e) {
       alert.show("에러가 발생했습니다. 잠시 후 다시 시도해주세요.");
@@ -368,7 +368,7 @@ function Howto() {
 
   async function quBlobClip() {
     try {
-      const imgURL = url;
+      const imgURL = imgUrl;
       const data = await fetch(imgURL);
       const blob = await data.blob();
       await navigator.clipboard.write([
@@ -384,7 +384,7 @@ function Howto() {
 
   // qr코드 클릭 시 확대
   function zoomQr() {
-    const qrimgDiv = <img src={url} alt={url} />;
+    const qrimgDiv = <img src={imgUrl} alt={shortUrl} />;
     imgAlert.show(qrimgDiv, {
       close: () => {
         alert.remove(imgAlert);
@@ -433,7 +433,7 @@ function Howto() {
       <div className="voteResultChild voteResultQr">
         <div className="voteResultChildTitle">QR Code</div>
         <div className="voteResultChildContent voteResultChildQr">
-          <img src={url} alt="qr" onClick={() => zoomQr()} />
+          <img src={imgUrl} alt="qr" onClick={() => zoomQr()} />
         </div>
         <div className="voteResultChildShare">
           <div className="copy" onClick={() => quBlobClip()}>

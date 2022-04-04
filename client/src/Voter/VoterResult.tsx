@@ -142,7 +142,7 @@ function VoterResult() {
           setTitle(response.data.vote_data.title);
           if (response.data.user_data) {
             setNickName(response.data.user_data.nickname);
-            if (response.data.user_data.image.length)
+            if (response.data.user_data.image)
               setProfileImg(response.data.user_data.image);
           } else {
             console.log(response);
@@ -154,6 +154,7 @@ function VoterResult() {
           }
         }
       } catch (e) {
+        console.log(e);
         setErrorMode(true);
       }
     };
