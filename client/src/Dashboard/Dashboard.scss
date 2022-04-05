@@ -54,8 +54,13 @@
     }
 
     & th {
+      width: 150px;
       padding: 0.5em 1em;
       font-size: 1.1em;
+
+      & .idx {
+        width: 50px;
+      }
     }
 
     & td {
@@ -107,14 +112,33 @@
 // * 페이지네이션
 .pagination {
   margin: 1em;
+  display: flex;
+  list-style: none;
+  flex-direction: row;
 
   .page_btn {
     cursor: pointer;
     border: none;
-    border-bottom: 1px solid $vting-blue;
-    padding: 0px 5px;
+    font-size: large;
+    font-weight: bold;
+    padding: 3.5px 10px;
     color: $vting-blue;
+    margin: 5px;
     background-color: transparent;
+
+    &:hover {
+      cursor: pointer;
+      background-color: $vting-blue;
+      color: #fff;
+      border-radius: 50%;
+    }
+
+    &:active {
+      cursor: pointer;
+      background-color: $vting-blue;
+      color: #fff;
+      border-radius: 50%;
+    }
   }
 }
 
