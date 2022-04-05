@@ -35,23 +35,28 @@ function Edit() {
   // ! Cannot PATCH => `${serverURL}/user` 요거로 바뀐거임!
   // ! 심각한 오류 => 비밀번호를 비워두고 닉네임만 바꾸면 비번을 찾을 수가 없음..
   // todo: 방안 1. 닉네임 변경 / 비밀번호 변경 분기하기
-  const EditUserName = async () => {
+  const EditUserInfo = async () => {
     let accessToken = localStorage.getItem("accessToken");
+    let sendBody;
+    // * 패스워드에 입력된 값이 있다면 바디에 내용을 담아서 보낸다.(변경할 nickname, password)
+    if (patchUserInfo.password !== "")
+      sendBody = {
+        nickname: patchUserInfo.name || userInfo.nickname,
+        password: patchUserInfo.password,
+      };
+    // * 패스워드에 입력된 값이 없다면 바디에 변경할 nickname만 담아서 보낸다
+    else
+      sendBody = {
+        nickname: patchUserInfo.name || userInfo.nickname,
+      };
     try {
       await axios
-        .patch(
-          `${serverURL}/user`,
-          {
-            nickname: patchUserInfo.name || userInfo.nickname,
-            password: patchUserInfo.password,
+        .patch(`${serverURL}/user`, sendBody, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              withCredentials: true,
-            },
-          }
-        )
+        })
         .then((res) => {
           if (res.status === 200) {
             dispatch(
@@ -68,59 +73,6 @@ function Edit() {
     } catch (err) {
       console.log(err);
     }
-  };
-
-  const EditUserPassword = async () => {
-    let accessToken = localStorage.getItem("accessToken");
-    try {
-      await axios
-        .patch(
-          `${serverURL}/user`,
-          {
-            password: patchUserInfo.password,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              withCredentials: true,
-            },
-          }
-        )
-        .then((res) => {
-          if (res.status === 200) {
-            alert("비밀번호가 변경되었습니다.");
-          } else {
-            console.log("Bad Request 입니다. 400에러");
-          }
-        });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  // * 비밀번호를 불러오기 위해 user/check 를 쓸 수 있으려나..?
-  const userPasswordCheck = async () => {
-    let accessToken = localStorage.getItem("accessToken");
-    axios
-      .post(
-        `${serverURL}/user/check`,
-        {
-          password: patchUserInfo.password,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            withCredentials: true,
-          },
-        }
-      )
-      .then((res) => {
-        if (res.status === 200) {
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   return (
@@ -154,7 +106,8 @@ function Edit() {
               name="name"
               onChange={edit_onChangeName}
               type="text"
-              placeholder="변경하실 닉네임을 입력해주세요."
+              // value={userInfo.nickname}
+              placeholder={userInfo.nickname}
             />
           </div>
 
@@ -170,11 +123,8 @@ function Edit() {
         </div>
       </main>
       <div className="edit_btnWrap">
-        <button className="edit_btn" onClick={() => EditUserPassword()}>
-          비밀번호 변경
-        </button>
-        <button className="edit_btn" onClick={() => EditUserName()}>
-          닉네임 변경
+        <button className="edit_btn" onClick={() => EditUserInfo()}>
+          수정하기
         </button>
       </div>
     </div>

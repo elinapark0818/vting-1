@@ -1,37 +1,75 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./Navbar.scss";
 import Logo from "../assets/vt_logo_1.png";
 import Profile from "../assets/yof_logo-17.jpg";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState, setIsLogin } from "../store/index";
+import { RootState, setIsLogin, setUserInfo } from "../store/index";
 import axios from "axios";
-// import jwt from "jsonwebtoken";
+
+interface User {
+  email: string;
+  nickname: string;
+}
 
 const serverURL: string = "http://localhost:8000";
 
 function Navbar() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   let location = useLocation();
   // * 로그인상태
   let isLoginState = useSelector((state: RootState) => state.isLogin);
   let loginState = isLoginState.login;
 
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+  // console.log("유저인포이메일", userInfo);
+
+  const [user, setUser] = useState<User>({ email: "", nickname: "" });
+
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
       settingLogin();
     }
+    NavbarUserInfo();
   }, [location]);
 
-  // ? 처음 렌더링할때, 로그인상태 useEffect로 토큰여부에 따라 판단한다.
-  // useEffect(() => {
+  const NavbarUserInfo = async () => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      await axios
+        .get(`${serverURL}/auth`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            setUser({
+              email: res.data.data.user_id,
+              nickname: res.data.data.nickname,
+            });
 
-  // }, []);
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  // const userInfo = useSelector((state: RootState) => state.userInfo);
+            Object.assign(
+              {},
+              userInfo,
+              res.data.data.user_id,
+              res.data.data.nickname
+            );
+            // userInfo.email = res.data.data.user_id;
+            // userInfo.nickname = res.data.data.nickname;
+            // console.log("리덕스이메일", userInfo.email);
+            // console.log("리덕스닉네임", userInfo.nickname);
+          } else {
+            console.error("400 Error");
+          }
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   // ? 로그인 핸들링
   const settingLogin = () => {
@@ -93,8 +131,10 @@ function Navbar() {
                 alt="profile_img"
                 style={{ width: "60px", borderRadius: "50%" }}
               />
+
               <ul className="subMenu">
                 <div className="subMenuLi">
+                  <div>{user.nickname}님</div>
                   <Link className="nav-link link" to="myPage">
                     MyPage
                   </Link>
