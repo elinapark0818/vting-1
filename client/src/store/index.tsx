@@ -1,4 +1,5 @@
 import { createSlice, configureStore, PayloadAction } from "@reduxjs/toolkit";
+import { stat } from "fs";
 
 // 로그인, 로그아웃 관련 state입니다.
 export interface IsLogin {
@@ -151,11 +152,72 @@ const newVoteSlice = createSlice({
   },
 });
 
+// 받아온 vote (/v 혹은 vote.) 정보 처리를 위한 부분입니다.
+export interface ResultVoteItem {
+  idx: number;
+  content: string;
+  count?: number;
+}
+
+export interface ResultVoteInfo {
+  _id?: string;
+  user_id?: string;
+  nickname?: string;
+  image?: string;
+  password?: string;
+  url?: number;
+  title: string;
+  format?: string;
+  type?: string;
+  items: ResultVoteItem[];
+  multiple?: boolean;
+  manytimes?: boolean;
+  undergoing?: boolean;
+  isPublic?: boolean;
+  created_at?: string;
+  overtime?: number;
+  sumCount?: number;
+}
+
+const initialGetVoteState: ResultVoteInfo = {
+  title: "",
+  items: [],
+};
+
+const getVoteSlice = createSlice({
+  name: "getVote",
+  initialState: initialGetVoteState,
+  reducers: {
+    patchGetVote(state, action: PayloadAction<ResultVoteInfo>) {
+      if (action.payload._id) state._id = action.payload._id;
+      if (action.payload.user_id) state.user_id = action.payload.user_id;
+      if (action.payload.nickname) state.nickname = action.payload.nickname;
+      if (action.payload.image) state.image = action.payload.image;
+      if (action.payload.password) state.password = action.payload.password;
+      if (action.payload.url) state.url = action.payload.url;
+      if (action.payload.title) state.title = action.payload.title;
+      if (action.payload.format) state.format = action.payload.format;
+      if (action.payload.type) state.type = action.payload.type;
+      if (action.payload.items) state.items = action.payload.items;
+      if (action.payload.multiple) state.multiple = action.payload.multiple;
+      if (action.payload.manytimes) state.manytimes = action.payload.manytimes;
+      if (action.payload.undergoing)
+        state.undergoing = action.payload.undergoing;
+      if (action.payload.isPublic) state.isPublic = action.payload.isPublic;
+      if (action.payload.created_at)
+        state.created_at = action.payload.created_at;
+      if (action.payload.overtime) state.overtime = action.payload.overtime;
+      if (action.payload.sumCount) state.sumCount = action.payload.sumCount;
+    },
+  },
+});
+
 const store = configureStore({
   reducer: {
     isOpenModal: isModalSlice.reducer,
     isLogin: isLogInSlice.reducer,
     makeNewVote: newVoteSlice.reducer,
+    getVote: getVoteSlice.reducer,
     userInfo: UserInfoSlice.reducer,
   },
 });
@@ -167,6 +229,8 @@ export const { setIsLogin } = isLogInSlice.actions;
 export const { setUserInfo } = UserInfoSlice.actions;
 
 export const { setIsModalOpen } = isModalSlice.actions;
+
+export const { patchGetVote } = getVoteSlice.actions;
 
 export const {
   setFormat,

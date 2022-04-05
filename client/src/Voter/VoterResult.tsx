@@ -7,6 +7,8 @@ import vtCry from "../assets/vt_cry.png";
 import VoterAnswer from "./VoterAnswer";
 import Counter from "./Counter";
 import VoterRealtime from "./VoterRealtime";
+import { useSelector, useDispatch } from "react-redux";
+import { patchGetVote, RootState } from "../store/index";
 
 const adj = [
   "사랑스러운",
@@ -52,48 +54,6 @@ function randomNick() {
   );
 }
 
-interface Item {
-  idx: number;
-  content: string;
-  count?: number;
-}
-
-interface VoteInfo {
-  _id?: string;
-  user_id?: string;
-  password?: string;
-  url?: number;
-  title?: string;
-  format?: string;
-  type?: string;
-  items?: Item[];
-  multiple?: boolean;
-  manytimes?: boolean;
-  undergoing?: boolean;
-  isPublic?: boolean;
-  created_at?: string;
-  overtime?: number;
-  sumCount?: number;
-}
-
-const dummVoteData: VoteInfo = {
-  _id: "abc",
-  user_id: "abc",
-  password: "abc",
-  url: 123456,
-  title: "abc",
-  format: "abc",
-  type: "abc",
-  items: [{ idx: 0, content: "abc" }],
-  multiple: false,
-  manytimes: false,
-  undergoing: false,
-  isPublic: false,
-  created_at: "abc",
-  overtime: 0,
-  sumCount: 0,
-};
-
 function VoterResult() {
   const [profileImg, setProfileImg] = useState(logo);
   const [title, setTitle] = useState("");
@@ -104,9 +64,10 @@ function VoterResult() {
   const [errorMode, setErrorMode] = useState(false);
   const [nonUser, setNonUser] = useState(false);
   const [overtime, setOvertime] = useState(60);
-  const [voteData, setVoteData] = useState(dummVoteData);
-
-  console.log(voteData);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [voteData, setVoteData] = useState(dummVoteData);
+  const dispatch = useDispatch();
+  const voteData = useSelector((state: RootState) => state.getVote);
 
   useEffect(() => {
     if (code) setResult(true);
@@ -114,6 +75,7 @@ function VoterResult() {
 
   const serverURL = "http://localhost:8000";
 
+  // 접속 시 해당 설문 정보 가져오기
   useEffect(() => {
     const voteResult = async () => {
       try {
@@ -123,35 +85,63 @@ function VoterResult() {
           },
         });
         if (response.status === 200) {
-          setVoteData({
-            _id: response.data.vote_data._id,
-            url: response.data.vote_data.url,
-            title: response.data.vote_data.title,
-            format: response.data.vote_data.format,
-            type: response.data.vote_data.type || "",
-            items:
-              response.data.vote_data.items || response.data.vote_data.response,
-            multiple: response.data.vote_data.multiple,
-            manytimes: response.data.vote_data.manytimes,
-            undergoing: response.data.vote_data.undergoing || false,
-            isPublic: response.data.vote_data.isPublic || false,
-            created_at: response.data.vote_data.created_at,
-            overtime: response.data.overtime || 0,
-            sumCount: response.data.sumCount || 0,
-          });
+          setIsLoading(true);
+          let getVoteBody;
+          // 회원 생성한 설문일 때 body
+          if (response.data.user_data) {
+            getVoteBody = {
+              _id: response.data.vote_data._id,
+              user_id: response.data.user_data._user_id,
+              image: response.data.user_data.image,
+              url: response.data.vote_data.url,
+              title: response.data.vote_data.title,
+              format: response.data.vote_data.format,
+              type: response.data.vote_data.type,
+              items:
+                response.data.vote_data.items ||
+                response.data.vote_data.response,
+              multiple: response.data.vote_data.multiple,
+              manytimes: response.data.vote_data.manytimes,
+              undergoing: response.data.vote_data.undergoing,
+              isPublic: response.data.vote_data.isPublic,
+              created_at: response.data.vote_data.created_at,
+              sumCount: response.data.sumCount || 0,
+            };
+          } else {
+            getVoteBody = {
+              _id: response.data.vote_data._id,
+              url: response.data.vote_data.url,
+              title: response.data.vote_data.title,
+              format: response.data.vote_data.format,
+              type: response.data.vote_data.type,
+              items:
+                response.data.vote_data.items ||
+                response.data.vote_data.response,
+              multiple: response.data.vote_data.multiple,
+              manytimes: response.data.vote_data.manytimes,
+              undergoing: response.data.vote_data.undergoing,
+              created_at: response.data.vote_data.created_at,
+              overtime: response.data.overtime,
+              sumCount: response.data.sumCount || 0,
+            };
+          }
+          dispatch(patchGetVote(getVoteBody));
           setTitle(response.data.vote_data.title);
           if (response.data.user_data) {
             setNickName(response.data.user_data.nickname);
-            if (response.data.user_data.image)
+            if (
+              response.data.user_data.image &&
+              response.data.user_data.image.length
+            )
               setProfileImg(response.data.user_data.image);
           } else {
-            console.log(response);
             // 비회원 설문임
             // 1. 비회원모드 설정
             setNonUser(true);
             // 2. 남은시간 설정
             setOvertime(response.data.overtime);
           }
+          setIsLoading(false);
         }
       } catch (e) {
         console.log(e);
@@ -182,6 +172,8 @@ function VoterResult() {
             </div>
           </div>
         </>
+      ) : isLoading ? (
+        <>로딩중...</>
       ) : (
         <>
           <div className="votingHeader">
@@ -195,13 +187,9 @@ function VoterResult() {
           </div>
           <div className="votingTitle">{title}</div>
           {answerMode ? (
-            <VoterAnswer
-              setAnswerMode={setAnswerMode}
-              code={code}
-              voteData={voteData}
-            />
+            <VoterAnswer setAnswerMode={setAnswerMode} voteData={voteData} />
           ) : (
-            <VoterRealtime voteData={voteData} />
+            <VoterRealtime />
           )}
         </>
       )}
