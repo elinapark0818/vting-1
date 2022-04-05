@@ -8,11 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, setIsLogin, setUserInfo } from "../store/index";
 import axios from "axios";
 
-interface User {
-  email: string;
-  nickname: string;
-}
-
 const serverURL: string = "http://localhost:8000";
 
 function Navbar() {
@@ -24,9 +19,6 @@ function Navbar() {
   let loginState = isLoginState.login;
 
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  // console.log("유저인포이메일", userInfo);
-
-  const [user, setUser] = useState<User>({ email: "", nickname: "" });
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
@@ -34,6 +26,9 @@ function Navbar() {
     }
     NavbarUserInfo();
   }, [location]);
+
+  console.log("리덕스이메일", userInfo.email);
+  console.log("리덕스닉네임", userInfo.nickname);
 
   const NavbarUserInfo = async () => {
     let accessToken = localStorage.getItem("accessToken");
@@ -47,21 +42,20 @@ function Navbar() {
         })
         .then((res) => {
           if (res.status === 200) {
-            setUser({
-              email: res.data.data.user_id,
-              nickname: res.data.data.nickname,
-            });
-
-            Object.assign(
-              {},
-              userInfo,
-              res.data.data.user_id,
-              res.data.data.nickname
+            settingLogin();
+            // Object.assign(
+            //   {},
+            //   userInfo,
+            //   res.data.data.user_id,
+            //   res.data.data.nickname
+            // );
+            dispatch(
+              setUserInfo({
+                _id: res.data.data._id,
+                nickname: res.data.data.nickname,
+                email: res.data.data.user_id,
+              })
             );
-            // userInfo.email = res.data.data.user_id;
-            // userInfo.nickname = res.data.data.nickname;
-            // console.log("리덕스이메일", userInfo.email);
-            // console.log("리덕스닉네임", userInfo.nickname);
           } else {
             console.error("400 Error");
           }
@@ -86,7 +80,6 @@ function Navbar() {
         },
       });
       if (res.status === 200) {
-        // console.log("로그아웃성공===");
         const token = res.data.data.accessToken;
         localStorage.setItem("accessToken", token);
         dispatch(setIsLogin(false));
@@ -97,13 +90,6 @@ function Navbar() {
       console.log(err);
     }
   };
-
-  // ? 모달 끄기 핸들링
-  // const isCloseModal = () => {
-  //   navigate(-1);
-  // };
-
-  // todo : 네비게이션 바 버튼 CSS
 
   return (
     <div className="container">
@@ -134,7 +120,7 @@ function Navbar() {
 
               <ul className="subMenu">
                 <div className="subMenuLi">
-                  <div>{user.nickname}님</div>
+                  <div className="username">{userInfo.nickname} 님 🧡</div>
                   <Link className="nav-link link" to="myPage">
                     MyPage
                   </Link>
