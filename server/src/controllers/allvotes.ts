@@ -17,6 +17,7 @@ export let allVoteController = {
       const findAllVotes = await db
         .collection("vote")
         .find({ isPublic: true, undergoing: true })
+        .sort({ _id: -1 })
         .limit(20)
         .toArray();
 

@@ -47,6 +47,19 @@ $vting-gray: #dfe9f3;
   font-family: "Noto Sans CJK KR";
 }
 
-body {
-  min-width: 1100px;
+@media (min-width: 1440px) {
+  body {
+    min-width: 1100px;
+  }
+  .bodyContainer {
+    width: 100%;
+    height: 100vh;
+    // background-color: $vting-gray;
+    display: flex;
+    justify-content: center;
+    .newVoteCon {
+      width: 1200px;
+      // background-color: white;
+    }
+  }
 }

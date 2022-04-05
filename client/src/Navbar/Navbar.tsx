@@ -84,58 +84,60 @@ function Navbar() {
 
   return (
     <div className="container">
-      <div className="NavLeft">
-        <Link to="/">
-          <img src={Logo} alt="logo" style={{ width: "150px" }} />
-        </Link>
-      </div>
-      {loginState ? (
-        <div className="NavRight">
-          <Link className="nav-link link" to="/">
-            Home
+      <div className="NavBar">
+        <div className="NavLeft">
+          <Link to="/">
+            <img src={Logo} alt="logo" style={{ width: "140px" }} />
           </Link>
-          <Link className="nav-link link" to="dashboard">
-            Dashboard
-          </Link>
-          <Link className="nav-link link" to="new">
-            Vote
-          </Link>
+        </div>
+        {loginState ? (
+          <div className="NavRight">
+            <Link className="nav-link link" to="/">
+              Home
+            </Link>
+            <Link className="nav-link link" to="dashboard">
+              Dashboard
+            </Link>
+            <Link className="nav-link link" to="new">
+              Vote
+            </Link>
 
-          <div className="profile">
-            <div>
-              <img
-                src={Profile}
-                alt="profile_img"
-                style={{ width: "60px", borderRadius: "50%" }}
-              />
+            <div className="profile">
+              <div>
+                <img
+                  src={Profile}
+                  alt="profile_img"
+                  style={{ width: "60px", borderRadius: "50%" }}
+                />
 
-              <ul className="subMenu">
-                <div className="subMenuLi">
-                  <div className="username">{userInfo.nickname} 님 🧡</div>
-                  <Link className="nav-link link" to="myPage">
-                    MyPage
-                  </Link>
-                </div>
-                <div className="nav-link link" onClick={() => handleLogout()}>
-                  SingOut
-                </div>
-              </ul>
+                <ul className="subMenu">
+                  <div className="subMenuLi">
+                    <div className="username">{userInfo.nickname} 님 🧡</div>
+                    <Link className="nav-link link" to="myPage">
+                      MyPage
+                    </Link>
+                  </div>
+                  <div className="nav-link link" onClick={() => handleLogout()}>
+                    SingOut
+                  </div>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="NavRight">
-          <Link className="nav-link link" to="/">
-            Home
-          </Link>
-          <Link className="nav-link link" to="new">
-            Vote
-          </Link>
-          <Link className="nav-link link" to="signIn">
-            SignIn
-          </Link>
-        </div>
-      )}
+        ) : (
+          <div className="NavRight">
+            <Link className="nav-link link" to="/">
+              Home
+            </Link>
+            <Link className="nav-link link" to="new">
+              Vote
+            </Link>
+            <Link className="nav-link link" to="signIn">
+              SignIn
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

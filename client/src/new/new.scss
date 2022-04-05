@@ -1,16 +1,18 @@
 @import "../index.scss";
 
 .newVoteCon {
+  // width: 1200px;
+  display: flex;
+  flex-direction: row;
   min-height: 500px;
-  display: grid;
-  grid-template-areas: ". icon body body body body .";
-  margin-top: 100px;
+  padding: 70px 100px;
+  box-shadow: 2px 0 8px $vting-gray;
 }
 
 .vote-body {
-  grid-area: body;
-  display: grid;
-  grid-template-columns: minmax(400px, 1fr) minmax(400px, 1fr);
+  width: 900px;
+  display: flex;
+  flex-direction: row;
 
   .vote-info {
     width: 300px;
@@ -33,10 +35,10 @@
   }
   @keyframes motion {
     0% {
-      margin-left: 0px;
+      margin-left: 20px;
     }
     100% {
-      margin-left: 10px;
+      margin-left: 30px;
     }
   }
 
@@ -46,10 +48,10 @@
     flex-direction: row;
   }
   .vote-button {
-    display: flex;
-    justify-content: center;
+    // display: flex;
+    // justify-content: center;
     .vtingButton {
-      width: 200px;
+      width: 310px;
       height: 40px;
     }
   }
@@ -102,10 +104,12 @@
 }
 
 .voteMakerCon {
-  display: grid;
-  justify-content: center;
-  align-items: start;
-  padding: 10px;
+  padding: 0 70px;
+  width: 450px;
+  display: flex;
+  flex-direction: column;
+  // justify-content: center;
+  // align-items: start;
   .voteLabel {
     font-weight: 500;
   }
@@ -138,7 +142,7 @@
     justify-content: center;
   }
   .VotetextInput {
-    width: 250px;
+    width: 310px;
     padding: 5px;
     border: 0;
     border-bottom: 2px solid $vting-orange;
@@ -148,20 +152,24 @@
     margin-top: 5px;
     display: flex;
     flex-direction: column;
+    min-height: 200px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
     .voteAnswer {
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
-      margin: 3px 0;
+      margin: 5px 0;
       .answerIdx {
         background-color: $vting-orange;
         color: white;
         width: 30px;
         text-align: center;
-        line-height: 29.5px;
+        line-height: 40px;
       }
       .VoteAnswerInput {
-        width: 200px;
+        width: 255px;
+        height: 40px;
         padding: 5px;
         border: 0;
         border: 2px solid $vting-orange;
@@ -169,12 +177,23 @@
     }
   }
 
+  .versusAnswers {
+    text-align: center;
+    .versusAnswer {
+      padding: 10px 0;
+      .versusAnswerInput {
+        text-align: center;
+        width: 310px;
+      }
+    }
+  }
+
   .plusItem {
     background-color: $vting-orange;
     color: white;
-    width: 20px;
+    width: 25px;
     text-align: center;
-    line-height: 29.5px;
+    line-height: 40px;
     font-size: 20px;
     font-weight: 500;
     cursor: pointer;
@@ -232,6 +251,7 @@
 }
 
 .votePreviewCon {
+  width: 450px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -247,35 +267,46 @@
     padding: 10px;
     min-height: 24px;
     font-size: 20px;
-    background-color: $vting-blue;
+    background-color: $vting-orange;
     color: white;
   }
-  .wordTitle {
-    max-width: 250px;
-  }
   .votePreviewBack {
-    padding: 20px 0;
+    padding: 30px;
     height: 300px;
-    background-color: $vting-gray;
+    border: 2px solid $vting-orange;
+    // background-color: $vting-gray;
 
     .votePreview-barVer-con {
-      padding: 10%;
-      height: 250px;
+      // padding: 30px;
+      height: 230px;
       display: flex;
       flex-direction: row;
-      justify-content: space-around;
+      justify-content: center;
+      overflow-x: auto;
     }
     #votePreview-barVer-bar {
-      flex: 1 1 auto;
+      // flex: 1 1 0;
       margin: 0 10px;
+      // padding: 0 10px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       .barVer-itemBar {
-        width: 100%;
+        // padding: 0 10px;
+        // border: 0 10% solid white;
+        width: 50px;
+        // width: 100%;
         animation-name: barVerAnimation;
         animation-duration: 1s;
         background-color: $vting-blue;
+      }
+      .barVer-itemName {
+        margin-bottom: 10px;
+        width: 50px;
+        display: inline-block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
       @keyframes barVerAnimation {
         0% {
@@ -285,24 +316,33 @@
     }
 
     .votePreview-barHor-con {
-      width: 80%;
-      padding: 10%;
-      height: 250px;
+      // width: 80%;
+      // padding: 10%;
+      height: 240px;
       display: flex;
       flex-direction: column;
       justify-content: space-around;
+      overflow-y: auto;
     }
     #votePreview-barHor-bar {
-      flex: 1 1 auto;
+      // flex: 1 1 auto;
       margin: 10px 0;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       .barHor-itemBar {
-        height: 100%;
+        height: 30px;
         animation-name: barAnimation;
         animation-duration: 1s;
         background-color: $vting-blue;
+      }
+      .barHor-itemName {
+        width: 150px;
+        text-align: left;
+        display: inline-block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
       @keyframes barAnimation {
         0% {
@@ -310,9 +350,42 @@
         }
       }
     }
-  }
-  .wordBack {
-    max-width: 250px;
+    .openItems {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+      .openItem {
+        // min-width: 150px;
+        text-align: left;
+        flex: 2 1 0;
+        margin: 5px;
+        padding: 10px;
+        border: 1px dotted $vting-blue;
+      }
+      .openItem:first-child {
+        border: 1px dotted $vting-green;
+      }
+      .openItem:last-child {
+        border: 1px dotted $vting-orange;
+      }
+    }
+    .versusItemCon {
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      .versusItem {
+        flex: 1 1 0;
+        padding: 0 10px;
+        color: $vting-green;
+      }
+      .versusItem:first-child {
+        font-size: 30px;
+        color: $vting-blue;
+      }
+    }
   }
   .vResult {
     height: 100%;
@@ -399,12 +472,12 @@
   font-weight: 400;
   width: 80%;
   background-color: $vting-gray;
-  color: black;
+  color: gray;
   padding: 10px;
   border-radius: 20px;
   border-style: none;
   margin-top: 10px;
   outline: 0;
-  cursor: pointer;
+  cursor: no-drop;
   box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
 }

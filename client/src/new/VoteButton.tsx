@@ -42,6 +42,7 @@ function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
             },
           });
           if (response.status === 201) {
+            console.log(response.data);
             dispatch(setRestart("delete all!!"));
             dispatch(
               patchGetVote({
