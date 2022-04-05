@@ -27,9 +27,13 @@ exports.ImageController = {
                 let accessToken = authorization.split(" ")[1];
                 try {
                     const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-                    __1.db.collection("user").updateOne({ user_id: decoded.user_id }, {
+                    const findUser = yield __1.db
+                        .collection("user")
+                        .findOne({ user_id: decoded.user_id });
+                    yield __1.db.collection("user").updateOne({ user_id: decoded.user_id }, {
                         $set: {
-                            image: req.file.location,
+                            image: req.file.location ||
+                                findUser.image,
                         },
                     });
                     res.status(200).json({

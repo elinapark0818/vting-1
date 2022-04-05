@@ -33,11 +33,17 @@ export let ImageController = {
             process.env.ACCESS_SECRET as jwt.Secret
           );
 
-          db.collection("user").updateOne(
+          const findUser = await db
+            .collection("user")
+            .findOne({ user_id: decoded.user_id });
+
+          await db.collection("user").updateOne(
             { user_id: decoded.user_id },
             {
               $set: {
-                image: (req.file as Express.MulterS3.File).location,
+                image:
+                  (req.file as Express.MulterS3.File).location ||
+                  findUser.image,
               },
             }
           );
