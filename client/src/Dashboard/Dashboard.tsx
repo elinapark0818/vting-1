@@ -120,10 +120,12 @@ function Dashboard() {
     }
     getUserInfo();
     getVoteCount();
-  }, []);
+  }, [userVoteCount]);
 
   // todo: Vote Table 에서 설문 생성, 설문 종료, 설문 삭제 기능 구현하기
   const DeleteVote = async (url: string) => {
+    console.log(url);
+
     let accessToken = localStorage.getItem("accessToken");
     try {
       const res = await axios.delete(`${serverURL}/vting/${url}`, {
@@ -224,8 +226,8 @@ function Dashboard() {
                   <th>타입</th>
                   <th>생성일</th>
                   <th>코드</th>
-                  <th>공개</th>
-                  <th>진행</th>
+                  <th>공개여부</th>
+                  <th>진행여부</th>
                   <th>삭제</th>
                 </tr>
               </thead>
@@ -315,6 +317,11 @@ function Dashboard() {
                 </tbody>
               ))}
             </table>
+
+            <div className="pagination">
+              <button className="page_btn">{Page}</button>
+            </div>
+
             <div onClick={() => navigate("/new")} className="dashboard_btnWrap">
               <BsFillPlusCircleFill className="dashboard_plusBtn" />
             </div>
