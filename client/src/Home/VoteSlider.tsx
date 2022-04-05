@@ -1,46 +1,71 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
+import axios from "axios";
 // react-slick (slider) 관련 css import
 import "../../node_modules/slick-carousel/slick/slick.css";
 import "../../node_modules/slick-carousel/slick/slick-theme.css";
+import "./HotVote.scss";
 
-export default class VoteSlider extends Component {
-  render() {
-    const settings = {
-      dots: true,
-      infinite: true,
-      speed: 0,
-      slidesToShow: 4,
-      slidesToScroll: 4,
-    };
+function setVoteFormat(format: string) {
+  if (format === "bar") return "막대그래프형";
+  if (format === "versus") return "대결형";
+  if (format === "word") return "말풍선형";
+  if (format === "open") return "대화형";
+}
 
-    return (
-      <div className="hotVotes">
-        <div className="hotVotesContents">
-          <Slider {...settings}>
-            <div className="hotVoteCard">
-              <div className="hotVoteCardTitle">엄마가 좋아 아빠가 좋아?</div>
-              <div className="hotVoteCardFormat">대결형</div>
-              <div className="hotVoteCardCount">79명 참여 중</div>
-            </div>
-            <div className="hotVoteCard">
-              <div className="hotVoteCardTitle">오늘 점심 메뉴</div>
-              <div className="hotVoteCardFormat">바 그래프</div>
-              <div className="hotVoteCardCount">37명 참여 중</div>
-            </div>
-            <div className="hotVoteCard">
-              <div className="hotVoteCardTitle">인생에서 가장 소중한 것은?</div>
-              <div className="hotVoteCardFormat">워드클라우드</div>
-              <div className="hotVoteCardCount">11명 참여 중</div>
-            </div>
-            <div className="hotVoteCard">
-              <div className="hotVoteCardTitle">궁금한거 있어?</div>
-              <div className="hotVoteCardFormat">대화창</div>
-              <div className="hotVoteCardCount">124명 참여 중</div>
-            </div>
-          </Slider>
-        </div>
+export default function VoteSlider() {
+  const navigate = useNavigate();
+  const [allVotes, setAllVotes] = useState([
+    {
+      title: "",
+      format: "",
+      sumCount: 0,
+      url: 123456,
+    },
+  ]);
+
+  const serverURL: string = "http://localhost:8000";
+  useEffect(() => {
+    async function getAllVotes() {
+      const response = await axios.get(`${serverURL}/allvotes`);
+      if (response.status === 200) {
+        setAllVotes(response.data.vote);
+      }
+    }
+    getAllVotes();
+  }, []);
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 0,
+    slidesToShow: 5,
+    slidesToScroll: 5,
+  };
+
+  return (
+    <div className="hotVotes">
+      <div className="hotVotesContents">
+        <Slider {...settings}>
+          {allVotes.map((el, idx) => (
+            <a
+              href={`http://vote.localhost:3000/${el.url}`}
+              key={idx}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div className="hotVoteCard">
+                <div className="hotVoteCardTitle">{el.title}</div>
+                <div className="hotVoteCardFormat">
+                  {setVoteFormat(el.format)}
+                </div>
+                <div className="hotVoteCardCount">{el.sumCount}명 참여 중</div>
+              </div>
+            </a>
+          ))}
+        </Slider>
       </div>
-    );
-  }
+    </div>
+  );
 }

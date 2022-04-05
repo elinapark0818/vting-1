@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import VoteSlider from "./VoteSlider";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import { Link } from "react-router-dom";
@@ -9,18 +8,6 @@ import "./HotVote.scss";
 function HotVote() {
   const isLogin = useSelector((state: RootState) => state.isLogin);
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const [allVotes, setAllVotes] = useState([]);
-
-  const serverURL: string = "http://localhost:8000";
-  useEffect(() => {
-    async function getAllVotes() {
-      const response = await axios.get(`${serverURL}/allvotes`);
-      if (response.status === 200) {
-        setAllVotes(response.data.vote);
-      }
-    }
-    getAllVotes();
-  }, []);
 
   return (
     <div className="hotVotes">
