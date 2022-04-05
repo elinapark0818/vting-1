@@ -17,6 +17,8 @@ dotenv.config();
 const SALT_ROUNDS = 6;
 const bcrypt = require("bcrypt");
 
+const multerS3 = require("multer-s3");
+
 // const clientID = process.env.GITHUB_CLIENT_ID;
 // const clientSecret = process.env.GITHUB_CLIENT_SECRET;
 // const axios = require("axios");
@@ -61,6 +63,19 @@ interface UserController {
   // oauth: { post: any };
   resign: { delete: any };
   userInfo: { get: any; patch: any };
+}
+
+interface Vote {
+  _id: ObjectID;
+  user_id: string;
+  url: number;
+  title: string;
+  format: string;
+  manytimes: Boolean;
+  items: any[];
+  undergoing: Boolean;
+  isPublic: Boolean;
+  created_at: dateType;
 }
 
 export let UserController = {
@@ -135,11 +150,7 @@ export let UserController = {
 
   signup: {
     post: async (req: Request & { body: UserType }, res: Response) => {
-      const { user_id, nickname, password, image } = req.body;
-      // const image = req.file.path;
-      // if (!image) {
-      //   return res.send({ message: "No image" });
-      // }
+      const { user_id, nickname, password } = req.body;
       try {
         if (user_id && password && nickname) {
           bcrypt.genSalt(SALT_ROUNDS, function (err: Error, salt: string) {
@@ -156,7 +167,8 @@ export let UserController = {
                     user_id: req.body.user_id,
                     nickname: req.body.nickname,
                     password: hash,
-                    image: req.body.image,
+                    image:
+                      "https://vtingimage.s3.ap-northeast-2.amazonaws.com/uploads/yof_logo-17.jpg",
                     vote: [],
                   },
                   async (err: Error, data: any) => {
@@ -180,7 +192,8 @@ export let UserController = {
                           _id: findUserId._id,
                           user_id: req.body.user_id,
                           nickname: req.body.nickname,
-                          image: req.body.image,
+                          image:
+                            "https://vtingimage.s3.ap-northeast-2.amazonaws.com/uploads/yof_logo-17.jpg",
                           vote: req.body.vote,
                         },
                         accessToken: accessToken,
@@ -259,15 +272,15 @@ export let UserController = {
             const findUser = await db
               .collection("user")
               .findOne({ user_id: decoded.user_id });
-            console.log("decoded", decoded);
-            console.log("finduser", findUser);
+            // console.log("decoded", decoded);
+            // console.log("finduser", findUser);
 
             const countUserVote = await db
               .collection("vote")
               .find({ user_id: decoded.user_id })
               .count();
 
-            console.log(countUserVote);
+            // console.log(countUserVote);
 
             return res.status(200).json({
               data: {
@@ -281,19 +294,6 @@ export let UserController = {
           } else if (req.query) {
             var q: any = req.query.q;
 
-            interface Vote {
-              _id: ObjectID;
-              user_id: string;
-              url: number;
-              title: string;
-              format: string;
-              manytimes: Boolean;
-              items: any[];
-              undergoing: Boolean;
-              isPublic: Boolean;
-              created_at: dateType;
-            }
-
             const findUserVote: Vote[] = await db
               .collection("vote")
               .find({ user_id: decoded.user_id })
@@ -302,7 +302,7 @@ export let UserController = {
             // console.log("findUserVote", findUserVote);
 
             var voteInfo = [];
-            //q=1 일때 0~9까지 q=2일때 10~19까지 q=3일때 20~29까지
+            //q=1 일때 0~9까지 q=2일때 10~19까지 q=3일때 20~29까지 q=10일때 90~99까지 q=100일때 990~999까지
             for (let i = (q - 1) * 10; i < q * 10; i++) {
               if (findUserVote[i] === undefined) break;
               const vote: any = {
@@ -330,11 +330,11 @@ export let UserController = {
 
     patch: async (
       req: Request & {
-        body: { nickname?: string; password?: string; image?: string };
+        body: { nickname?: string; password?: string };
       },
       res: Response
     ) => {
-      const { nickname, password, image } = req.body;
+      const { nickname, password } = req.body;
 
       if (
         req.headers.authorization &&
@@ -359,20 +359,19 @@ export let UserController = {
               if (err) {
                 console.log("genSalt Error: " + err);
               } else {
-                console.log("salt", salt);
+                // console.log("salt", salt);
 
                 bcrypt.hash(
                   req.body.password,
                   salt,
                   function (err: Error, hash: string) {
-                    console.log("hash", hash);
+                    // console.log("hash", hash);
 
                     db.collection("user").updateOne(
                       { user_id: decoded.user_id },
                       {
                         $set: {
                           nickname: req.body.nickname || findUser.nickname,
-                          image: req.body.image || findUser.image,
                           password: hash || findUser.password,
                         },
                       }

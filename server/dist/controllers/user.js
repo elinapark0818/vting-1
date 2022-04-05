@@ -19,6 +19,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const SALT_ROUNDS = 6;
 const bcrypt = require("bcrypt");
+const multerS3 = require("multer-s3");
 exports.UserController = {
     //회원가입과 탈퇴시 모두 사용가능한 체크
     userCheck: {
@@ -77,11 +78,7 @@ exports.UserController = {
     },
     signup: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            const { user_id, nickname, password, image } = req.body;
-            // const image = req.file.path;
-            // if (!image) {
-            //   return res.send({ message: "No image" });
-            // }
+            const { user_id, nickname, password } = req.body;
             try {
                 if (user_id && password && nickname) {
                     bcrypt.genSalt(SALT_ROUNDS, function (err, salt) {
@@ -96,7 +93,7 @@ exports.UserController = {
                                     user_id: req.body.user_id,
                                     nickname: req.body.nickname,
                                     password: hash,
-                                    image: req.body.image,
+                                    image: "https://vtingimage.s3.ap-northeast-2.amazonaws.com/uploads/yof_logo-17.jpg",
                                     vote: [],
                                 }, (err, data) => __awaiter(this, void 0, void 0, function* () {
                                     const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, {
@@ -112,7 +109,7 @@ exports.UserController = {
                                                 _id: findUserId._id,
                                                 user_id: req.body.user_id,
                                                 nickname: req.body.nickname,
-                                                image: req.body.image,
+                                                image: "https://vtingimage.s3.ap-northeast-2.amazonaws.com/uploads/yof_logo-17.jpg",
                                                 vote: req.body.vote,
                                             },
                                             accessToken: accessToken,
@@ -179,13 +176,13 @@ exports.UserController = {
                         const findUser = yield __1.db
                             .collection("user")
                             .findOne({ user_id: decoded.user_id });
-                        console.log("decoded", decoded);
-                        console.log("finduser", findUser);
+                        // console.log("decoded", decoded);
+                        // console.log("finduser", findUser);
                         const countUserVote = yield __1.db
                             .collection("vote")
                             .find({ user_id: decoded.user_id })
                             .count();
-                        console.log(countUserVote);
+                        // console.log(countUserVote);
                         return res.status(200).json({
                             data: {
                                 _id: findUser._id,
@@ -204,7 +201,7 @@ exports.UserController = {
                             .toArray();
                         // console.log("findUserVote", findUserVote);
                         var voteInfo = [];
-                        //q=1 일때 0~9까지 q=2일때 10~19까지 q=3일때 20~29까지
+                        //q=1 일때 0~9까지 q=2일때 10~19까지 q=3일때 20~29까지 q=10일때 90~99까지 q=100일때 990~999까지
                         for (let i = (q - 1) * 10; i < q * 10; i++) {
                             if (findUserVote[i] === undefined)
                                 break;
@@ -232,7 +229,7 @@ exports.UserController = {
             }
         }),
         patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            const { nickname, password, image } = req.body;
+            const { nickname, password } = req.body;
             if (req.headers.authorization &&
                 req.headers.authorization.split(" ")[0] === "Bearer") {
                 let authorization = req.headers.authorization;
@@ -247,13 +244,12 @@ exports.UserController = {
                             console.log("genSalt Error: " + err);
                         }
                         else {
-                            console.log("salt", salt);
+                            // console.log("salt", salt);
                             bcrypt.hash(req.body.password, salt, function (err, hash) {
-                                console.log("hash", hash);
+                                // console.log("hash", hash);
                                 __1.db.collection("user").updateOne({ user_id: decoded.user_id }, {
                                     $set: {
                                         nickname: req.body.nickname || findUser.nickname,
-                                        image: req.body.image || findUser.image,
                                         password: hash || findUser.password,
                                     },
                                 });
