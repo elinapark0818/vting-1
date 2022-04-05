@@ -28,12 +28,13 @@
   flex-direction: column;
   align-items: center;
   margin: 3em;
+  text-align: center;
 
   & .dashboard_table {
     min-width: 30em;
     width: 100%;
     padding-top: 5em;
-    font-size: 2em;
+    font-size: 1em;
 
     & thead {
       background-color: rgb(252, 205, 165);
@@ -64,10 +65,10 @@
 }
 
 .toggleBtn {
-  margin-left: 25px;
+  // margin-left: 50px;
   background-color: $vting-gray;
-  width: 85px;
-  height: 30px;
+  width: 50px;
+  height: 20px;
   border-radius: 30px;
   border: none;
   cursor: pointer;
@@ -79,8 +80,8 @@
 }
 .toggleCircle {
   background-color: rgb(184, 52, 52);
-  width: 38px;
-  height: 38px;
+  width: 18px;
+  height: 18px;
   border-radius: 50px;
   position: absolute;
   left: 5%;
@@ -92,19 +93,18 @@
   font-weight: bold;
 }
 .toggleOn {
-  background-color: #e2e2e2;
+  background-color: #adabab;
   color: black;
-  transform: translate(38px, 0);
+  transform: translate(28px, 0);
   transition: all 0.5s ease-in-out;
 }
 
 .dashboard_deleteBtn {
-  margin-left: 10px;
   cursor: pointer;
   border: none;
   background-color: rgb(184, 52, 52);
   color: #fff;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
   border-radius: 5px;
   padding: 8px 8px;
@@ -113,21 +113,22 @@
 
 .dashboard_btnWrap {
   margin-top: 3em;
-  margin-left: 90em;
+  margin-left: 50em;
+  transition: all 0.3s ease;
 }
 
 .dashboard_plusBtn {
   cursor: pointer;
-  font-size: 4em;
+  font-size: 3em;
   color: gray;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 
   & :hover {
     color: rgb(184, 52, 52);
   }
 }
 
-// * 모달
+// * 비로그인 시 모달
 
 .dashboardModal_closeBtn {
   color: #aaa;
@@ -153,7 +154,6 @@
   height: 100%;
   width: 100%;
   z-index: 1;
-  // transform: scale(0);
 }
 
 .dashboardModal_container .dashboardModal_background {
