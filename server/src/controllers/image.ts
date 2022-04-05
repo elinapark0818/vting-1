@@ -49,6 +49,7 @@ export let ImageController = {
           );
 
           res.status(200).json({
+            data: (req.file as Express.MulterS3.File).location,
             message: "Image successfully updated ",
           });
         } catch {
