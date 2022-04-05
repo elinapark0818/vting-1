@@ -288,10 +288,10 @@ function Versus() {
       <div className="voteLabel topMargin10">
         &#128073; 대결 항목을 입력하세요.
       </div>
-      <div className="voteAnswers">
-        <div className="voteAnswer">
+      <div className="voteAnswers versusAnswers">
+        <div className="voteAnswer versusAnswer">
           <input
-            className="VoteAnswerInput"
+            className="VoteAnswerInput versusAnswerInput"
             value={newVoteItems[0] ? newVoteItems[0].content : ""}
             onChange={(e) => {
               dispatch(setItems({ idx: 0, content: e.target.value }));
@@ -299,9 +299,9 @@ function Versus() {
           ></input>
         </div>
         <div>vs</div>
-        <div className="voteAnswer">
+        <div className="voteAnswer versusAnswer">
           <input
-            className="VoteAnswerInput"
+            className="VoteAnswerInput versusAnswerInput"
             value={newVoteItems[1] ? newVoteItems[1].content : ""}
             onChange={(e) => {
               dispatch(setItems({ idx: 1, content: e.target.value }));

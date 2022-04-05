@@ -1,8 +1,7 @@
 @import "../index.scss";
 
 .voteResultPageCon {
-  width: 80%;
-  margin: 50px 10%;
+  width: 1200px;
   .voteResultPage {
     border: 1px solid $vting-gray;
     background-color: white;
@@ -22,7 +21,7 @@
     }
   }
   .voteResultContent {
-    height: 500px;
+    height: 520px;
     padding: 20px;
     display: flex;
     flex-direction: row;
@@ -51,11 +50,11 @@
         text-align: center;
       }
       .voteResultChildContent {
-        width: 180px;
-        height: 100px;
+        width: 280px;
+        height: 200px;
         padding: 10px;
         background-color: $vting-gray;
-        font-size: 20px;
+        font-size: 25px;
         font-weight: 500;
         margin: 10px 0;
         display: flex;
@@ -89,7 +88,8 @@
         }
       }
       .voteResultChildEx {
-        width: 200px;
+        text-align: center;
+        width: 280px;
         padding: 10px;
         box-sizing: border-box;
       }
@@ -97,6 +97,37 @@
     .hrVer {
       height: 200px;
       border-left: 1px solid black;
+    }
+
+    .nonUserPasswordCon {
+      display: flex;
+      flex-direction: column;
+      .nonUserPasswordText {
+        margin: 20px;
+        text-align: center;
+        line-height: 25px;
+      }
+      input {
+        border: none;
+        border-bottom: 2px solid $vting-orange;
+        margin: 20px;
+        font-size: 20px;
+        text-align: center;
+      }
+      button {
+        font-size: 15px;
+        font-weight: 400;
+        width: 100%;
+        background-color: $vting-orange;
+        color: white;
+        padding: 10px;
+        border-radius: 20px;
+        border-style: none;
+        margin-top: 10px;
+        outline: 0;
+        cursor: pointer;
+        box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
+      }
     }
 
     // 여기부터 실시간 응답보기 관련 css
@@ -107,6 +138,14 @@
       flex-direction: row;
       flex-wrap: wrap;
       align-items: flex-start;
+      .openEndCon {
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        overflow-y: auto;
+      }
       .openendIcon {
         min-width: 100px;
         padding: 15px;
@@ -134,23 +173,53 @@
         background-color: $vting-gray;
 
         .votePreview-barVer-con {
-          padding: 10%;
+          padding: 30px;
           height: 100%;
           display: flex;
           flex-direction: row;
           justify-content: space-around;
+          // justify-content: center;
+          overflow-x: auto;
         }
         #votePreview-barVer-bar {
           margin: 0 10px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+          align-items: center;
           .barVer-itemBar {
-            width: 100%;
+            width: 50px;
+            // padding-top: 10px;
             animation-name: barVerAnimation;
             animation-duration: 1s;
             background-color: $vting-blue;
           }
+          .barVer-itemNameCon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            .barVer-itemName {
+              text-align: center;
+              background-color: $vting-orange;
+              color: white;
+              padding: 10px 0;
+              border-radius: 20px;
+              // margin-bottom: 10px;
+              width: 100px;
+              display: inline-block;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+            }
+            .triangle {
+              width: 0px;
+              height: 0px;
+              border-top: calc(10px * 1.732) solid $vting-orange;
+              border-left: 8px solid transparent;
+              border-right: 8px solid transparent;
+            }
+          }
+
           @keyframes barVerAnimation {
             0% {
               height: 0;
@@ -159,24 +228,50 @@
         }
 
         .votePreview-barHor-con {
-          width: 100%;
+          padding: 30px 100px;
           height: 100%;
-          padding: 10%;
           display: flex;
           flex-direction: column;
           justify-content: space-around;
+          overflow-y: auto;
         }
         #votePreview-barHor-bar {
-          flex: 1 1 auto;
           margin: 10px 0;
           display: flex;
           flex-direction: row;
           justify-content: space-between;
+          align-items: center;
           .barHor-itemBar {
-            height: 100%;
+            height: 50px;
             animation-name: barAnimation;
             animation-duration: 1s;
             background-color: $vting-blue;
+          }
+          .barHor-itemNameCon {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            .barHor-itemName {
+              text-align: center;
+              background-color: $vting-orange;
+              color: white;
+              padding: 10px 0;
+              border-radius: 20px;
+              // margin-bottom: 10px;
+              width: 100px;
+              display: inline-block;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+            }
+            .triangle {
+              width: 0px;
+              height: 0px;
+              margin-left: -2px;
+              border-left: calc(10px * 1.732) solid $vting-orange;
+              border-top: 8px solid transparent;
+              border-bottom: 8px solid transparent;
+            }
           }
           @keyframes barAnimation {
             0% {
@@ -304,4 +399,17 @@
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  .item1 {
+    flex: 1 1 0;
+    text-align: center;
+    color: $vting-blue;
+  }
+  .item2 {
+    flex: 1 1 0;
+    text-align: center;
+    color: $vting-green;
+  }
+  .vs {
+    color: $vting-orange;
+  }
 }

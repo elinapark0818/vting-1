@@ -209,108 +209,120 @@ function V() {
         context={imgAlertContext}
       >
         {somethingWrong ? (
-          <div className="voteResultPageCon">
-            <div className="voteResultPage">
-              <div className="voteResultTitle">잘못된 접근입니다.</div>
-              <div className="voteResultContent">
-                <div className="errorCon">
-                  <div className="imgCon">
-                    <img src={vtCry} alt="somethingw wrong" />
-                  </div>
-                  <div>
-                    <span className="errorTitle">
-                      Ooooops... Something went wrong.
-                    </span>
-                    <br />
-                    해당 코드를 가진 설문이 없거나 만료된 설문입니다.
-                    <br />
-                    설문 코드를 다시 확인해주시기 바랍니다. <br />
+          <div className="bodyContainer">
+            <div className="voteResultPageCon">
+              <div className="voteResultPage">
+                <div className="voteResultTitle">잘못된 접근입니다.</div>
+                <div className="voteResultContent">
+                  <div className="errorCon">
+                    <div className="imgCon">
+                      <img src={vtCry} alt="somethingw wrong" />
+                    </div>
+                    <div>
+                      <span className="errorTitle">
+                        Ooooops... Something went wrong.
+                      </span>
+                      <br />
+                      해당 코드를 가진 설문이 없거나 만료된 설문입니다.
+                      <br />
+                      설문 코드를 다시 확인해주시기 바랍니다. <br />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         ) : isNonUser ? (
-          <div className="voteResultPageCon">
-            <div className="voteResultPage">
-              <div className="voteResultTitle">비회원 설문 관리 페이지</div>
-              <div className="voteResultContent">
-                <PasswordCheck
-                  setIsNonUser={setIsNonUser}
-                  votePass={voteInfo.password}
-                />
+          <div className="bodyContainer">
+            <div className="voteResultPageCon">
+              <div className="voteResultPage">
+                <div className="voteResultTitle">비회원 설문 관리 페이지</div>
+                <div className="voteResultContent">
+                  <PasswordCheck
+                    setIsNonUser={setIsNonUser}
+                    votePass={voteInfo.password}
+                  />
+                </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="voteResultPageCon">
-            <div className="voteResultPage">
-              <div className="voteResultTitle">{voteTitle}</div>
-              <div className="voteResultContent">
-                {isRealTime ? <Vresult /> : <Howto />}
-              </div>
-            </div>
-            <div className="voteResultFooter">
-              <div className="modeChange">
-                <div
-                  className={isRealTime ? "modebtn gray" : "modebtn"}
-                  onClick={() => setIsRealTime(false)}
-                >
-                  Vting 접속 방법
-                </div>
-                <div
-                  className={isRealTime ? "modebtn" : "modebtn gray"}
-                  onClick={() => setIsRealTime(true)}
-                >
-                  실시간 응답 보기
+          <div className="bodyContainer">
+            <div className="voteResultPageCon">
+              <div className="voteResultPage">
+                <div className="voteResultTitle">{voteTitle}</div>
+                <div className="voteResultContent">
+                  {isRealTime ? <Vresult /> : <Howto />}
                 </div>
               </div>
-              {voteInfo.password ? (
-                <div className="options">
-                  <div>
-                    <Counter overtime={overtime} />
+              <div className="voteResultFooter">
+                <div className="modeChange">
+                  <div
+                    className={isRealTime ? "modebtn gray" : "modebtn"}
+                    onClick={() => setIsRealTime(false)}
+                  >
+                    Vting 접속 방법
                   </div>
-                  <button
-                    onClick={() => clickedToggleOngoing()}
-                    className="toggleBtn"
+                  <div
+                    className={isRealTime ? "modebtn" : "modebtn gray"}
+                    onClick={() => setIsRealTime(true)}
                   >
-                    <div
-                      className={
-                        toggleOngoing ? "toggleCircle" : "toggleCircle toggleOn"
-                      }
-                    >
-                      {toggleOngoing ? "진행중" : "재시작"}
-                    </div>
-                  </button>
+                    실시간 응답 보기
+                  </div>
                 </div>
-              ) : (
-                <div className="options">
-                  <button
-                    onClick={() => clickedTogglePublic()}
-                    className="toggleBtn"
-                  >
-                    <div
-                      className={
-                        togglePublic ? "toggleCircle" : "toggleCircle toggleOn"
-                      }
-                    >
-                      {togglePublic ? "공개" : "비공개"}
+                {voteInfo.password ? (
+                  <div className="options">
+                    <div>
+                      <Counter overtime={overtime} />
                     </div>
-                  </button>
-                  <button
-                    onClick={() => clickedToggleOngoing()}
-                    className="toggleBtn"
-                  >
-                    <div
-                      className={
-                        toggleOngoing ? "toggleCircle" : "toggleCircle toggleOn"
-                      }
+                    <button
+                      onClick={() => clickedToggleOngoing()}
+                      className="toggleBtn"
                     >
-                      {toggleOngoing ? "진행중" : "재시작"}
-                    </div>
-                  </button>
-                </div>
-              )}
+                      <div
+                        className={
+                          toggleOngoing
+                            ? "toggleCircle"
+                            : "toggleCircle toggleOn"
+                        }
+                      >
+                        {toggleOngoing ? "진행중" : "재시작"}
+                      </div>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="options">
+                    <button
+                      onClick={() => clickedTogglePublic()}
+                      className="toggleBtn"
+                    >
+                      <div
+                        className={
+                          togglePublic
+                            ? "toggleCircle"
+                            : "toggleCircle toggleOn"
+                        }
+                      >
+                        {togglePublic ? "공개" : "비공개"}
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => clickedToggleOngoing()}
+                      className="toggleBtn"
+                    >
+                      <div
+                        className={
+                          toggleOngoing
+                            ? "toggleCircle"
+                            : "toggleCircle toggleOn"
+                        }
+                      >
+                        {toggleOngoing ? "진행중" : "재시작"}
+                      </div>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -402,7 +414,8 @@ function Howto() {
           </div>
         </div>
         <div className="voteResultChildEx">
-          인터넷 주소창에 위 주소를 기입하여 접속
+          인터넷 주소창에
+          <br />위 주소를 기입하여 접속
         </div>
       </div>
       <div className="hrVer"></div>
@@ -418,7 +431,8 @@ function Howto() {
           </div>
         </div>
         <div className="voteResultChildEx">
-          vote.v-ting.net에서 위 코드를 기입하여 접속
+          vote.v-ting.net에 접속 후<br />
+          코드 입력란에 위 코드를 기입하여 접속
         </div>
       </div>
       <div className="hrVer"></div>
@@ -436,7 +450,8 @@ function Howto() {
           </div>
         </div>
         <div className="voteResultChildEx">
-          QR 코드를 찍어서 연결되는 페이지로 접속
+          QR 코드를 휴대폰 카메라로 촬영해
+          <br /> 연결되는 페이지로 접속
         </div>
       </div>
     </>
@@ -457,11 +472,14 @@ function PasswordCheck({ setIsNonUser, votePass }: Props) {
   }
 
   return (
-    <div>
-      <div>비회원 설문 관리 페이지에 입장하시려면</div>
-      <div>설문 시 생성한 임시 비밀번호를 입력하세요.</div>
+    <div className="nonUserPasswordCon">
+      <div className="nonUserPasswordText">
+        비회원 설문 관리 페이지에 입장하시려면
+        <br />
+        설문 시 생성한 임시 비밀번호를 입력하세요.
+      </div>
       <input
-        type="text"
+        type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />

@@ -40,9 +40,11 @@ const AlertTemplate = ({
 function NewVote() {
   return (
     <AlertProvider template={AlertTemplate} {...options}>
-      <div className="newVoteCon">
-        <VoteFormats />
-        <VoteBody />
+      <div className="bodyContainer">
+        <div className="newVoteCon">
+          <VoteFormats />
+          <VoteBody />
+        </div>
       </div>
     </AlertProvider>
   );

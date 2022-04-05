@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, CSSProperties } from "react";
 import ReactWordcloud, { MinMaxPair } from "react-wordcloud";
 import "tippy.js/dist/tippy.css";
 import "tippy.js/animations/scale.css";
@@ -45,18 +45,26 @@ function VoterRealtime() {
   const serverURL = "http://localhost:8000";
   const { code } = useParams();
   const items = voteData.items;
-  const sum = voteData.sumCount;
+  const sum = voteData.sumCount || 0;
   const format = voteData.format;
   const type = voteData.type;
   const dispatch = useDispatch();
+  const [words, setWords] = useState([{ text: "", value: 10 }]);
 
   // 워드클라우드 세팅
-  const words = items
-    ? items.map((el: any) => ({
-        text: el.content as string,
-        value: el.count as number,
-      }))
-    : [{ text: "", value: 0 }];
+  useEffect(() => {
+    let newWords;
+    if (items.length) {
+      newWords = items.map((el: any) => ({
+        text: el.content ? (el.content as string) : "",
+        value: el.count ? (el.count as number) : 10,
+      }));
+    } else {
+      newWords = [{ text: "", value: 0 }];
+    }
+    setWords(newWords);
+  }, [items]);
+
   const fontSizes = [20, 50] as MinMaxPair;
   const options = {
     fontSizes: fontSizes,
@@ -65,16 +73,23 @@ function VoterRealtime() {
   // 처음 접속하면 응답 새로 받아오기
   useEffect(() => {
     async function getAnswers() {
-      const response = await axios.get(`${serverURL}/voter/${code}`);
-      if (response.status === 200) {
-        dispatch(
-          patchGetVote({
-            title: response.data.vote_data.title,
-            items:
-              response.data.vote_data.items || response.data.vote_data.response,
-            sumCount: response.data.sumCount || 0,
-          })
-        );
+      try {
+        const response = await axios.get(`${serverURL}/voter/${code}`);
+        if (response.status === 200) {
+          dispatch(
+            patchGetVote({
+              title: response.data.vote_data.title,
+              items:
+                response.data.vote_data.items ||
+                response.data.vote_data.response,
+              sumCount: response.data.sumCount || 0,
+              format: response.data.vote_data.format,
+              type: response.data.vote_data.type || "",
+            })
+          );
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
     getAnswers();
@@ -95,6 +110,31 @@ function VoterRealtime() {
     }
   }, 5000);
 
+  // versus 폰트 크기 조절 관련
+  let fontSizeChange1: CSSProperties;
+  let fontSizeChange2: CSSProperties;
+  if (items.length) {
+    fontSizeChange1 = {
+      fontSize:
+        items[0] && items[0].count
+          ? ((items[0].count as number) / sum) * 100
+          : 30,
+    };
+    fontSizeChange2 = {
+      fontSize:
+        items[1] && items[1].count
+          ? ((items[1].count as number) / sum) * 100
+          : 30,
+    };
+  } else {
+    fontSizeChange1 = {
+      fontSize: 30,
+    };
+    fontSizeChange2 = {
+      fontSize: 30,
+    };
+  }
+
   switch (format) {
     case "bar":
       if (type === "vertical") {
@@ -105,7 +145,10 @@ function VoterRealtime() {
                 {items ? (
                   items.map((el, idx) => (
                     <div key={idx} id="votePreview-barVer-bar">
-                      <div className="barVer-itemName">{el.content}</div>
+                      <div className="barVer-itemNameCon">
+                        <div className="barVer-itemName">{el.content}</div>
+                        <div className="triangle"></div>
+                      </div>
                       <div
                         className="barVer-itemBar"
                         style={makeRandomHeight(
@@ -130,7 +173,10 @@ function VoterRealtime() {
                 {items ? (
                   items.map((el, idx) => (
                     <div key={idx} id="votePreview-barHor-bar">
-                      <div className="barHor-itemName">{el.content}</div>
+                      <div className="barHor-itemNameCon">
+                        <div className="barHor-itemName">{el.content}</div>
+                        <div className="triangle"></div>
+                      </div>
                       <div
                         className="barHor-itemBar"
                         style={makeRandomWidth(
@@ -174,9 +220,13 @@ function VoterRealtime() {
       return (
         <div className="realTimeCon">
           <div className="versusCon">
-            <div>{items ? items[0].content : ""}</div>
-            <div>vs</div>
-            <div>{items ? items[1].content : ""}</div>
+            <div className="item1" style={fontSizeChange1}>
+              {items.length ? items[0].content : ""}
+            </div>
+            <div className="vs">vs</div>
+            <div className="item2" style={fontSizeChange2}>
+              {items.length ? items[1].content : ""}
+            </div>
           </div>
         </div>
       );
