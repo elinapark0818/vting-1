@@ -68,6 +68,8 @@ function Dashboard() {
   // todo: 첫번째 페이지 (10개가 넘어갈 경우)
   let Page = 1;
 
+  const [userVoteCode, setUserVoteCode] = useState([]);
+
   // * 보트들의 정보 조회하기
   // todo: 페이지네이션을 어떻게 할 것인가?
   const getUserInfo = async () => {
@@ -123,9 +125,8 @@ function Dashboard() {
   }, [userVoteCount]);
 
   // todo: Vote Table 에서 설문 생성, 설문 종료, 설문 삭제 기능 구현하기
-  const DeleteVote = async (url: string) => {
+  const DeleteVote = async (url: number) => {
     console.log(url);
-
     let accessToken = localStorage.getItem("accessToken");
     try {
       const res = await axios.delete(`${serverURL}/vting/${url}`, {
@@ -144,7 +145,7 @@ function Dashboard() {
   };
 
   // * 퍼블릭 패치
-  const memberPublic = async (url: string) => {
+  const memberPublic = async (url: number) => {
     let accessToken = localStorage.getItem("accessToken");
     try {
       const res = await axios.patch(
@@ -171,7 +172,7 @@ function Dashboard() {
   };
 
   // * 액티브 패치
-  const memberActive = async (url: string) => {
+  const memberActive = async (url: number) => {
     let accessToken = localStorage.getItem("accessToken");
     try {
       const res = await axios.patch(
@@ -198,10 +199,12 @@ function Dashboard() {
   };
 
   // * 삭제 모달
-
   const [openModal, setOpenModal] = useState<boolean>(false);
 
-  const isOpenModal = () => {
+  const [deleteURL, setDeleteURL] = useState<number>(0);
+
+  const deleteHandler = (url: number) => {
+    setDeleteURL(url);
     setOpenModal(true);
   };
 
@@ -214,21 +217,26 @@ function Dashboard() {
       {signInState ? (
         <div className="dashboard_container">
           <header className="dashboard_header">
-            <h1>나의 Vting</h1>
+            <h1>나의 V-ting</h1>
           </header>
 
           <main className="dashboard_wrap">
+            <div onClick={() => navigate("/new")} className="dashboard_btnWrap">
+              <button className="dashboard_plusBtn">
+                Let's create a V-ting!
+              </button>
+            </div>
             <table className="dashboard_table">
               <thead>
                 <tr>
                   <th>No.</th>
-                  <th>제목</th>
-                  <th>타입</th>
-                  <th>생성일</th>
-                  <th>코드</th>
-                  <th>공개여부</th>
-                  <th>진행여부</th>
-                  <th>삭제</th>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Created_At</th>
+                  <th>Code</th>
+                  <th>isPublic</th>
+                  <th>isActive</th>
+                  <th>Delete</th>
                 </tr>
               </thead>
 
@@ -245,7 +253,7 @@ function Dashboard() {
                     <td>{vote.format}</td>
                     <td>{vote.created_at}</td>
                     <td>{vote.url}</td>
-                    <td onClick={() => memberPublic(`${vote.url}`)}>
+                    <td onClick={() => memberPublic(vote.url)}>
                       <button className="toggleBtn">
                         <div
                           className={
@@ -253,12 +261,10 @@ function Dashboard() {
                               ? "toggleCircle"
                               : "toggleCircle toggleOn"
                           }
-                        >
-                          {/* {vote.isPublic} */}
-                        </div>
+                        ></div>
                       </button>
                     </td>
-                    <td onClick={() => memberActive(`${vote.url}`)}>
+                    <td onClick={() => memberActive(vote.url)}>
                       <button className="toggleBtn">
                         <div
                           className={
@@ -266,9 +272,7 @@ function Dashboard() {
                               ? "toggleCircle"
                               : "toggleCircle toggleOn"
                           }
-                        >
-                          {/* {vote.undergoing} */}
-                        </div>
+                        ></div>
                       </button>
                     </td>
                     <td>
@@ -276,54 +280,52 @@ function Dashboard() {
                         className="dashboard_deleteBtn"
                         type="button"
                         value="삭제"
-                        onClick={isOpenModal}
+                        onClick={() => deleteHandler(vote.url)}
                       />
-                      {openModal && (
-                        <div className="dashboard_deleteModal_container">
-                          <div className="dashboard_deleteModal_background">
-                            <div className="dashboard_deleteModal_modal">
-                              <button
-                                className="deleteModal_closeBtn"
-                                onClick={closeModal}
-                              >
-                                X
-                              </button>
-                              <div className="dashboard_deleteModal_desc">
-                                <h3>
-                                  삭제시, 복구되지 않습니다.
-                                  <br /> 정말로 삭제하시겠습니까?
-                                </h3>
-                              </div>
-                              <div className="btnWrap">
-                                <button
-                                  className="dashboard_delete_ok"
-                                  onClick={() => DeleteVote(`${vote.url}`)}
-                                >
-                                  확인
-                                </button>
-                                <button
-                                  className="dashboard_delete_cancel"
-                                  onClick={closeModal}
-                                >
-                                  취소
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
                     </td>
                   </tr>
+
+                  {openModal && (
+                    <div className="dashboard_deleteModal_container">
+                      <div className="dashboard_deleteModal_background">
+                        <div className="dashboard_deleteModal_modal">
+                          <button
+                            className="deleteModal_closeBtn"
+                            onClick={closeModal}
+                          >
+                            X
+                          </button>
+                          <div className="dashboard_deleteModal_desc">
+                            <h3>
+                              코드번호 : {deleteURL} <br />
+                              삭제시, 복구되지 않습니다.
+                              <br /> 정말로 삭제하시겠습니까?
+                            </h3>
+                          </div>
+                          <div className="btnWrap">
+                            <button
+                              className="dashboard_delete_ok"
+                              onClick={() => DeleteVote(deleteURL)}
+                            >
+                              확인
+                            </button>
+                            <button
+                              className="dashboard_delete_cancel"
+                              onClick={closeModal}
+                            >
+                              취소
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </tbody>
               ))}
             </table>
 
             <div className="pagination">
               <button className="page_btn">{Page}</button>
-            </div>
-
-            <div onClick={() => navigate("/new")} className="dashboard_btnWrap">
-              <BsFillPlusCircleFill className="dashboard_plusBtn" />
             </div>
           </main>
         </div>

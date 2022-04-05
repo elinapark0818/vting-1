@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./Navbar.scss";
 import Logo from "../assets/vt_logo_1.png";
@@ -14,21 +14,13 @@ function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   let location = useLocation();
-  // * 로그인상태
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   let isLoginState = useSelector((state: RootState) => state.isLogin);
   let loginState = isLoginState.login;
 
-  const userInfo = useSelector((state: RootState) => state.userInfo);
-
   useEffect(() => {
-    if (localStorage.getItem("accessToken")) {
-      settingLogin();
-    }
     NavbarUserInfo();
   }, [location]);
-
-  console.log("리덕스이메일", userInfo.email);
-  console.log("리덕스닉네임", userInfo.nickname);
 
   const NavbarUserInfo = async () => {
     let accessToken = localStorage.getItem("accessToken");
@@ -83,8 +75,7 @@ function Navbar() {
         const token = res.data.data.accessToken;
         localStorage.setItem("accessToken", token);
         dispatch(setIsLogin(false));
-        // ? 로그아웃되면 일단 구분하려고 홈으로 이동시킴
-        navigate("/");
+        navigate(-1);
       }
     } catch (err) {
       console.log(err);
