@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.VoteController = void 0;
 const __1 = require("..");
 const mongodb_1 = require("mongodb");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -32,8 +31,10 @@ exports.VoteController = {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             let { title, format, manytimes, multiple, type, items, response, password, } = req.body;
             // access code(6-digits) 만들기
-            let randomNum = Math.random();
-            let url = Math.round(randomNum.toFixed(6) * 1000000);
+            let url = 0;
+            while (String(url).length < 6) {
+                url = Math.ceil(Math.random() * 1000000);
+            }
             if (items !== undefined) {
                 // items Array에 count: 0 넣어주기
                 if (Array.isArray(items)) {
@@ -46,6 +47,8 @@ exports.VoteController = {
             else {
                 items = [];
             }
+            // response 빈객체로 셋팅 해놓기
+            response = [];
             // response 아무것도 안보내줄때 빈객체로 셋팅 해놓기
             try {
                 // 헤더에 token 받아오기
@@ -489,19 +492,23 @@ exports.VoteController = {
     },
     undergoingAndPublic: {
         patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            // url(req.params.id)로 vote data 가져오기
-            let voteId = yield __1.db
+            const reqData = req.body;
+            const findMemberVote = yield __1.db
                 .collection("vote")
                 .findOne({ url: Number(req.params.accessCode) });
-            voteId = voteId._id;
-            const reqData = req.body;
             try {
                 // 회원인 경우 token 확인 후 내 vote를 수정하기
                 if (req.headers.authorization &&
-                    req.headers.authorization.split(" ")[0] === "Bearer") {
+                    req.headers.authorization.split(" ")[0] === "Bearer" &&
+                    findMemberVote) {
                     let authorization = req.headers.authorization;
                     let token = authorization.split(" ")[1];
                     jsonwebtoken_1.default.verify(token, process.env.ACCESS_SECRET, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+                        // url(req.params.id)로 vote data 가져오기
+                        let voteId = yield __1.db
+                            .collection("vote")
+                            .findOne({ url: Number(req.params.accessCode) });
+                        voteId = voteId._id;
                         // 토큰이 확인되면 vote collection에서 해당유저가 만들었던 vote중 요청된 보트가 일치하면 patch 가능
                         yield __1.db
                             .collection("vote")
@@ -554,7 +561,12 @@ exports.VoteController = {
                     }));
                     // 비회원일떄 수정 하기(undergoing만 바꿀 수 있음)
                 }
-                else {
+                else if (!findMemberVote) {
+                    // url(req.params.id)로 vote data 가져오기
+                    let voteId = yield __1.db
+                        .collection("non-member")
+                        .findOne({ url: Number(req.params.accessCode) });
+                    voteId = voteId._id;
                     yield __1.db
                         .collection("non-member")
                         .findOne({ _id: new mongodb_1.ObjectId(voteId) }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
@@ -573,6 +585,9 @@ exports.VoteController = {
                             }));
                         }
                     }));
+                }
+                else {
+                    return res.status(400).json({ message: "Bad Request" });
                 }
             }
             catch (_d) {
