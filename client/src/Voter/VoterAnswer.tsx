@@ -1,9 +1,10 @@
 import axios from "axios";
 import React, { useState, Dispatch, SetStateAction, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { patchGetVote, RootState } from "../store/index";
 
 interface Props {
-  code: string | undefined;
   answerMode?: boolean;
   setAnswerMode: Dispatch<SetStateAction<boolean>>;
   voteData: any;
@@ -12,33 +13,22 @@ interface Props {
 interface Options {
   multiple?: boolean;
   setAnswerMode: Dispatch<SetStateAction<boolean>>;
-  voteData: any;
 }
 
 const serverURL = "http://localhost:8000";
 
-function VoterAnswer({ setAnswerMode, code, voteData }: Props) {
-  const [format, setFormat] = useState(voteData.format);
-  const [multiple, setMultiple] = useState(voteData.mutiple);
-
-  useEffect(() => {
-    setFormat(voteData.format);
-    setMultiple(voteData.multiple);
-  }, [voteData]);
+function VoterAnswer({ setAnswerMode }: Props) {
+  const voteData = useSelector((state: RootState) => state.getVote);
+  const format = voteData.format;
+  const multiple = voteData.multiple;
 
   switch (format) {
     case "bar":
     case "versus":
-      return (
-        <Bar
-          multiple={multiple}
-          setAnswerMode={setAnswerMode}
-          voteData={voteData}
-        />
-      );
+      return <Bar multiple={multiple} setAnswerMode={setAnswerMode} />;
     case "open":
     case "word":
-      return <Open setAnswerMode={setAnswerMode} voteData={voteData} />;
+      return <Open setAnswerMode={setAnswerMode} />;
     default:
       return <>Ooooops!</>;
   }
@@ -50,7 +40,8 @@ interface Item {
   clicked?: boolean;
 }
 
-function Bar({ multiple, setAnswerMode, voteData }: Options) {
+function Bar({ multiple, setAnswerMode }: Options) {
+  const voteData = useSelector((state: RootState) => state.getVote);
   const { code } = useParams();
   const [clicked, setClicked] = useState(-1);
   const [multipleMode, setMultipleMode] = useState(multiple);
@@ -67,8 +58,6 @@ function Bar({ multiple, setAnswerMode, voteData }: Options) {
   useEffect(() => {
     setMultipleMode(voteData.multiple);
   }, []);
-
-  console.log(multiClicked);
 
   useEffect(() => {
     if (multipleMode && countAnswers()) {
@@ -106,12 +95,11 @@ function Bar({ multiple, setAnswerMode, voteData }: Options) {
       } else {
         reqBodyIdx.push(clicked);
       }
-      console.log(reqBodyIdx);
+
       try {
         const response = await axios.patch(`${serverURL}/voter/${code}`, {
           idx: reqBodyIdx,
         });
-        console.log(response);
         if (response.status === 200) {
           setAnswerMode(false);
         }
@@ -208,7 +196,7 @@ function Bar({ multiple, setAnswerMode, voteData }: Options) {
   );
 }
 
-function Open({ setAnswerMode, voteData }: Options) {
+function Open({ setAnswerMode }: Options) {
   const { code } = useParams();
   const [subAnswer, setSubAnswer] = useState("");
   const [shake, setShake] = useState(false);
