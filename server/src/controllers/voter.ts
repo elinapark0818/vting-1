@@ -29,56 +29,62 @@ export let VoterController = {
 
   show_vote: {
     get: async (req: Request, res: Response) => {
-      const memberVoteData = await db
-        .collection("vote")
-        .findOne({ url: Number(req.params.accessCode) });
-
-      if (memberVoteData) {
-        const userData = await db
-          .collection("user")
-          .findOne({ user_id: memberVoteData.user_id });
-
-        if (memberVoteData.format !== "open") {
-          let sumCount: number = 0;
-          for (let el of memberVoteData.items) {
-            sumCount += el.count;
-          }
-          return res
-            .status(200)
-            .json({ vote_data: memberVoteData, user_data: userData, sumCount });
-        } else {
-          return res
-            .status(200)
-            .json({ vote_data: memberVoteData, user_data: userData });
-        }
-      } else if (!memberVoteData) {
-        const nonmemberVoteData = await db
-          .collection("non-member")
+      try {
+        const memberVoteData = await db
+          .collection("vote")
           .findOne({ url: Number(req.params.accessCode) });
 
-        // 남은시간(분) 계산해서 보내주기
-        let overtime =
-          (new Date(nonmemberVoteData.created_at.toString()).getTime() -
-            new Date().getTime()) /
-            (1000 * 60) +
-          60;
-        overtime = Math.round(overtime);
+        if (memberVoteData) {
+          const userData = await db
+            .collection("user")
+            .findOne({ user_id: memberVoteData.user_id });
 
-        if (nonmemberVoteData.format !== "open") {
-          let sumCount: number = 0;
-          for (let el of nonmemberVoteData.items) {
-            sumCount += el.count;
+          if (memberVoteData.format !== "open") {
+            let sumCount: number = 0;
+            for (let el of memberVoteData.items) {
+              sumCount += el.count;
+            }
+            return res.status(200).json({
+              vote_data: memberVoteData,
+              user_data: userData,
+              sumCount,
+            });
+          } else {
+            return res
+              .status(200)
+              .json({ vote_data: memberVoteData, user_data: userData });
           }
-          return res
-            .status(200)
-            .json({ vote_data: nonmemberVoteData, sumCount, overtime });
-        } else {
-          return res
-            .status(200)
-            .json({ vote_data: nonmemberVoteData, overtime });
-        }
+        } else if (!memberVoteData) {
+          const nonmemberVoteData = await db
+            .collection("non-member")
+            .findOne({ url: Number(req.params.accessCode) });
 
-        // return res.status(200).json({ vote_data: nonmemberVoteData, overtime });
+          // 남은시간(분) 계산해서 보내주기
+          let overtime =
+            (new Date(nonmemberVoteData.created_at.toString()).getTime() -
+              new Date().getTime()) /
+              (1000 * 60) +
+            60;
+          overtime = Math.round(overtime);
+
+          if (nonmemberVoteData.format !== "open") {
+            let sumCount: number = 0;
+            for (let el of nonmemberVoteData.items) {
+              sumCount += el.count;
+            }
+            return res
+              .status(200)
+              .json({ vote_data: nonmemberVoteData, sumCount, overtime });
+          } else {
+            return res
+              .status(200)
+              .json({ vote_data: nonmemberVoteData, overtime });
+          }
+        } else {
+          return res.status(400).json({ message: "Bad Request" });
+        }
+      } catch {
+        return res.status(400).json({ message: "Bad Request" });
       }
     },
   },
