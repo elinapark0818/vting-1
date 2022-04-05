@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/index";
+import { useSelector, useDispatch } from "react-redux";
+import { patchGetVote, RootState, setRestart } from "../store/index";
 import VoteBody from "./VoteBody";
 import VoteFormats from "./VoteFormats";
 import axios from "axios";
@@ -55,7 +55,7 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
   const [newVotePassword, setNewVotePassword] = useState("");
   const [newVotePasswordRe, setNewVotePasswordRe] = useState("");
   const [isMatch, setIsMatch] = useState(true);
-
+  const dispatch = useDispatch();
   const serverURL = "http://localhost:8000";
 
   useEffect(() => {
@@ -70,13 +70,21 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
     const sendBody = logoutVoteBody();
 
     try {
-      const res = await axios.post(serverURL + "/vting", sendBody, {
+      const response = await axios.post(serverURL + "/vting", sendBody, {
         headers: {
           withCredentials: true,
         },
       });
-      if (res.status === 201) {
-        navigate(`/v/${res.data.data.url}`);
+      if (response.status === 201) {
+        dispatch(setRestart("delete all!!"));
+        dispatch(
+          patchGetVote({
+            title: response.data.data.title,
+            items: response.data.data.items || response.data.data.response,
+            sumCount: response.data.sumCount || 0,
+          })
+        );
+        navigate(`/v/${response.data.data.url}`);
         close();
       }
     } catch (e) {
