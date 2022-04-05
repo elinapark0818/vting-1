@@ -12,28 +12,9 @@ function Home() {
     <div className="homeCon">
       <HotVote />
       <Testfunc />
-      <Testfunc2 />
       <div className="services">추후 서비스 소개가 들어갈 영역입니다.</div>
     </div>
   );
-}
-
-function Testfunc2() {
-  useEffect(() => {
-    async function get400Error() {
-      try {
-        const response = await axios.post("http://localhost:8000/session", {
-          user_id: "nonono@gmail.com",
-          password: "1234567",
-        });
-        console.log(response);
-      } catch (e: any) {
-        console.log(e.response.data.message);
-      }
-    }
-    get400Error();
-  }, []);
-  return <></>;
 }
 
 function Testfunc() {
