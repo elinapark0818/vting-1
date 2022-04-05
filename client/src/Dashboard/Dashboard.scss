@@ -28,7 +28,7 @@
   flex-direction: column;
   align-items: center;
   margin: 3em;
-  text-align: center;
+  // text-align: center;
 
   & .dashboard_table {
     min-width: 30em;
@@ -37,13 +37,16 @@
     font-size: 1em;
 
     & thead {
-      background-color: rgb(252, 205, 165);
+      background-color: $vting-blue;
+      color: #fff;
       padding-top: 1em;
       border-bottom: 3px solid gray;
     }
 
     & tbody {
       padding-top: 1em;
+      background-color: #e9eefd;
+      text-align: center;
     }
 
     & tr {
@@ -52,79 +55,177 @@
 
     & th {
       padding: 0.5em 1em;
+      font-size: 1.1em;
     }
 
     & td {
       padding: 0.5em 1em;
       border-bottom: 1px solid $vting-gray;
     }
+
+    .toggleBtn {
+      margin-left: 10px;
+      background-color: #fff;
+      width: 50px;
+      height: 20px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.5s ease-in-out;
+    }
+    .toggleCircle {
+      background-color: $vting-orange;
+      width: 18px;
+      height: 18px;
+      border-radius: 50px;
+      position: absolute;
+      left: 5%;
+      transition: all 0.5s ease-in-out;
+      color: white;
+      text-align: center;
+      line-height: 38px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .toggleOn {
+      background-color: #9c9a9a;
+      color: black;
+      transform: translate(26px, 0);
+      transition: all 0.5s ease-in-out;
+    }
+
+    .td_title {
+      cursor: pointer;
+    }
   }
 }
-.td_title {
-  cursor: pointer;
-}
 
-.toggleBtn {
-  // margin-left: 50px;
-  background-color: $vting-gray;
-  width: 50px;
-  height: 20px;
-  border-radius: 30px;
-  border: none;
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.5s ease-in-out;
-}
-.toggleCircle {
-  background-color: rgb(184, 52, 52);
-  width: 18px;
-  height: 18px;
-  border-radius: 50px;
-  position: absolute;
-  left: 5%;
-  transition: all 0.5s ease-in-out;
-  color: white;
-  text-align: center;
-  line-height: 38px;
-  font-size: 16px;
-  font-weight: bold;
-}
-.toggleOn {
-  background-color: #adabab;
-  color: black;
-  transform: translate(28px, 0);
-  transition: all 0.5s ease-in-out;
+// * 페이지네이션
+.pagination {
+  margin: 1em;
+
+  .page_btn {
+    cursor: pointer;
+    border: none;
+    border-bottom: 1px solid $vting-blue;
+    padding: 0px 5px;
+    color: $vting-blue;
+    background-color: transparent;
+  }
 }
 
 .dashboard_deleteBtn {
   cursor: pointer;
   border: none;
-  background-color: rgb(184, 52, 52);
+  background-color: $vting-orange;
   color: #fff;
   font-size: 12px;
   font-weight: bold;
-  border-radius: 5px;
-  padding: 8px 8px;
+  border-radius: 20px;
+  padding: 5px 15px;
   transition: all 0.3s ease;
 }
 
 .dashboard_btnWrap {
-  margin-top: 3em;
-  margin-left: 50em;
+  // margin-left: 45em;
   transition: all 0.3s ease;
 }
 
 .dashboard_plusBtn {
   cursor: pointer;
-  font-size: 3em;
-  color: gray;
+  border: 3px solid $vting-blue;
+  border-radius: 20px;
+  background-color: transparent;
+  font-size: 1.5em;
+  padding: 5px 15px;
+  color: $vting-blue;
+  transition: all 0.3s ease;
+}
+
+.dashboard_plusBtn:hover {
+  background-color: $vting-blue;
+  color: #fff;
+}
+
+// * 삭제 클릭시 모달
+
+.dashboard_deleteModal_container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  // transform: scale(0);
+}
+
+.dashboard_deleteModal_container .dashboard_deleteModal_background {
+  display: table-cell;
+  background: rgba(241, 247, 252, 0.1);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.dashboard_deleteModal_container
+  .dashboard_deleteModal_background
+  .dashboard_deleteModal_modal {
+  background: #fff;
+  // padding: 30px 10px;
+  display: inline-block;
+  border-radius: 3px;
+  position: relative;
+
+  & .dashboard_deleteModal_desc {
+    margin: 3em 2em;
+    & h3 {
+      font-size: 20px;
+    }
+  }
+}
+
+.dashboard_deleteModal_background {
+  & button {
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.dashboard_delete_ok {
+  background-color: $vting-gray;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0.5em;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
   transition: all 0.3s ease;
 
-  & :hover {
-    color: rgb(184, 52, 52);
+  &:hover {
+    background-color: $vting-orange;
+  }
+}
+
+.dashboard_delete_cancel {
+  background-color: $vting-gray;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0.5em;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $vting-orange;
   }
 }
 
@@ -221,83 +322,5 @@
 
   &:hover {
     background-color: $vting-blue;
-  }
-}
-
-// * 삭제 클릭시 모달
-
-.dashboard_deleteModal_container {
-  position: fixed;
-  left: 0;
-  top: 0;
-  display: table;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
-  // transform: scale(0);
-}
-
-.dashboard_deleteModal_container .dashboard_deleteModal_background {
-  display: table-cell;
-  background: rgba(226, 224, 224, 0.1);
-  text-align: center;
-  vertical-align: middle;
-}
-
-.dashboard_deleteModal_container
-  .dashboard_deleteModal_background
-  .dashboard_deleteModal_modal {
-  background: #fff;
-  padding: 30px;
-  display: inline-block;
-  border-radius: 3px;
-  position: relative;
-
-  & .dashboard_deleteModal_desc {
-    margin: 3em 2em;
-    & h3 {
-      font-size: 20px;
-    }
-  }
-}
-
-.dashboard_deleteModal_background {
-  & button {
-    border: none;
-    cursor: pointer;
-  }
-}
-
-.dashboard_delete_ok {
-  background-color: $vting-gray;
-  cursor: pointer;
-  color: #fff;
-  font-size: 20px;
-  font-weight: bold;
-  margin: 0.5em;
-  padding: 8px 20px;
-  border: none;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: rgb(184, 52, 52);
-  }
-}
-
-.dashboard_delete_cancel {
-  background-color: $vting-gray;
-  cursor: pointer;
-  color: #fff;
-  font-size: 20px;
-  font-weight: bold;
-  margin: 0.5em;
-  padding: 8px 20px;
-  border: none;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: rgb(184, 52, 52);
   }
 }
