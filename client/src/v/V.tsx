@@ -106,7 +106,6 @@ function V() {
           setVoteTitle(response.data.data.title);
           setToggleOngoing(response.data.data.undergoing);
           setTogglePublic(response.data.data.isPublic);
-          console.log("(회원) 설문 생성 후 받아온 데이터 ==>", response.data);
           // sumCount가 있는 설문이면 가져오기
           if (response.data.sumCount) setVoteSumCount(response.data.sumCount);
         } else {
@@ -135,7 +134,6 @@ function V() {
           },
         }
       );
-      console.log(response.data);
       if (response.status === 200) {
         setTogglePublic(response.data.isPublic);
       }
@@ -159,7 +157,6 @@ function V() {
             },
           }
         );
-        console.log(response.data);
         if (response.status === 200) {
           setToggleOngoing(response.data.isActive);
         }
@@ -181,7 +178,6 @@ function V() {
             },
           }
         );
-        console.log(response.data);
         if (response.status === 200) {
           setToggleOngoing(response.data.isActive);
         }
@@ -251,11 +247,7 @@ function V() {
             <div className="voteResultPage">
               <div className="voteResultTitle">{voteTitle}</div>
               <div className="voteResultContent">
-                {isRealTime ? (
-                  <Vresult voteInfo={voteInfo} voteSumCount={voteSumCount} />
-                ) : (
-                  <Howto />
-                )}
+                {isRealTime ? <Vresult /> : <Howto />}
               </div>
             </div>
             <div className="voteResultFooter">

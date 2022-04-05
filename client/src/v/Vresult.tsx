@@ -5,6 +5,8 @@ import "tippy.js/dist/tippy.css";
 import "tippy.js/animations/scale.css";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { patchGetVote, RootState } from "../store/index";
 
 type IntervalFunction = () => unknown | void;
 
@@ -38,44 +40,20 @@ const makeRandomWidth = (num: number, sum: number): React.CSSProperties => {
   return heightProprety;
 };
 
-interface Item {
-  idx: number;
-  content: string;
-  count?: number;
-}
-
-interface VoteInfo {
-  _id?: string;
-  user_id?: string;
-  password?: string;
-  url?: number;
-  title?: string;
-  format?: string;
-  type?: string;
-  items?: Item[];
-  multiple?: boolean;
-  manytimes?: boolean;
-  undergoing?: boolean;
-  isPublic?: boolean;
-  created_at?: string;
-  overtime?: number;
-}
-
-interface Props {
-  voteInfo: VoteInfo;
-  voteSumCount: number;
-}
-
 // 컴포넌트 시작
-function Vresult({ voteInfo, voteSumCount }: Props) {
+function Vresult() {
   const { code } = useParams();
-  const [voteInfoH, setVoteInfoH] = useState(voteInfo);
-  const format = voteInfoH.format;
-  const type = voteInfoH.type;
+  const voteData = useSelector((state: RootState) => state.getVote);
+  const items = voteData.items;
+  const sum = voteData.sumCount || 0;
+  const format = voteData.format;
+  const type = voteData.type;
+  const dispatch = useDispatch();
+  const serverURL = "http://localhost:8000";
 
   // 워드클라우드 세팅
-  const words = voteInfoH.items
-    ? voteInfoH.items.map((el) => ({
+  const words = items
+    ? items.map((el: any) => ({
         text: el.content as string,
         value: el.count as number,
       }))
@@ -85,20 +63,43 @@ function Vresult({ voteInfo, voteSumCount }: Props) {
     fontSizes: fontSizes,
   };
 
-  const serverURL = "http://localhost:8000";
-  const accessToken = localStorage.getItem("accessToken");
+  // 처음 접속하면 응답 새로 받아오기
+  useEffect(() => {
+    async function getAnswers() {
+      try {
+        const response = await axios.get(`${serverURL}/voter/${code}`);
+        if (response.status === 200) {
+          dispatch(
+            patchGetVote({
+              title: response.data.vote_data.title,
+              items:
+                response.data.vote_data.items ||
+                response.data.vote_data.response,
+              sumCount: response.data.sumCount || 0,
+              format: response.data.vote_data.format,
+              type: response.data.vote_data.type || "",
+            })
+          );
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    getAnswers();
+  }, []);
 
   // 5초에 한 번씩 ajax 요청 (응답 덮어쓰기)
   useInterval(async () => {
-    const response = await axios.get(`${serverURL}/vting/${code}`, {
-      headers: {
-        Authorization: accessToken ? `Bearer ${accessToken}` : "",
-        withCredentials: true,
-      },
-    });
+    const response = await axios.get(`${serverURL}/voter/${code}`);
     if (response.status === 200) {
-      console.log(response.data.data.items);
-      // console.log("그냥 로그만");
+      dispatch(
+        patchGetVote({
+          title: response.data.vote_data.title,
+          items:
+            response.data.vote_data.items || response.data.vote_data.response,
+          sumCount: response.data.sumCount || 0,
+        })
+      );
     }
   }, 5000);
 
@@ -109,15 +110,15 @@ function Vresult({ voteInfo, voteSumCount }: Props) {
           <div className="realTimeCon">
             <div className="votePreviewBack vResult">
               <div className="votePreview-barVer-con">
-                {voteInfoH.items ? (
-                  voteInfoH.items.map((el, idx) => (
+                {items ? (
+                  items.map((el, idx) => (
                     <div key={idx} id="votePreview-barVer-bar">
                       <div className="barVer-itemName">{el.content}</div>
                       <div
                         className="barVer-itemBar"
                         style={makeRandomHeight(
                           el.count as number,
-                          voteSumCount
+                          sum as number
                         )}
                       ></div>
                     </div>
@@ -134,15 +135,15 @@ function Vresult({ voteInfo, voteSumCount }: Props) {
           <div className="realTimeCon">
             <div className="votePreviewBack">
               <div className="votePreview-barHor-con">
-                {voteInfoH.items ? (
-                  voteInfoH.items.map((el, idx) => (
+                {items ? (
+                  items.map((el, idx) => (
                     <div key={idx} id="votePreview-barHor-bar">
                       <div className="barHor-itemName">{el.content}</div>
                       <div
                         className="barHor-itemBar"
                         style={makeRandomWidth(
                           el.count as number,
-                          voteSumCount
+                          sum as number
                         )}
                       ></div>
                     </div>
@@ -159,8 +160,8 @@ function Vresult({ voteInfo, voteSumCount }: Props) {
     case "open":
       return (
         <div className="realTimeCon">
-          {voteInfoH.items ? (
-            voteInfoH.items.map((el, idx) => (
+          {items ? (
+            items.map((el, idx) => (
               <div
                 className={
                   idx < 4
@@ -181,9 +182,9 @@ function Vresult({ voteInfo, voteSumCount }: Props) {
       return (
         <div className="realTimeCon">
           <div className="versusCon">
-            <div>{voteInfoH.items ? voteInfoH.items[0].content : ""}</div>
+            <div>{items ? items[0].content : ""}</div>
             <div>vs</div>
-            <div>{voteInfoH.items ? voteInfoH.items[1].content : ""}</div>
+            <div>{items ? items[1].content : ""}</div>
           </div>
         </div>
       );

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAlert } from "react-alert";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, setRestart } from "../store/index";
+import { patchGetVote, RootState, setRestart } from "../store/index";
 
 interface Props {
   everytingIsOk: boolean;
@@ -35,16 +35,22 @@ function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
         console.log(accessToken);
 
         try {
-          const res = await axios.post(serverURL + "/vting", sendBody, {
+          const response = await axios.post(serverURL + "/vting", sendBody, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               withCredentials: true,
             },
           });
-          if (res.status === 201) {
+          if (response.status === 201) {
             dispatch(setRestart("delete all!!"));
-            console.log(newVote);
-            navigate(`/v/${res.data.data.url}`);
+            dispatch(
+              patchGetVote({
+                title: response.data.data.title,
+                items: response.data.data.items || response.data.data.response,
+                sumCount: response.data.sumCount || 0,
+              })
+            );
+            navigate(`/v/${response.data.data.url}`);
           }
         } catch (e) {
           console.log(e);

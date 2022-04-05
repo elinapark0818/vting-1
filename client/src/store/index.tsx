@@ -212,34 +212,6 @@ const getVoteSlice = createSlice({
   },
 });
 
-// 받아온 vote (/v 혹은 vote.) 정보 처리를 위한 부분입니다.
-
-export interface AllVoteInfo {
-  url: number;
-  title: string;
-  format: string;
-  sumCount?: number;
-}
-
-const initialGetAllVoteState: AllVoteInfo = {
-  url: 123456,
-  title: "",
-  format: "",
-};
-
-const getAllVoteSlice = createSlice({
-  name: "getAllVote",
-  initialState: initialGetAllVoteState,
-  reducers: {
-    patchGetAllVote(state, action: PayloadAction<ResultVoteInfo>) {
-      if (action.payload.url) state.url = action.payload.url;
-      if (action.payload.title) state.title = action.payload.title;
-      if (action.payload.format) state.format = action.payload.format;
-      if (action.payload.sumCount) state.sumCount = action.payload.sumCount;
-    },
-  },
-});
-
 // 여기서부터 다른 파일에서 import 해오기 위해 사용하는 공용 부분입니다.
 const store = configureStore({
   reducer: {
@@ -247,7 +219,6 @@ const store = configureStore({
     isLogin: isLogInSlice.reducer,
     makeNewVote: newVoteSlice.reducer,
     getVote: getVoteSlice.reducer,
-    getAllVote: getAllVoteSlice.reducer,
     userInfo: UserInfoSlice.reducer,
   },
 });
@@ -261,8 +232,6 @@ export const { setUserInfo } = UserInfoSlice.actions;
 export const { setIsModalOpen } = isModalSlice.actions;
 
 export const { patchGetVote } = getVoteSlice.actions;
-
-export const { patchGetAllVote } = getAllVoteSlice.actions;
 
 export const {
   setFormat,
