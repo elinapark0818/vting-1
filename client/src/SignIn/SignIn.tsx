@@ -98,10 +98,10 @@ function SignIn() {
         password: user.password,
       })
       .then((res) => {
-        console.log("로그인성공res===", res);
+        // console.log("로그인성공res===", res);
         if (
-          res.status === 200 &&
-          res.data.message === "Successfully logged in"
+          res.status === 200
+          // && res.data.message === "Successfully logged in"
         ) {
           localStorage.setItem("accessToken", res.data.data.accessToken);
           const userInfo = res.data.data.user_data;
