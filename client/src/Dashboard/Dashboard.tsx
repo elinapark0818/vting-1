@@ -4,14 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import "./Dashboard.scss";
-import { BsFillPlusCircleFill } from "react-icons/bs";
 
 const serverURL: string = "http://localhost:8000";
 
 function Dashboard() {
   const navigate = useNavigate();
+
   const isLogin = useSelector((state: RootState) => state.isLogin);
-  // const userInfo = useSelector((state: RootState) => state.userInfo);
 
   const [signInState, setSignInState] = useState<boolean>(false);
 
@@ -63,19 +62,34 @@ function Dashboard() {
   }
 
   // * 페이지네이션
+  const [currentPage, setCurrentPage] = useState(1);
   const [userVoteCount, setUserVoteCount] = useState(1);
+  let totalPage: number = Math.ceil(userVoteCount / 10);
 
-  // todo: 첫번째 페이지 (10개가 넘어갈 경우)
-  let Page = 1;
+  const [buttonActive, setButtonActive] = useState(false);
 
-  const [userVoteCode, setUserVoteCode] = useState([]);
+  const showPageBtn = () => {
+    let pages: React.ReactElement<any>[] = [];
+    for (let i: number = 1; i <= totalPage; i++) {
+      pages.push(
+        <li>
+          <button
+            className={buttonActive ? "page_btn" : "page_btn"}
+            onClick={() => getChangePage(i)}
+          >
+            {i}
+          </button>
+        </li>
+      );
+    }
+    return pages;
+  };
 
   // * 보트들의 정보 조회하기
-  // todo: 페이지네이션을 어떻게 할 것인가?
   const getUserInfo = async () => {
     let accessToken = localStorage.getItem("accessToken");
     try {
-      const res = await axios.get(`${serverURL}/user?q=${Page}`, {
+      const res = await axios.get(`${serverURL}/user?q=1`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           withCredentials: true,
@@ -83,9 +97,31 @@ function Dashboard() {
       });
       if (res.status === 200) {
         setUserVote(res.data.vote);
-        console.log("페이지별 보트들(10ea)===", userVote);
+        getChangePage(currentPage);
       } else {
         setUserVote(votes);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // * 페이지네이션
+  const getChangePage = async (pageNumber: number) => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      const res = await axios.get(`${serverURL}/user?q=${pageNumber}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
+      });
+      if (res.status === 200) {
+        setButtonActive(true);
+        setCurrentPage(pageNumber);
+        setUserVote(res.data.vote);
+      } else {
+        // setUserVote(votes);
       }
     } catch (err) {
       console.log(err);
@@ -105,7 +141,6 @@ function Dashboard() {
       if (res.status === 200) {
         // todo: 보트들 개수 저장해두기
         setUserVoteCount(res.data.data.voteCount);
-        console.log("총 보트 몇개===", userVoteCount);
       } else {
         setUserVote(userVote);
       }
@@ -126,7 +161,6 @@ function Dashboard() {
 
   // todo: Vote Table 에서 설문 생성, 설문 종료, 설문 삭제 기능 구현하기
   const DeleteVote = async (url: number) => {
-    console.log(url);
     let accessToken = localStorage.getItem("accessToken");
     try {
       const res = await axios.delete(`${serverURL}/vting/${url}`, {
@@ -229,21 +263,21 @@ function Dashboard() {
             <table className="dashboard_table">
               <thead>
                 <tr>
-                  <th>No.</th>
-                  <th>Title</th>
-                  <th>Type</th>
-                  <th>Created_At</th>
-                  <th>Code</th>
-                  <th>isPublic</th>
-                  <th>isActive</th>
-                  <th>Delete</th>
+                  <th style={{ width: "20px" }}>No.</th>
+                  <th style={{ width: "350px" }}>Title</th>
+                  <th style={{ width: "120px" }}>Type</th>
+                  <th style={{ width: "20px" }}>Created_At</th>
+                  <th style={{ width: "20px" }}>Code</th>
+                  <th style={{ width: "20px" }}>isPublic</th>
+                  <th style={{ width: "20px" }}>isActive</th>
+                  <th style={{ width: "20px" }}>Delete</th>
                 </tr>
               </thead>
 
               {newVotes.map((vote: any, index) => (
-                <tbody key={index}>
+                <tbody key={index + (currentPage - 1) * 10 + 1}>
                   <tr>
-                    <td>{index + 1}</td>
+                    <td>{index + (currentPage - 1) * 10 + 1}</td>
                     <td
                       onClick={() => navigate(`/v/${vote.url}`)}
                       className="td_title"
@@ -284,49 +318,45 @@ function Dashboard() {
                       />
                     </td>
                   </tr>
-
-                  {openModal && (
-                    <div className="dashboard_deleteModal_container">
-                      <div className="dashboard_deleteModal_background">
-                        <div className="dashboard_deleteModal_modal">
-                          <button
-                            className="deleteModal_closeBtn"
-                            onClick={closeModal}
-                          >
-                            X
-                          </button>
-                          <div className="dashboard_deleteModal_desc">
-                            <h3>
-                              코드번호 : {deleteURL} <br />
-                              삭제시, 복구되지 않습니다.
-                              <br /> 정말로 삭제하시겠습니까?
-                            </h3>
-                          </div>
-                          <div className="btnWrap">
-                            <button
-                              className="dashboard_delete_ok"
-                              onClick={() => DeleteVote(deleteURL)}
-                            >
-                              확인
-                            </button>
-                            <button
-                              className="dashboard_delete_cancel"
-                              onClick={closeModal}
-                            >
-                              취소
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </tbody>
               ))}
             </table>
-
-            <div className="pagination">
-              <button className="page_btn">{Page}</button>
-            </div>
+            {openModal && (
+              <div className="dashboard_deleteModal_container">
+                <div className="dashboard_deleteModal_background">
+                  <div className="dashboard_deleteModal_modal">
+                    <button
+                      className="deleteModal_closeBtn"
+                      onClick={closeModal}
+                    >
+                      X
+                    </button>
+                    <div className="dashboard_deleteModal_desc">
+                      <h3>
+                        코드번호 : {deleteURL} <br />
+                        삭제시, 복구되지 않습니다.
+                        <br /> 정말로 삭제하시겠습니까?
+                      </h3>
+                    </div>
+                    <div className="btnWrap">
+                      <button
+                        className="dashboard_delete_ok"
+                        onClick={() => DeleteVote(deleteURL)}
+                      >
+                        확인
+                      </button>
+                      <button
+                        className="dashboard_delete_cancel"
+                        onClick={closeModal}
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <ul className="pagination">{showPageBtn()}</ul>
           </main>
         </div>
       ) : (
