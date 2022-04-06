@@ -2,13 +2,62 @@
 
 .container {
   width: 100%;
-  height: 100px;
+  min-height: 100px;
   background-color: $vting-gray;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+}
+
+.votingBannerCon {
+  padding: 20px 0;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-color: $vting-orange;
+  justify-content: center;
+  color: white;
+  .votingBanner {
+    padding: 0 35px;
+    width: 1200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    .votingBannerText {
+      font-weight: 500;
+    }
+    .votingBannerInput {
+      input {
+        font-size: 17px;
+        padding: 0 5px;
+        width: 700px;
+        text-align: center;
+        // border: none;
+        border-radius: 3px;
+        border: 1px solid transparent;
+        border: 1px solid $vting-orange;
+        border-top: none;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.39),
+          0 -1px 1px $vting-orange, 0 1px 0 $vting-orange;
+      }
+    }
+    button {
+      background-color: $vting-blue;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      border-style: none;
+      outline: 0;
+      cursor: pointer;
+      box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
+    }
+  }
 }
 
 .NavBar {
+  height: 100px;
   width: 1200px;
   display: flex;
   flex-direction: row;
