@@ -29,6 +29,7 @@ export default function VoteSlider() {
       const response = await axios.get(`${serverURL}/allvotes`);
       if (response.status === 200) {
         setAllVotes(response.data.vote);
+        console.log(response.data.vote);
       }
     }
     getAllVotes();
