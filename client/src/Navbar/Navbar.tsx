@@ -104,7 +104,7 @@ function Navbar() {
             <div className="profile">
               <div>
                 <img
-                  src={Profile}
+                  src={userInfo.image}
                   alt="profile_img"
                   style={{ width: "60px", borderRadius: "50%" }}
                 />

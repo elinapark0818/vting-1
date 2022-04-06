@@ -54,19 +54,20 @@ function MyPage() {
     const getUserInfo = async () => {
       let accessToken = localStorage.getItem("accessToken");
       try {
-        const res = await axios.get(`${serverURL}/user`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            withCredentials: true,
-          },
-        });
-        if (res.status === 200) {
-          // Oauth
-          console.log(res.data.data.provider);
-          if (res.data.data.provider !== null) {
-            setCheckPwd(true);
-          }
-        }
+        await axios
+          .get(`${serverURL}/user`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              withCredentials: true,
+            },
+          })
+          .then((res) => {
+            if (res.data.data.provider === undefined) {
+              setCheckPwd(false);
+            } else {
+              setCheckPwd(true);
+            }
+          });
       } catch (err) {
         console.log(err);
       }

@@ -77,7 +77,11 @@ function Delete() {
 
       <main className="delete_wrap">
         <div className="delete_profile">
-          <img src={userInfo.image} alt="프로필이미지" />
+          <img
+            src={userInfo.image}
+            alt="프로필이미지"
+            style={{ width: "10em" }}
+          />
         </div>
         <div className="delete_userInfo">
           <h1>닉네임 : {userInfo.nickname}</h1>
