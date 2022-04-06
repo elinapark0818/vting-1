@@ -6,8 +6,6 @@ import { setIsLogin, setUserInfo } from "../store/index";
 import "./SignIn.scss";
 
 import Logo from "../assets/v-ting_logo_circle.png";
-import { SiGithub } from "react-icons/si";
-import Google from "../assets/google-oauth-logo.png";
 import { LoginGoogle, LoginFacebook } from "./OauthLogin";
 
 interface User {
@@ -31,12 +29,7 @@ function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [isMatch, setIsMatch] = useState(false);
-
-  // * 기존 유저정보를 담을 상태
   const [user, setUser] = useState<User>({ email: "", password: "" });
-
-  // * 새로운 유저 정보를 담을 상태
   const [newUser, setNewUser] = useState<CreateUser>({
     email: "",
     name: "",
@@ -44,6 +37,7 @@ function SignIn() {
     passwordConfirm: "",
     image: "",
   });
+  const [isMatch, setIsMatch] = useState(false);
 
   useEffect(() => {
     if (newUser.password === newUser.passwordConfirm) {
@@ -51,7 +45,6 @@ function SignIn() {
     } else {
       setIsMatch(false);
     }
-    // ? 인풋창에 내용물이 없어지면 안내메시지 없애기
     if (!user.email.length) {
       setUserCheck(true);
     }
@@ -84,14 +77,10 @@ function SignIn() {
     navigate(-1);
   };
 
-  // ! 유저체크 (아이디, 비번)
-  // ? false = 미가입 true = 가입
   const [userCheck, setUserCheck] = useState(true);
   const [alreadyUser, setAlreadyUser] = useState(false);
   const [userPasswordCheck, setUserPasswordCheck] = useState(true);
 
-  // ? 로그인 서버 연동 => [POST] session
-  // ! server/session
   const LogInUser = async () => {
     await axios
       .post(serverURL + "/session", {
@@ -99,11 +88,7 @@ function SignIn() {
         password: user.password,
       })
       .then((res) => {
-        // console.log("로그인성공res===", res);
-        if (
-          res.status === 200
-          // && res.data.message === "Successfully logged in"
-        ) {
+        if (res.status === 200) {
           localStorage.setItem("accessToken", res.data.data.accessToken);
           const userInfo = res.data.data.user_data;
           setUserCheck(true);
@@ -115,26 +100,23 @@ function SignIn() {
               _id: userInfo._id,
               nickname: userInfo.nickname,
               email: userInfo.user_id,
+              image: userInfo.image,
             })
           );
+          console.log("이미지", userInfo.image);
         }
       })
       .catch((err) => {
-        console.log("에러상태===", err.response.data.message);
         if (err.response.data.message === "There's no ID") {
           setUserCheck(false);
-          console.log("가입되지 않은 이메일입니다.");
         } else if (err.response.data.message === "Wrong password") {
           setUserPasswordCheck(false);
-          console.log("비밀번호가 틀렸습니다.");
         } else if (err.response.data.status === 400) {
           setIsServerOk(false);
-          console.log("네트워크 상태가 불안정합니다.");
         }
       });
   };
 
-  // ? 회원가입 + 유저체크 핸들링
   const SignUpUser = async () => {
     try {
       await axios
@@ -143,8 +125,6 @@ function SignIn() {
         })
         .then((data) => {
           if (data.status === 200 && data.data.message === "Success verified") {
-            // * 이미 가입된 이메일의 경우
-            console.log("이미 가입된 이메일입니다");
             setAlreadyUser(true);
           }
           if (data.status === 200 && data.data.message === "It doesn't match") {
@@ -167,6 +147,7 @@ function SignIn() {
                       _id: userInfo._id,
                       nickname: userInfo.nickname,
                       email: userInfo.user_id,
+                      image: userInfo.image,
                     })
                   );
                   alert("회원가입이 완료되었습니다.");
@@ -190,6 +171,7 @@ function SignIn() {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
   };
+
   // ? SignIn input onChanges
   const signUp_onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -211,8 +193,6 @@ function SignIn() {
   };
 
   // ! Validation
-
-  // * 닉네임 유효성검사
   const [nameValid, setNameValid] = useState(false);
   const [isBlur, setIsBlur] = useState(false);
 
@@ -225,10 +205,6 @@ function SignIn() {
     }
   };
 
-  // * 이메일 유효성검사
-  // ? 숫자 (0~9) or 알파벳 (a~z, A~Z) 으로 시작하며 중간에 -_. 문자가 있을 수 있으며
-  // ? 그 후 숫자 (0~9) or 알파벳 (a~z, A~Z)이 올 수도 있고 연달아 올 수도 있고 없을 수도 있다.
-  // ? @ 는 반드시 존재하며 . 도 반드시 존재하고 a~z, A~Z 의 문자가 2,3개 존재하고 i = 대소문자 구분 안한다.
   const [emailValid, setEmailValid] = useState(false);
   const [isEmailBlur, setIsEmailBlur] = useState(false);
 
@@ -251,7 +227,6 @@ function SignIn() {
     }
   };
 
-  // *  로그인 비밀번호 유효성검사
   const [passwordValid, setPasswordValid] = useState(true);
   const [isPasswordBlur, setIsPasswordBlur] = useState(false);
 
@@ -274,7 +249,6 @@ function SignIn() {
     }
   };
 
-  // * 회원가입 비밀번호 유효성검사
   const [newPasswordValid, setNewPasswordValid] = useState(true);
   const [newPasswordBlur, setNewPasswordBlur] = useState(false);
 
@@ -315,13 +289,13 @@ function SignIn() {
                 />
                 {isEmailBlur && !emailValid && (
                   <div className="email Error">
-                    ! 이메일을 정확히 입력해주세요.
+                    이메일을 정확히 입력해주세요.
                   </div>
                 )}
 
                 {!userCheck && (
                   <div className="server Error">
-                    ! 가입되지 않은 이메일입니다.
+                    가입되지 않은 이메일입니다.
                   </div>
                 )}
               </div>
@@ -337,20 +311,18 @@ function SignIn() {
                 />
 
                 {isPasswordBlur && !user.password && (
-                  <div className="password Empty">
-                    ! 비밀번호를 입력해주세요
-                  </div>
+                  <div className="password Empty">비밀번호를 입력해주세요</div>
                 )}
                 {isPasswordBlur && user.password && (
                   <div className="password Success"></div>
                 )}
                 {!isServerOk && (
                   <div className="server Error">
-                    ! 네트워크 상태가 불안정합니다.
+                    네트워크 상태가 불안정합니다.
                   </div>
                 )}
                 {!userPasswordCheck && (
-                  <div className="server Error">! 비밀번호가 틀렸습니다.</div>
+                  <div className="server Error">비밀번호가 틀렸습니다.</div>
                 )}
               </div>
 
@@ -359,7 +331,7 @@ function SignIn() {
                   로그인
                 </button>
                 <div className="oauth_wrap">
-                  <div>
+                  <div className="google-button" style={{ width: "100%" }}>
                     <LoginGoogle inOrUp="in" />
                   </div>
                   <div>
@@ -395,7 +367,7 @@ function SignIn() {
               />
               {isBlur && !nameValid && (
                 <div className="nickname Error">
-                  ! 한글, 영문, 숫자만 가능하며 2-10자리 입력해주세요
+                  한글, 영문, 숫자만 가능하며 2-10자리 입력해주세요
                 </div>
               )}
               {isBlur && nameValid && <div className="nickname Success"></div>}
@@ -412,13 +384,11 @@ function SignIn() {
                 />
                 {isEmailBlur && !emailValid && (
                   <div className="email Error">
-                    ! 이메일을 정확히 입력해주세요.
+                    이메일을 정확히 입력해주세요.
                   </div>
                 )}
                 {alreadyUser && (
-                  <div className="server Error">
-                    ! 이미 가입된 이메일입니다.
-                  </div>
+                  <div className="server Error">이미 가입된 이메일입니다.</div>
                 )}
                 {isEmailBlur && emailValid && (
                   <div className="email Success"></div>
@@ -437,7 +407,7 @@ function SignIn() {
                 />
                 {newPasswordBlur && !newPasswordValid && (
                   <div className="password Error">
-                    ! 영문, 숫자, 특수문자 포함 8자리이상 입력해주세요.
+                    영문, 숫자, 특수문자 포함 8자리이상 입력해주세요.
                   </div>
                 )}
                 {newPasswordBlur && newPasswordValid && (
@@ -456,13 +426,13 @@ function SignIn() {
 
               {!isMatch && (
                 <div className="password Error">
-                  ! 비밀번호가 일치하지 않습니다.
+                  비밀번호가 일치하지 않습니다.
                 </div>
               )}
 
               {!isServerOk && (
                 <div className="server Error">
-                  ! 네트워크 상태가 불안정합니다.
+                  네트워크 상태가 불안정합니다.
                 </div>
               )}
 

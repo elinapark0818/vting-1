@@ -40,12 +40,6 @@ function Navbar() {
         .then((res) => {
           if (res.status === 200) {
             settingLogin();
-            // Object.assign(
-            //   {},
-            //   userInfo,
-            //   res.data.data.user_id,
-            //   res.data.data.nickname
-            // );
             dispatch(
               setUserInfo({
                 _id: res.data.data._id,
@@ -62,11 +56,10 @@ function Navbar() {
     }
   };
 
-  // ? 로그인 핸들링
   const settingLogin = () => {
     dispatch(setIsLogin(true));
   };
-  // ? 로그아웃 핸들링
+
   const handleLogout = async () => {
     let accessToken = localStorage.getItem("accessToken");
     try {
@@ -80,7 +73,7 @@ function Navbar() {
         const token = res.data.data.accessToken;
         localStorage.setItem("accessToken", token);
         dispatch(setIsLogin(false));
-        navigate(-1);
+        navigate("/");
       }
     } catch (err) {
       console.log(err);
@@ -111,7 +104,7 @@ function Navbar() {
             <div className="profile">
               <div>
                 <img
-                  src={Profile}
+                  src={userInfo.image}
                   alt="profile_img"
                   style={{ width: "60px", borderRadius: "50%" }}
                 />

@@ -11,7 +11,6 @@ function ProgressBar() {
         document.documentElement.scrollHeight -
         document.documentElement.clientHeight;
       const scrollY: number = Math.floor((totalScroll / windowHeight) * 100);
-      // console.log("스크롤 잘 잡고 있음", scrollY);
       setScroll(scrollY);
     };
     window.addEventListener("scroll", handleScrollY);
