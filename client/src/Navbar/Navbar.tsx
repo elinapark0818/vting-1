@@ -9,7 +9,7 @@ import { RootState, setIsLogin, setUserInfo } from "../store/index";
 import axios from "axios";
 import ProgressBar from "../Info/ProgressBar";
 
-const serverURL: string = "http://localhost:8000";
+const serverURL: string = process.env.SERVER_URL as string;
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -164,7 +164,7 @@ function VotingBanner() {
           ></input>
         </div>
         <a
-          href={`http://vote.localhost:3000/${vtingCode}`}
+          href={`${process.env.CLIENT_URL}/${vtingCode}`}
           target="_blank"
           rel="noopener noreferrer"
         >
