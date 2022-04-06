@@ -40,8 +40,6 @@ const AlertTemplate = ({
 function NewVote() {
   const isLogin = useSelector((state: RootState) => state.isLogin);
 
-  console.log(isLogin);
-
   return (
     <AlertProvider template={AlertTemplate} {...options}>
       <div className="bodyContainer">

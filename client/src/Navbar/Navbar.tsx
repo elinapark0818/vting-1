@@ -115,9 +115,12 @@ function Navbar() {
                     <Link className="nav-link link" to="myPage">
                       MyPage
                     </Link>
-                  </div>
-                  <div className="nav-link link" onClick={() => handleLogout()}>
-                    SingOut
+                    <div
+                      className="nav-link link"
+                      onClick={() => handleLogout()}
+                    >
+                      SingOut
+                    </div>
                   </div>
                 </ul>
               </div>
@@ -157,7 +160,7 @@ function VotingBanner() {
           ></input>
         </div>
         <a
-          href={`${process.env.CLIENT_URL}/${vtingCode}`}
+          href={`${process.env.REACT_APP_CLIENT_URL}/${vtingCode}`}
           target="_blank"
           rel="noopener noreferrer"
         >

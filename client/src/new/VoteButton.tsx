@@ -31,8 +31,6 @@ function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
       if (isLogin.login) {
         const sendBody = loginVoteBody();
         const accessToken = localStorage.getItem("accessToken");
-        console.log(sendBody);
-        console.log(accessToken);
 
         try {
           const response = await axios.post(serverURL + "/vting", sendBody, {

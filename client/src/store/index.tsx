@@ -199,11 +199,10 @@ const getVoteSlice = createSlice({
       if (action.payload.format) state.format = action.payload.format;
       if (action.payload.type) state.type = action.payload.type;
       if (action.payload.items) state.items = action.payload.items;
-      if (action.payload.multiple) state.multiple = action.payload.multiple;
-      if (action.payload.manytimes) state.manytimes = action.payload.manytimes;
-      if (action.payload.undergoing)
-        state.undergoing = action.payload.undergoing;
-      if (action.payload.isPublic) state.isPublic = action.payload.isPublic;
+      state.multiple = action.payload.multiple || false;
+      state.manytimes = action.payload.manytimes || false;
+      state.undergoing = action.payload.undergoing || false;
+      state.isPublic = action.payload.isPublic || false;
       if (action.payload.created_at)
         state.created_at = action.payload.created_at;
       if (action.payload.overtime) state.overtime = action.payload.overtime;

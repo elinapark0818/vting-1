@@ -20,6 +20,8 @@ import axios from "axios";
 import Vresult from "./Vresult";
 import Counter from "../Voter/Counter";
 import vtCry from "../assets/vt_cry.png";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, patchGetVote, ResultVoteInfo } from "../store/index";
 
 const imgAlertContext = createContext<any | null>(null);
 
@@ -78,44 +80,115 @@ function V() {
   const [isNonUser, setIsNonUser] = useState(false);
   const [overtime, setOvertime] = useState(0);
   const [somethingWrong, setSometingWrong] = useState(false);
+  const dispatch = useDispatch();
 
   const serverURL = process.env.REACT_APP_SERVER_URL;
   const accessToken = localStorage.getItem("accessToken");
 
+  // useEffect(() => {
+  //   const voteResult = async () => {
+  //     try {
+  //       const response = await axios.get(`${serverURL}/vting/${code}`, {
+  //         headers: {
+  //           Authorization: accessToken ? `Bearer ${accessToken}` : "",
+  //           withCredentials: true,
+  //         },
+  //       });
+
+  //       // 응답 객체에 password가 있으면 -> 비회원 설문조사임
+  //       if (response.status === 200 && response.data.data.password) {
+  //         setVoteInfo(response.data.data);
+  //         setVoteTitle(response.data.data.title);
+  //         setToggleOngoing(response.data.data.undergoing);
+  //         setTogglePublic(response.data.data.isPublic);
+  //         setOvertime(response.data.overtime);
+  //         // 비회원 설문조사 모드 (비밀번호 입력창) 활성화
+  //         setIsNonUser(true);
+  //       } else if (response.status === 200 && response.data.data.user_id) {
+  //         setVoteInfo(response.data.data);
+  //         setVoteTitle(response.data.data.title);
+  //         setToggleOngoing(response.data.data.undergoing);
+  //         setTogglePublic(response.data.data.isPublic);
+  //         // sumCount가 있는 설문이면 가져오기
+  //         if (response.data.sumCount) setVoteSumCount(response.data.sumCount);
+  //       } else {
+  //         setSometingWrong(true);
+  //       }
+  //     } catch (e) {
+  //       setSometingWrong(true);
+  //     }
+  //   };
+
+  //   voteResult();
+  // }, []);
+
   useEffect(() => {
     const voteResult = async () => {
       try {
-        const response = await axios.get(`${serverURL}/vting/${code}`, {
+        const response = await axios.get(`${serverURL}/voter/${code}`, {
           headers: {
-            Authorization: accessToken ? `Bearer ${accessToken}` : "",
             withCredentials: true,
           },
         });
-
-        // 응답 객체에 password가 있으면 -> 비회원 설문조사임
-        if (response.status === 200 && response.data.data.password) {
-          setVoteInfo(response.data.data);
-          setVoteTitle(response.data.data.title);
-          setToggleOngoing(response.data.data.undergoing);
-          setTogglePublic(response.data.data.isPublic);
-          setOvertime(response.data.overtime);
-          // 비회원 설문조사 모드 (비밀번호 입력창) 활성화
-          setIsNonUser(true);
-        } else if (response.status === 200 && response.data.data.user_id) {
-          setVoteInfo(response.data.data);
-          setVoteTitle(response.data.data.title);
-          setToggleOngoing(response.data.data.undergoing);
-          setTogglePublic(response.data.data.isPublic);
-          // sumCount가 있는 설문이면 가져오기
-          if (response.data.sumCount) setVoteSumCount(response.data.sumCount);
-        } else {
-          setSometingWrong(true);
+        if (response.status === 200) {
+          let getVoteBody: ResultVoteInfo;
+          // 회원 생성한 설문일 때 body
+          if (response.data.user_data) {
+            getVoteBody = {
+              _id: response.data.vote_data._id,
+              user_id: response.data.user_data._user_id,
+              image: response.data.user_data.image,
+              url: response.data.vote_data.url,
+              title: response.data.vote_data.title,
+              format: response.data.vote_data.format,
+              type: response.data.vote_data.type,
+              items:
+                response.data.vote_data.items ||
+                response.data.vote_data.response,
+              multiple: response.data.vote_data.multiple,
+              manytimes: response.data.vote_data.manytimes,
+              undergoing: response.data.vote_data.undergoing,
+              isPublic: response.data.vote_data.isPublic,
+              created_at: response.data.vote_data.created_at,
+              sumCount: response.data.sumCount || 0,
+            };
+          } else {
+            getVoteBody = {
+              _id: response.data.vote_data._id,
+              url: response.data.vote_data.url,
+              title: response.data.vote_data.title,
+              format: response.data.vote_data.format,
+              type: response.data.vote_data.type,
+              items:
+                response.data.vote_data.items ||
+                response.data.vote_data.response,
+              multiple: response.data.vote_data.multiple,
+              manytimes: response.data.vote_data.manytimes,
+              undergoing: response.data.vote_data.undergoing,
+              created_at: response.data.vote_data.created_at,
+              overtime: response.data.overtime,
+              sumCount: response.data.sumCount || 0,
+            };
+          }
+          dispatch(patchGetVote(getVoteBody));
+          setVoteTitle(response.data.vote_data.title);
+          if (response.data.user_data) {
+            setVoteInfo(getVoteBody);
+            setVoteTitle(response.data.vote_data.title);
+            setToggleOngoing(response.data.vote_data.undergoing);
+            setTogglePublic(response.data.vote_data.isPublic);
+          } else {
+            // 비회원 설문임
+            // 1. 비회원모드 설정
+            setIsNonUser(true);
+            // 2. 남은시간 설정
+            setOvertime(response.data.overtime);
+          }
         }
       } catch (e) {
         setSometingWrong(true);
       }
     };
-
     voteResult();
   }, []);
 
@@ -332,6 +405,7 @@ function V() {
 }
 
 function Howto() {
+  const voteInfo = useSelector((state: RootState) => state.getVote);
   const [imgUrl, setImgUrl] = useState("");
   const { code } = useParams();
   const alert = useAlert();
@@ -396,6 +470,23 @@ function Howto() {
     });
   }
 
+  // 카카오톡 공유하기
+  const sendKakaoMessage = () => {
+    window.Kakao.Link.sendDefault({
+      objectType: "feed",
+      content: {
+        title: voteInfo.title,
+        description: "지금 당신의 소중한 의견을 반영해보세요!",
+        imageUrl:
+          "https://vtingimage.s3.ap-northeast-2.amazonaws.com/uploads/yof_logo-17.jpg",
+        link: {
+          webUrl: `https://vote.v-ting.net/${code}`,
+          mobileWebUrl: `https://vote.v-ting.net/${code}`,
+        },
+      },
+    });
+  };
+
   return (
     <>
       <div className="voteResultChild voteResultShort">
@@ -409,7 +500,7 @@ function Howto() {
           <div className="copy" onClick={() => shortUrlClip()}>
             <BiCopy />
           </div>
-          <div className="sns">
+          <div className="sns" onClick={() => sendKakaoMessage()}>
             <BiShareAlt />
           </div>
         </div>
@@ -426,7 +517,7 @@ function Howto() {
           <div className="copy" onClick={() => codeClip()}>
             <BiCopy />
           </div>
-          <div className="sns">
+          <div className="sns" onClick={() => sendKakaoMessage()}>
             <BiShareAlt />
           </div>
         </div>
@@ -445,7 +536,7 @@ function Howto() {
           <div className="copy" onClick={() => quBlobClip()}>
             <BiCopy />
           </div>
-          <div className="sns">
+          <div className="sns" onClick={() => sendKakaoMessage()}>
             <BiShareAlt />
           </div>
         </div>
