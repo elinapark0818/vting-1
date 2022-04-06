@@ -15,6 +15,9 @@ import store from "./store/index";
 
 import React, { useEffect, useState } from "react";
 import SignIn from "./SignIn/SignIn";
+import Footer from "./Info/Footer";
+import TopButton from "./Info/TopButton";
+
 // import Modal from "./Modal/Modal";
 
 // import NewVote from "./new/new";
@@ -56,6 +59,7 @@ function App() {
       <Provider store={store}>
         <BrowserRouter>
           <Navbar />
+          <TopButton />
 
           <Routes>
             <Route path="/" element={<Home />} />
@@ -75,6 +79,7 @@ function App() {
           </Routes>
           {/* <Modal /> */}
         </BrowserRouter>
+        <Footer />
       </Provider>
     );
   }

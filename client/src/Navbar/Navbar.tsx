@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, setIsLogin, setUserInfo } from "../store/index";
 import axios from "axios";
+import ProgressBar from "../Info/ProgressBar";
 
 const serverURL: string = "http://localhost:8000";
 
@@ -143,6 +144,7 @@ function Navbar() {
           </div>
         )}
       </div>
+      <ProgressBar />
     </div>
   );
 }
