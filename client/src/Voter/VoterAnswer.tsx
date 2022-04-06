@@ -15,7 +15,7 @@ interface Options {
   setAnswerMode: Dispatch<SetStateAction<boolean>>;
 }
 
-const serverURL = process.env.SERVER_URL;
+const serverURL = process.env.REACT_APP_SERVER_URL;
 
 function VoterAnswer({ setAnswerMode }: Props) {
   const voteData = useSelector((state: RootState) => state.getVote);

@@ -9,7 +9,7 @@ import { RootState, setIsLogin, setUserInfo } from "../store/index";
 import axios from "axios";
 import ProgressBar from "../Info/ProgressBar";
 
-const serverURL: string = process.env.SERVER_URL as string;
+const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
 function Navbar() {
   const dispatch = useDispatch();
