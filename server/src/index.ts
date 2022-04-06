@@ -7,6 +7,7 @@ import voteRoutes from "./routes/vote";
 import voterRoutes from "./routes/voter";
 import imageRoutes from "./routes/image";
 import allvotesRoutes from "./routes/allvotes";
+import oauthRoutes from "./routes/oauth";
 import cors from "cors";
 
 dotenv.config();
@@ -37,6 +38,7 @@ app.use("/vting", voteRoutes);
 app.use("/voter", voterRoutes);
 app.use("/image", imageRoutes);
 app.use("/allvotes", allvotesRoutes);
+app.use("/oauth", oauthRoutes);
 
 //db 연결 -> 되면 포트 열기
 export const MongoClient = require("mongodb").MongoClient;
