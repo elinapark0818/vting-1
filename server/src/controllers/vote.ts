@@ -8,10 +8,9 @@ import express, {
 import { request } from "http";
 import { read } from "fs";
 import { ObjectId } from "mongodb";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { off } from "process";
-import { ItemSelection } from "aws-sdk/clients/cloudfront";
+
 dotenv.config();
 
 interface VoteType {
@@ -33,7 +32,6 @@ export let VoteController = {
         test: true,
         created_at: new Date(),
       });
-      res.send("vote test!!");
     },
   },
 
