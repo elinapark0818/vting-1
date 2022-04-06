@@ -1,0 +1,40 @@
+@import "../index.scss";
+
+.topButton_wrap {
+  position: relative;
+  padding: 0;
+}
+
+.TopButton {
+  position: fixed;
+  cursor: pointer;
+  color: $vting-blue;
+  border: 5px solid $vting-blue;
+  background-color: transparent;
+  opacity: 0;
+  bottom: 3em;
+  right: 3em;
+  width: 5em;
+  height: 5em;
+  border-radius: 50%;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  transition: all 0.3s ease 0s;
+  outline: none;
+
+  &:hover {
+    transform: translateY(-2em);
+  }
+
+  &.active {
+    z-index: 10;
+    opacity: 1;
+  }
+
+  &:hover,
+  &:focus,
+  &:active {
+    outline: 0 none;
+  }
+}
