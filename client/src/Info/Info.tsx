@@ -3,8 +3,11 @@ import "./Info.scss";
 import Logo from "../assets/vt_logo_2.png";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useNavigate } from "react-router-dom";
 
 function Info() {
+  const navigate = useNavigate();
+
   useEffect(() => {
     AOS.init();
   });
@@ -84,6 +87,12 @@ function Info() {
             beatae harum hic autem consectetur temporibus reiciendis. Tempora
             quaerat amet nam.
           </div>
+        </div>
+
+        <div onClick={() => navigate("/new")} className="dashboard_btnWrap">
+          <button className="dashboard_plusBtn">
+            나만의 V-ting 만들러 가기!
+          </button>
         </div>
       </div>
     </div>
