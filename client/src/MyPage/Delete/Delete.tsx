@@ -60,11 +60,9 @@ function Delete() {
 
       if (res.status === 200) {
         localStorage.setItem("accessToken", res.data.data.accessToken);
-        console.log("회원탈퇴완료===", res.data.data);
         alert("회원탈퇴가 완료되었습니다.");
-        // ? 로그아웃처리
         dispatch(setIsLogin(false));
-        navigate("/");
+        navigate(-1);
       }
     } catch (err) {
       console.log(err);

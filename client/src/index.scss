@@ -40,11 +40,22 @@ $vting-gray: #dfe9f3;
     url("./assets/fonts/NotoSansKR-Bold.otf") format("truetype");
 }
 
+#root {
+  position: relative;
+  min-height: 100vh;
+}
+
 * {
   box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-family: "Noto Sans CJK KR";
+}
+
+html {
+  height: 100%;
 }
 
 @media (min-width: 1440px) {
@@ -62,4 +73,12 @@ $vting-gray: #dfe9f3;
       // background-color: white;
     }
   }
+}
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+body::-webkit-scrollbar {
+  display: none;
 }
