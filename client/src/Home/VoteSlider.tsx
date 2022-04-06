@@ -23,13 +23,12 @@ export default function VoteSlider() {
     },
   ]);
 
-  const serverURL: string = process.env.SERVER_URL as string;
+  const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
   useEffect(() => {
     async function getAllVotes() {
       const response = await axios.get(`${serverURL}/allvotes`);
       if (response.status === 200) {
         setAllVotes(response.data.vote);
-        console.log(response.data.vote);
       }
     }
     getAllVotes();
@@ -41,6 +40,8 @@ export default function VoteSlider() {
     speed: 0,
     slidesToShow: 5,
     slidesToScroll: 5,
+    swipeToSlide: true,
+    // slide: "a",
   };
 
   return (
@@ -48,20 +49,19 @@ export default function VoteSlider() {
       <div className="hotVotesContents">
         <Slider {...settings}>
           {allVotes.map((el, idx) => (
-            <a
-              href={`${process.env.CLIENT_URL}/${el.url}`}
-              key={idx}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <div className="hotVoteCard">
+            <div className="hotVoteCard" key={idx}>
+              <a
+                href={`${process.env.REACT_APP_CLIENT_URL}/${el.url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <div className="hotVoteCardTitle">{el.title}</div>
                 <div className="hotVoteCardFormat">
                   {setVoteFormat(el.format)}
                 </div>
                 <div className="hotVoteCardCount">{el.sumCount}명 참여 중</div>
-              </div>
-            </a>
+              </a>
+            </div>
           ))}
         </Slider>
       </div>

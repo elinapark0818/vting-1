@@ -3,6 +3,7 @@ import React, { useState, Dispatch, SetStateAction, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { patchGetVote, RootState } from "../store/index";
+import { useAlert } from "react-alert";
 
 interface Props {
   answerMode?: boolean;
@@ -15,7 +16,53 @@ interface Options {
   setAnswerMode: Dispatch<SetStateAction<boolean>>;
 }
 
-const serverURL = process.env.SERVER_URL;
+interface Item {
+  idx: number;
+  content: string;
+  clicked?: boolean;
+}
+
+const serverURL = process.env.REACT_APP_SERVER_URL;
+
+function setCookie(name: string, value: string, days: number) {
+  const exdate = new Date();
+  exdate.setDate(exdate.getDate() + days);
+  const cookie_value =
+    value + (days === null ? "" : "; expires=" + exdate.toUTCString());
+  document.cookie = name + "=" + cookie_value;
+}
+
+function getCookie(key: string) {
+  const cookie = document.cookie.split(";");
+  let x, y;
+  for (let i = 0; i < cookie.length; i++) {
+    x = cookie[i].substring(0, cookie[i].indexOf("="));
+    y = cookie[i].substring(cookie[i].indexOf("=") + 1);
+    x = x.replace(/^\s+|\s+$/g, "");
+    if (x === key) {
+      return y;
+    }
+  }
+}
+
+function addCookie(code: string) {
+  let items = getCookie("checked");
+  let expire = 3;
+  if (items) {
+    const itemArray = items.split(",");
+    itemArray.unshift(code);
+    items = itemArray.join(",");
+    setCookie("checked", items, expire);
+  } else {
+    setCookie("checked", code, expire);
+  }
+}
+
+function verrifyCookie(code: string) {
+  if (getCookie("checked")?.split(",").includes(code)) {
+    return true;
+  } else return false;
+}
 
 function VoterAnswer({ setAnswerMode }: Props) {
   const voteData = useSelector((state: RootState) => state.getVote);
@@ -34,13 +81,8 @@ function VoterAnswer({ setAnswerMode }: Props) {
   }
 }
 
-interface Item {
-  idx: number;
-  content: string;
-  clicked?: boolean;
-}
-
 function Bar({ multiple, setAnswerMode }: Options) {
+  const alert = useAlert();
   const voteData = useSelector((state: RootState) => state.getVote);
   const { code } = useParams();
   const [clicked, setClicked] = useState(-1);
@@ -86,6 +128,11 @@ function Bar({ multiple, setAnswerMode }: Options) {
       setTimeout(function () {
         setError(false);
       }, 1000);
+    } else if (
+      !voteData.manytimes &&
+      verrifyCookie(code ? code.toString() : "")
+    ) {
+      alert.show("이미 응답한 설문입니다.");
     } else {
       const reqBodyIdx = [];
       if (multipleMode) {
@@ -102,6 +149,9 @@ function Bar({ multiple, setAnswerMode }: Options) {
         });
         if (response.status === 200) {
           setAnswerMode(false);
+          if (code) {
+            addCookie(code.toString());
+          }
         }
       } catch (e) {
         console.log(e);
@@ -190,28 +240,36 @@ function Bar({ multiple, setAnswerMode }: Options) {
         }
         onClick={() => toResult()}
       >
-        응답 결정
+        의견 제출
       </div>
     </div>
   );
 }
 
 function Open({ setAnswerMode }: Options) {
+  const alert = useAlert();
   const { code } = useParams();
   const [subAnswer, setSubAnswer] = useState("");
   const [shake, setShake] = useState(false);
+  const voteData = useSelector((state: RootState) => state.getVote);
   async function toResult() {
     if (!subAnswer.length) {
       setShake(true);
       setTimeout(function () {
         setShake(false);
       }, 1000);
+    } else if (
+      !voteData.manytimes &&
+      verrifyCookie(code ? code.toString() : "")
+    ) {
+      alert.show("이미 응답한 설문입니다.");
     } else {
       try {
         const response = await axios.patch(`${serverURL}/voter/${code}`, {
           content: subAnswer,
         });
         if (response.status === 200) {
+          if (code) addCookie(code.toString());
           setAnswerMode(false);
         }
       } catch (e) {
@@ -241,7 +299,7 @@ function Open({ setAnswerMode }: Options) {
         }
         onClick={() => toResult()}
       >
-        응답 결정
+        의견 제출
       </div>
     </div>
   );

@@ -25,7 +25,7 @@ interface InOrUp {
   signIn: boolean;
 }
 
-const serverURL: string = process.env.SERVER_URL as string;
+const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
 function SignIn() {
   const dispatch = useDispatch();

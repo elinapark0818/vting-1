@@ -5,7 +5,7 @@ import { setIsLogin, RootState, setUserInfo } from "../../store/index";
 import { useNavigate } from "react-router-dom";
 import "./Delete.scss";
 
-const serverURL: string = process.env.SERVER_URL as string;
+const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
 function Delete() {
   const dispatch = useDispatch();

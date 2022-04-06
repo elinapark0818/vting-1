@@ -10,7 +10,7 @@ import axios from "axios";
 const clientId =
   "1090240452697-ld3bhcs5kd2v5m8c9iijrjtqckimgfbi.apps.googleusercontent.com";
 
-const serverURL: string = process.env.SERVER_URL as string;
+const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
 interface PropsType {
   inOrUp: string;

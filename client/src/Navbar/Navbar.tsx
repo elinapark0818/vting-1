@@ -9,7 +9,7 @@ import { RootState, setIsLogin, setUserInfo } from "../store/index";
 import axios from "axios";
 import ProgressBar from "../Info/ProgressBar";
 
-const serverURL: string = process.env.SERVER_URL as string;
+const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -122,9 +122,12 @@ function Navbar() {
                     <Link className="nav-link link" to="myPage">
                       MyPage
                     </Link>
-                  </div>
-                  <div className="nav-link link" onClick={() => handleLogout()}>
-                    SingOut
+                    <div
+                      className="nav-link link"
+                      onClick={() => handleLogout()}
+                    >
+                      SingOut
+                    </div>
                   </div>
                 </ul>
               </div>
@@ -164,7 +167,7 @@ function VotingBanner() {
           ></input>
         </div>
         <a
-          href={`${process.env.CLIENT_URL}/${vtingCode}`}
+          href={`${process.env.REACT_APP_CLIENT_URL}/${vtingCode}`}
           target="_blank"
           rel="noopener noreferrer"
         >
