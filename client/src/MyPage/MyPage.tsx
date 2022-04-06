@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Outlet } from "react-router-dom";
 // import { useSelector } from "react-redux";
 // import { RootState } from "../store/index";
@@ -21,7 +21,6 @@ function MyPage() {
   // todo: serverURL + "/user/check" { password: myPagePwd }, { withCredentials: true }
   const handlePasswordCheck = async () => {
     let accessToken = localStorage.getItem("accessToken");
-
     try {
       const res = await axios.post(
         `${serverURL}/user/check`,
@@ -46,6 +45,34 @@ function MyPage() {
       console.log(err);
     }
   };
+
+  // * OAuth 로 로그인할 경우, provider 가 있고, 비밀번호가 없다.
+  // todo: 비밀번호 확인 페이지로 가면 안된다.
+  // todo: 유저정보 조회시, provider가 있다면 비밀번호 확인 상태를 true 로 해주자
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      let accessToken = localStorage.getItem("accessToken");
+      try {
+        const res = await axios.get(`${serverURL}/user`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        });
+        if (res.status === 200) {
+          // Oauth
+          console.log(res.data.data.provider);
+          if (res.data.data.provider !== null) {
+            setCheckPwd(true);
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUserInfo();
+  }, []);
 
   return (
     <div className="myPage_container">
@@ -75,7 +102,6 @@ function MyPage() {
               name="password"
               onChange={myPage_onChangePassword}
             />
-            {!myPagePwd && <div>! 비밀번호를 입력하세요.</div>}
           </main>
           <div className="passwordCheck_btnWrap">
             <button className="check_btn" onClick={handlePasswordCheck}>
