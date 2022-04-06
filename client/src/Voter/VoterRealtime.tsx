@@ -57,7 +57,7 @@ function VoterRealtime() {
     if (items.length) {
       newWords = items.map((el: any) => ({
         text: el.content ? (el.content as string) : "",
-        value: el.count ? (el.count as number) : 10,
+        value: el.count ? (el.count as number) : 1,
       }));
     } else {
       newWords = [{ text: "", value: 0 }];
@@ -66,8 +66,11 @@ function VoterRealtime() {
   }, [items]);
 
   const fontSizes = [20, 50] as MinMaxPair;
+  const rotationAngles = [0, 90] as [number, number];
   const options = {
     fontSizes: fontSizes,
+    rotationAngles: rotationAngles,
+    rotations: 2,
   };
 
   // 처음 접속하면 응답 새로 받아오기
@@ -99,14 +102,21 @@ function VoterRealtime() {
   useInterval(async () => {
     const response = await axios.get(`${serverURL}/voter/${code}`);
     if (response.status === 200) {
-      dispatch(
-        patchGetVote({
-          title: response.data.vote_data.title,
-          items:
-            response.data.vote_data.items || response.data.vote_data.response,
-          sumCount: response.data.sumCount || 0,
-        })
-      );
+      if (
+        response.data.vote_data.format === "word" &&
+        response.data.sumCount === voteData.sumCount
+      ) {
+        // do nothing
+      } else {
+        dispatch(
+          patchGetVote({
+            title: response.data.vote_data.title,
+            items:
+              response.data.vote_data.items || response.data.vote_data.response,
+            sumCount: response.data.sumCount || 0,
+          })
+        );
+      }
     }
   }, 5000);
 

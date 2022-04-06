@@ -20,18 +20,13 @@ export let allVoteController = {
         .sort({ _id: -1 })
         .limit(20)
         .toArray();
-
+      // console.log(findAllVotes);
       const voteInfo = [];
 
       for (let vote of findAllVotes) {
-        console.log(vote);
-        if (
-          vote.format === "bar" ||
-          vote.format === "versus" ||
-          vote.format === "word"
-        ) {
+        if (vote.format === "bar" || vote.format === "versus") {
           let result = 0;
-          if (vote.items && vote.items.count) {
+          if (vote.items) {
             for (let item of vote.items) {
               result += item.count;
             }
@@ -59,8 +54,27 @@ export let allVoteController = {
             sumCount: result,
           };
           voteInfo.push(voteType2);
+        } else if (vote.format === "word") {
+          let result = 0;
+          if (vote.items) {
+            for (let item of vote.items) {
+              result += item.count + 1;
+            }
+          } else {
+            result = 0;
+          }
+          const voteType1: AnswerVoteType = {
+            title: vote.title,
+            format: vote.format,
+            created_at: vote.created_at,
+            url: vote.url,
+            sumCount: result,
+          };
+          voteInfo.push(voteType1);
         }
       }
+
+      // console.log(voteInfo);
 
       return res.status(200).json({
         vote: voteInfo,
