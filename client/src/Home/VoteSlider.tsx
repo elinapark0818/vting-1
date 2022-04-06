@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import axios from "axios";
 // react-slick (slider) 관련 css import
@@ -15,7 +14,6 @@ function setVoteFormat(format: string) {
 }
 
 export default function VoteSlider() {
-  const navigate = useNavigate();
   const [allVotes, setAllVotes] = useState([
     {
       title: "",
@@ -53,7 +51,7 @@ export default function VoteSlider() {
               href={`http://vote.localhost:3000/${el.url}`}
               key={idx}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               <div className="hotVoteCard">
                 <div className="hotVoteCardTitle">{el.title}</div>

@@ -1,7 +1,25 @@
 @import "../index.scss";
 
+.bannerCon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .nonUserBanner {
+    display: flex;
+    width: 100%;
+    height: 50px;
+    background-color: $vting-green;
+    z-index: 3;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
 .newVoteCon {
   // width: 1200px;
+  height: 100%;
   display: flex;
   flex-direction: row;
   min-height: 500px;

@@ -38,12 +38,26 @@ const AlertTemplate = ({
 };
 
 function NewVote() {
+  const isLogin = useSelector((state: RootState) => state.isLogin);
+
+  console.log(isLogin);
+
   return (
     <AlertProvider template={AlertTemplate} {...options}>
       <div className="bodyContainer">
-        <div className="newVoteCon">
-          <VoteFormats />
-          <VoteBody />
+        <div className="bannerCon">
+          {isLogin.login ? (
+            ""
+          ) : (
+            <div className="nonUserBanner">
+              잠깐! 로그인 하지 않은 상태로 생성한 설문은 1시간 후 사라집니다.
+              지금 무료 가입 후 나의 설문을 체계적으로 관리해보세요!
+            </div>
+          )}
+          <div className="newVoteCon">
+            <VoteFormats />
+            <VoteBody />
+          </div>
         </div>
       </div>
     </AlertProvider>
