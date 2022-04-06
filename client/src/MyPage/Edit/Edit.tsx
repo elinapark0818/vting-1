@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Edit.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, setUserInfo } from "../../store/index";
@@ -14,6 +14,37 @@ const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 function Edit() {
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.userInfo);
+
+  const [oauthUser, setOauthUser] = useState(false);
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      let accessToken = localStorage.getItem("accessToken");
+      try {
+        const res = await axios
+          .get(`${serverURL}/user`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              withCredentials: true,
+            },
+          })
+          .then((res) => {
+            if (res.data.data.provider === undefined) {
+              setOauthUser(false);
+              console.log("oauth유저인지", oauthUser);
+              // Oauth
+              console.log("userInfo===", userInfo);
+              console.log("프로바이더", res.data.data.provider);
+            } else {
+              setOauthUser(true);
+            }
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUserInfo();
+  }, []);
 
   const [patchUserInfo, setPatchUserInfo] = useState<PatchUser>({
     name: "",
@@ -88,27 +119,41 @@ function Edit() {
           </div>
         </div>
 
-        <div className="edit_userInfo">
-          <div className="edit_nickname">
-            <h3>닉네임 </h3>
-            <input
-              name="name"
-              onChange={edit_onChangeName}
-              type="text"
-              placeholder={userInfo.nickname}
-            />
+        {oauthUser ? (
+          <div className="edit_userInfo">
+            <div className="edit_nickname">
+              <h3>닉네임 </h3>
+              <input
+                name="name"
+                onChange={edit_onChangeName}
+                type="text"
+                placeholder={userInfo.nickname}
+              />
+            </div>
           </div>
+        ) : (
+          <div className="edit_userInfo">
+            <div className="edit_nickname">
+              <h3>닉네임 </h3>
+              <input
+                name="name"
+                onChange={edit_onChangeName}
+                type="text"
+                placeholder={userInfo.nickname}
+              />
+            </div>
 
-          <div className="edit_password">
-            <h3>비밀번호</h3>
-            <input
-              type="password"
-              name="password"
-              onChange={edit_onChangePassword}
-              placeholder="변경하실 비밀번호를 입력해주세요."
-            />
+            <div className="edit_password">
+              <h3>비밀번호</h3>
+              <input
+                type="password"
+                name="password"
+                onChange={edit_onChangePassword}
+                placeholder="변경하실 비밀번호를 입력해주세요."
+              />
+            </div>
           </div>
-        </div>
+        )}
       </main>
       <div className="edit_btnWrap">
         <button className="edit_btn" onClick={() => EditUserInfo()}>

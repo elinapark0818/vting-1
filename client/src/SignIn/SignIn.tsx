@@ -100,8 +100,10 @@ function SignIn() {
               _id: userInfo._id,
               nickname: userInfo.nickname,
               email: userInfo.user_id,
+              image: userInfo.image,
             })
           );
+          console.log("이미지", userInfo.image);
         }
       })
       .catch((err) => {
@@ -145,6 +147,7 @@ function SignIn() {
                       _id: userInfo._id,
                       nickname: userInfo.nickname,
                       email: userInfo.user_id,
+                      image: userInfo.image,
                     })
                   );
                   alert("회원가입이 완료되었습니다.");
