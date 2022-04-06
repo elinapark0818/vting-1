@@ -289,6 +289,7 @@ export let UserController = {
                 user_id: findUser.user_id,
                 image: findUser.image,
                 voteCount: countUserVote,
+                provider: findUser.provider,
               },
             });
           } else if (req.query) {

@@ -73,7 +73,7 @@ function VoterResult() {
     if (code) setResult(true);
   }, [code]);
 
-  const serverURL = process.env.SERVER_URL;
+  const serverURL = process.env.REACT_APP_SERVER_URL;
 
   // 접속 시 해당 설문 정보 가져오기
   useEffect(() => {

@@ -79,7 +79,7 @@ function V() {
   const [overtime, setOvertime] = useState(0);
   const [somethingWrong, setSometingWrong] = useState(false);
 
-  const serverURL = process.env.SERVER_URL;
+  const serverURL = process.env.REACT_APP_SERVER_URL;
   const accessToken = localStorage.getItem("accessToken");
 
   useEffect(() => {

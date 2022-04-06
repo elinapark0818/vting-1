@@ -72,7 +72,7 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
   const [newVotePasswordRe, setNewVotePasswordRe] = useState("");
   const [isMatch, setIsMatch] = useState(true);
   const dispatch = useDispatch();
-  const serverURL = process.env.SERVER_URL;
+  const serverURL = process.env.REACT_APP_SERVER_URL;
 
   useEffect(() => {
     if (newVotePassword === newVotePasswordRe) {
