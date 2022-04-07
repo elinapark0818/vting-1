@@ -154,7 +154,7 @@ function Bar({ multiple, setAnswerMode }: Options) {
           }
         }
       } catch (e) {
-        console.log(e);
+        alert.show("네트워크 에러 발생. 잠시 후 다시 시도해주세요.");
       }
     }
   }
@@ -273,7 +273,7 @@ function Open({ setAnswerMode }: Options) {
           setAnswerMode(false);
         }
       } catch (e) {
-        console.log(e);
+        alert.show("네트워크 에러 발생. 잠시 후 다시 시도해주세요.");
       }
     }
   }

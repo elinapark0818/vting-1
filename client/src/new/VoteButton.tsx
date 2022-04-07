@@ -51,7 +51,9 @@ function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
             navigate(`/v/${response.data.data.url}`);
           }
         } catch (e) {
-          console.log(e);
+          return (
+            <div>설문 생성에 실패했습니다. 잠시 후 다시 시도해주세요.</div>
+          );
         }
       } else if (!isAlertOpen) {
         alert.show();
@@ -101,8 +103,12 @@ function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
         };
         return sendVoteBody;
       default:
-        console.log("오류 발생 : 투표 포맷이 선택되지 않음");
-        return;
+        return (
+          <div>
+            설문 생성에 실패했습니다. <br />
+            다시 한 번 시도해주세요.
+          </div>
+        );
     }
   };
 

@@ -82,6 +82,7 @@ function V() {
   const voteInfo = useSelector((state: RootState) => state.getVote);
   const votePass = voteInfo.password;
   const dispatch = useDispatch();
+  const alert = useAlert();
 
   const serverURL = process.env.REACT_APP_SERVER_URL;
   const accessToken = localStorage.getItem("accessToken");
@@ -171,7 +172,7 @@ function V() {
         setTogglePublic(response.data.isPublic);
       }
     } catch (e) {
-      console.log(e);
+      alert.show("네트워크 오류 발생. 잠시 후 다시 시도해주세요.");
     }
   };
 
@@ -194,7 +195,7 @@ function V() {
           setToggleOngoing(response.data.isActive);
         }
       } catch (e) {
-        console.log(e);
+        alert.show("네트워크 오류 발생. 잠시 후 다시 시도해주세요.");
       }
     } else {
       try {
@@ -215,7 +216,7 @@ function V() {
           setToggleOngoing(response.data.isActive);
         }
       } catch (e) {
-        console.log(e);
+        alert.show("네트워크 오류 발생. 잠시 후 다시 시도해주세요.");
       }
     }
   };

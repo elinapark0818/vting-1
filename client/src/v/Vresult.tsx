@@ -93,7 +93,13 @@ function Vresult() {
           );
         }
       } catch (e) {
-        console.log(e);
+        dispatch(
+          patchGetVote({
+            title: "",
+            items: [],
+            format: "",
+          })
+        );
       }
     }
     getAnswers();
@@ -246,7 +252,7 @@ function Vresult() {
     case "word":
       return <ReactWordcloud words={words} options={options} />;
     default:
-      return <div>데이터 불러오기 실패</div>;
+      return <div>설문 정보를 불러올 수 없습니다.</div>;
   }
 }
 
