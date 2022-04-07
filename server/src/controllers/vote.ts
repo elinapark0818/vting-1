@@ -35,8 +35,6 @@ export let VoteController = {
     },
   },
 
-  // 현재 보트 생성(post) 요청 후 url 데이터만 client에서 사용하고 있음
-  // TODO: refactoring시 보내는 데이터 수정할 것
   create: {
     post: async (req: Request & { body: any }, res: Response) => {
       let {
