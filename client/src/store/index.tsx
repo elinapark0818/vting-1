@@ -199,15 +199,32 @@ const getVoteSlice = createSlice({
       if (action.payload.format) state.format = action.payload.format;
       if (action.payload.type) state.type = action.payload.type;
       if (action.payload.items) state.items = action.payload.items;
-      if (action.payload.multiple) state.multiple = action.payload.multiple;
-      if (action.payload.manytimes) state.manytimes = action.payload.manytimes;
-      if (action.payload.undergoing)
-        state.undergoing = action.payload.undergoing;
-      if (action.payload.isPublic) state.isPublic = action.payload.isPublic;
+      state.multiple = action.payload.multiple || false;
+      state.manytimes = action.payload.manytimes || false;
+      state.undergoing = action.payload.undergoing || false;
+      state.isPublic = action.payload.isPublic || false;
       if (action.payload.created_at)
         state.created_at = action.payload.created_at;
       if (action.payload.overtime) state.overtime = action.payload.overtime;
       if (action.payload.sumCount) state.sumCount = action.payload.sumCount;
+    },
+  },
+});
+
+export interface VoteAlert {
+  isOn: boolean;
+}
+
+const voteAlertInitialState = {
+  isOn: false,
+};
+
+const voteAlert = createSlice({
+  name: "voteAlert",
+  initialState: voteAlertInitialState,
+  reducers: {
+    setVoteAlert(state, action: PayloadAction<boolean>) {
+      state.isOn = action.payload;
     },
   },
 });
@@ -220,19 +237,17 @@ const store = configureStore({
     makeNewVote: newVoteSlice.reducer,
     getVote: getVoteSlice.reducer,
     userInfo: UserInfoSlice.reducer,
+    voteAlert: voteAlert.reducer,
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 
 export const { setIsLogin } = isLogInSlice.actions;
-
 export const { setUserInfo } = UserInfoSlice.actions;
-
 export const { setIsModalOpen } = isModalSlice.actions;
-
 export const { patchGetVote } = getVoteSlice.actions;
-
+export const { setVoteAlert } = voteAlert.actions;
 export const {
   setFormat,
   setTitle,

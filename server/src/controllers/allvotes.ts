@@ -20,7 +20,6 @@ export let allVoteController = {
         .sort({ _id: -1 })
         .limit(20)
         .toArray();
-      // console.log(findAllVotes);
       const voteInfo = [];
 
       for (let vote of findAllVotes) {
@@ -73,8 +72,6 @@ export let allVoteController = {
           voteInfo.push(voteType1);
         }
       }
-
-      // console.log(voteInfo);
 
       return res.status(200).json({
         vote: voteInfo,

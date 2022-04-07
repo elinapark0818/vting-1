@@ -105,6 +105,7 @@ function MyPage() {
           </main>
         </div>
       )}
+
     </div>
   );
 }

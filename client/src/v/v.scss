@@ -1,6 +1,7 @@
 @import "../index.scss";
 
 .voteResultPageCon {
+  padding-bottom: 300px;
   width: 1200px;
   .voteResultPage {
     border: 1px solid $vting-gray;
@@ -310,6 +311,7 @@
     .options {
       display: flex;
       flex-direction: row;
+      align-items: center;
       .toggleBtn {
         margin-left: 10px;
         background-color: $vting-gray;
@@ -411,5 +413,20 @@
   }
   .vs {
     color: $vting-orange;
+  }
+}
+
+@media (max-width: 1439px) {
+  .voteResultPageCon {
+    min-width: 960px;
+    .voteResultContent {
+      .voteResultChild {
+        align-items: center;
+        .voteResultChildContent {
+          width: 250px;
+          height: 150px;
+        }
+      }
+    }
   }
 }

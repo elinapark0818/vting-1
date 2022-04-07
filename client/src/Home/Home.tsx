@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import axios from "axios";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/index";
 import "./Home.scss";
 import HotVote from "./HotVote";
 import Info from "../Info/Info";
+import Loading from "../Loading/Loading";
 
 axios.defaults.withCredentials = true;
 

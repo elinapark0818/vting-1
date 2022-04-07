@@ -120,8 +120,12 @@ function Bar() {
             className="VoteAnswerInput"
             value={typedItem}
             placeholder="이곳에 항목을 입력하고 + 버튼으로 추가하세요."
+            onBlur={() => plusTriger()}
             onChange={(e) => {
               setTypedItem(e.target.value);
+            }}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") plusTriger();
             }}
           ></input>
           <div className="plusItem" onClick={() => plusTriger()}>

@@ -86,14 +86,20 @@ function Vresult() {
               items:
                 response.data.vote_data.items ||
                 response.data.vote_data.response,
-              sumCount: response.data.sumCount || 0,
+              sumCount: response.data.vote_data.sumCount || 0,
               format: response.data.vote_data.format,
               type: response.data.vote_data.type || "",
             })
           );
         }
       } catch (e) {
-        console.log(e);
+        dispatch(
+          patchGetVote({
+            title: "",
+            items: [],
+            format: "",
+          })
+        );
       }
     }
     getAnswers();
@@ -105,7 +111,7 @@ function Vresult() {
     if (response.status === 200) {
       if (
         response.data.vote_data.format === "word" &&
-        response.data.sumCount === voteData.sumCount
+        response.data.vote_data.sumCount === voteData.sumCount
       ) {
         // do nothing
       } else {
@@ -114,7 +120,7 @@ function Vresult() {
             title: response.data.vote_data.title,
             items:
               response.data.vote_data.items || response.data.vote_data.response,
-            sumCount: response.data.sumCount || 0,
+            sumCount: response.data.vote_data.sumCount || 0,
           })
         );
       }
@@ -246,7 +252,7 @@ function Vresult() {
     case "word":
       return <ReactWordcloud words={words} options={options} />;
     default:
-      return <div>데이터 불러오기 실패</div>;
+      return <div>설문 정보를 불러올 수 없습니다.</div>;
   }
 }
 

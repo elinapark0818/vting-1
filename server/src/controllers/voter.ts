@@ -39,21 +39,21 @@ export let VoterController = {
             .collection("user")
             .findOne({ user_id: memberVoteData.user_id });
 
-          if (memberVoteData.format !== "open") {
-            let sumCount: number = 0;
-            for (let el of memberVoteData.items) {
-              sumCount += el.count;
-            }
-            return res.status(200).json({
-              vote_data: memberVoteData,
-              user_data: userData,
-              sumCount,
-            });
-          } else {
-            return res
-              .status(200)
-              .json({ vote_data: memberVoteData, user_data: userData });
-          }
+          // if (memberVoteData.format !== "open") {
+          //   let sumCount: number = 0;
+          //   for (let el of memberVoteData.items) {
+          //     sumCount += el.count;
+          //   }
+          //   return res.status(200).json({
+          //     vote_data: memberVoteData,
+          //     user_data: userData,
+          //     sumCount,
+          //   });
+          // } else {
+          return res
+            .status(200)
+            .json({ vote_data: memberVoteData, user_data: userData });
+          // }
         } else if (!memberVoteData) {
           const nonmemberVoteData = await db
             .collection("non-member")
@@ -67,19 +67,19 @@ export let VoterController = {
             60;
           overtime = Math.round(overtime);
 
-          if (nonmemberVoteData.format !== "open") {
-            let sumCount: number = 0;
-            for (let el of nonmemberVoteData.items) {
-              sumCount += el.count;
-            }
-            return res
-              .status(200)
-              .json({ vote_data: nonmemberVoteData, sumCount, overtime });
-          } else {
-            return res
-              .status(200)
-              .json({ vote_data: nonmemberVoteData, overtime });
-          }
+          // if (nonmemberVoteData.format !== "open") {
+          //   let sumCount: number = 0;
+          //   for (let el of nonmemberVoteData.items) {
+          //     sumCount += el.count;
+          //   }
+          //   return res
+          //     .status(200)
+          //     .json({ vote_data: nonmemberVoteData, sumCount, overtime });
+          // } else {
+          return res
+            .status(200)
+            .json({ vote_data: nonmemberVoteData, overtime });
+          // }
         } else {
           return res.status(400).json({ message: "Bad Request" });
         }
@@ -121,6 +121,18 @@ export let VoterController = {
               }
             }
 
+            // sumCount update
+            let sumCount = findMemberVote.sumCount;
+            for (let el of findMemberVote.items) {
+              sumCount += el.count;
+            }
+            await db
+              .collection("vote")
+              .updateOne(
+                { url: Number(req.params.accessCode) },
+                { $set: { sumCount } }
+              );
+
             return res.status(200).json({ message: "Successfully reflected" });
 
             // FIXME: format이 'open' 일때 => response 추가
@@ -141,7 +153,7 @@ export let VoterController = {
 
             return res.status(200).json({ message: "Successfully reflected" });
 
-            // FIXME: format이 'open' 일때 => items에 추가 또는 data가 있을때 items.idx count +1
+            // FIXME: format이 'word' 일때 => items에 추가 또는 data가 있을때 items.idx count +1
           } else if (findMemberVote.format === "word") {
             const findContent = await db.collection("vote").findOne({
               url: Number(req.params.accessCode),
@@ -158,10 +170,22 @@ export let VoterController = {
                 { $inc: { "items.$.count": 1 } }
               );
 
+              // sumCount update
+              let sumCount = findContent.sumCount;
+              for (let el of findContent.items) {
+                sumCount += el.count;
+              }
+              await db
+                .collection("vote")
+                .updateOne(
+                  { url: Number(req.params.accessCode) },
+                  { $set: { sumCount } }
+                );
+
               return res
                 .status(200)
                 .json({ message: "Successfully reflected" });
-              // 작성된 content와 동일한 content가 없을때 => push content
+              // format: 'open'작성된 content와 동일한 content가 없을때 => push content
             } else {
               await db.collection("vote").updateOne(
                 { url: Number(req.params.accessCode) },
@@ -210,6 +234,18 @@ export let VoterController = {
               }
             }
 
+            // sumCount update
+            let sumCount = findNonMemberVote.sumCount;
+            for (let el of findNonMemberVote.items) {
+              sumCount += el.count;
+            }
+            await db
+              .collection("vote")
+              .updateOne(
+                { url: Number(req.params.accessCode) },
+                { $set: { sumCount } }
+              );
+
             return res.status(200).json({ message: "Successfully reflected" });
 
             // format이 'open' 일때 => response 추가
@@ -246,6 +282,18 @@ export let VoterController = {
                 },
                 { $inc: { "items.$.count": 1 } }
               );
+
+              // sumCount update
+              let sumCount = findNonMemberVote.sumCount;
+              for (let el of findNonMemberVote.items) {
+                sumCount += el.count;
+              }
+              await db
+                .collection("vote")
+                .updateOne(
+                  { url: Number(req.params.accessCode) },
+                  { $set: { sumCount } }
+                );
 
               return res
                 .status(200)

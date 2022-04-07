@@ -85,14 +85,20 @@ function VoterRealtime() {
               items:
                 response.data.vote_data.items ||
                 response.data.vote_data.response,
-              sumCount: response.data.sumCount || 0,
+              sumCount: response.data.vote_data.sumCount || 0,
               format: response.data.vote_data.format,
               type: response.data.vote_data.type || "",
             })
           );
         }
       } catch (e) {
-        console.log(e);
+        dispatch(
+          patchGetVote({
+            title: "",
+            items: [],
+            format: "",
+          })
+        );
       }
     }
     getAnswers();
@@ -104,7 +110,7 @@ function VoterRealtime() {
     if (response.status === 200) {
       if (
         response.data.vote_data.format === "word" &&
-        response.data.sumCount === voteData.sumCount
+        response.data.vote_data.sumCount === voteData.sumCount
       ) {
         // do nothing
       } else {
@@ -113,7 +119,7 @@ function VoterRealtime() {
             title: response.data.vote_data.title,
             items:
               response.data.vote_data.items || response.data.vote_data.response,
-            sumCount: response.data.sumCount || 0,
+            sumCount: response.data.vote_data.sumCount || 0,
           })
         );
       }
@@ -243,7 +249,12 @@ function VoterRealtime() {
     case "word":
       return <ReactWordcloud words={words} options={options} />;
     default:
-      return <div>데이터 불러오기 실패</div>;
+      return (
+        <div>
+          데이터를 불러오는데 실패했습니다. <br />
+          잠시 후 다시 시도해주세요.
+        </div>
+      );
   }
 }
 

@@ -12,12 +12,12 @@ interface Props {
 }
 
 function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
+  const isAlertOpen = useSelector((state: RootState) => state.voteAlert.isOn);
   const navigate = useNavigate();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const isLogin = useSelector((state: RootState) => state.isLogin);
   const newVote = useSelector((state: RootState) => state.makeNewVote);
   const newVoteFormat = newVote.format;
-
   const alert = useAlert();
   const dispatch = useDispatch();
 
@@ -31,8 +31,6 @@ function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
       if (isLogin.login) {
         const sendBody = loginVoteBody();
         const accessToken = localStorage.getItem("accessToken");
-        console.log(sendBody);
-        console.log(accessToken);
 
         try {
           const response = await axios.post(serverURL + "/vting", sendBody, {
@@ -42,21 +40,22 @@ function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
             },
           });
           if (response.status === 201) {
-            console.log(response.data);
             dispatch(setRestart("delete all!!"));
             dispatch(
               patchGetVote({
                 title: response.data.data.title,
                 items: response.data.data.items || response.data.data.response,
-                sumCount: response.data.sumCount || 0,
+                sumCount: response.data.data.sumCount || 0,
               })
             );
             navigate(`/v/${response.data.data.url}`);
           }
         } catch (e) {
-          console.log(e);
+          return (
+            <div>설문 생성에 실패했습니다. 잠시 후 다시 시도해주세요.</div>
+          );
         }
-      } else {
+      } else if (!isAlertOpen) {
         alert.show();
       }
     }
@@ -104,8 +103,12 @@ function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
         };
         return sendVoteBody;
       default:
-        console.log("오류 발생 : 투표 포맷이 선택되지 않음");
-        return;
+        return (
+          <div>
+            설문 생성에 실패했습니다. <br />
+            다시 한 번 시도해주세요.
+          </div>
+        );
     }
   };
 

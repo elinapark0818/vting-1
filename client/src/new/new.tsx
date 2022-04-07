@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { patchGetVote, RootState, setRestart } from "../store/index";
+import {
+  patchGetVote,
+  RootState,
+  setRestart,
+  setVoteAlert,
+} from "../store/index";
 import VoteBody from "./VoteBody";
 import VoteFormats from "./VoteFormats";
 import axios from "axios";
@@ -40,8 +45,6 @@ const AlertTemplate = ({
 function NewVote() {
   const isLogin = useSelector((state: RootState) => state.isLogin);
 
-  console.log(isLogin);
-
   return (
     <AlertProvider template={AlertTemplate} {...options}>
       <div className="bodyContainer">
@@ -75,6 +78,10 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
   const serverURL = process.env.REACT_APP_SERVER_URL;
 
   useEffect(() => {
+    dispatch(setVoteAlert(true));
+  }, []);
+
+  useEffect(() => {
     if (newVotePassword === newVotePasswordRe) {
       setIsMatch(true);
     } else {
@@ -97,14 +104,21 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
           patchGetVote({
             title: response.data.data.title,
             items: response.data.data.items || response.data.data.response,
-            sumCount: response.data.sumCount || 0,
+            sumCount: response.data.data.sumCount || 0,
           })
         );
         navigate(`/v/${response.data.data.url}`);
+        dispatch(setVoteAlert(false));
         close();
       }
     } catch (e) {
-      console.log(e);
+      return (
+        <div>
+          설문 생성에 실패했습니다.
+          <br />
+          잠시 후 다시 확인해주세요.
+        </div>
+      );
     }
   };
 
@@ -150,9 +164,13 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
         };
         return sendVoteBody;
       default:
-        console.log("오류 발생 : 투표 포맷이 선택되지 않음");
-        return;
+        return <>"오류 발생 : 투표 포맷이 선택되지 않음"</>;
     }
+  };
+
+  const closeAlertHandler = () => {
+    dispatch(setVoteAlert(false));
+    close();
   };
 
   return (
@@ -203,12 +221,12 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
           </div>
         </div>
       </div>
-      <button className="vtingButton" onClick={close}>
+      <button className="vtingButton" onClick={closeAlertHandler}>
         생성 화면으로 돌아가기
       </button>
       <button
         className={isMatch ? "vtingButton" : "vtingButtonGray"}
-        onClick={() => sendNewVote()}
+        onClick={sendNewVote}
       >
         설문 생성 완료
       </button>

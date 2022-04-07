@@ -5,6 +5,7 @@ import axios from "axios";
 import "../../node_modules/slick-carousel/slick/slick.css";
 import "../../node_modules/slick-carousel/slick/slick-theme.css";
 import "./HotVote.scss";
+import Loading from "../Loading/Loading";
 
 function setVoteFormat(format: string) {
   if (format === "bar") return "막대그래프형";
@@ -14,6 +15,8 @@ function setVoteFormat(format: string) {
 }
 
 export default function VoteSlider() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [errMode, setErrMode] = useState(false);
   const [allVotes, setAllVotes] = useState([
     {
       title: "",
@@ -23,14 +26,18 @@ export default function VoteSlider() {
     },
   ]);
 
-  const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
+  const serverURL: string = process.env.SERVER_URL as string;
   useEffect(() => {
     async function getAllVotes() {
-      const response = await axios.get(`${serverURL}/allvotes`);
-      if (response.status === 200) {
-        setAllVotes(response.data.vote);
-        console.log(response.data.vote);
+      try {
+        const response = await axios.get(`${serverURL}/allvotes`);
+        if (response.status === 200) {
+          setAllVotes(response.data.vote);
+        }
+      } catch (e) {
+        setErrMode(true);
       }
+      setIsLoading(false);
     }
     getAllVotes();
   }, []);
@@ -41,30 +48,42 @@ export default function VoteSlider() {
     speed: 0,
     slidesToShow: 5,
     slidesToScroll: 5,
+    swipeToSlide: true,
   };
 
   return (
     <div className="hotVotes">
-      <div className="hotVotesContents">
-        <Slider {...settings}>
-          {allVotes.map((el, idx) => (
-            <a
-              href={`${process.env.CLIENT_URL}/${el.url}`}
-              key={idx}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <div className="hotVoteCard">
-                <div className="hotVoteCardTitle">{el.title}</div>
-                <div className="hotVoteCardFormat">
-                  {setVoteFormat(el.format)}
-                </div>
-                <div className="hotVoteCardCount">{el.sumCount}명 참여 중</div>
+      {isLoading ? (
+        <Loading />
+      ) : errMode ? (
+        <div className="Error">
+          최근 설문을 불러오는데 실패했습니다.
+          <br />
+          잠시 후 다시 시도해주세요.
+        </div>
+      ) : (
+        <div className="hotVotesContents">
+          <Slider {...settings}>
+            {allVotes.map((el, idx) => (
+              <div className="hotVoteCard" key={idx}>
+                <a
+                  href={`${process.env.REACT_APP_CLIENT_URL}/${el.url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="hotVoteCardTitle">{el.title}</div>
+                  <div className="hotVoteCardFormat">
+                    {setVoteFormat(el.format)}
+                  </div>
+                  <div className="hotVoteCardCount">
+                    {el.sumCount}명 참여 중
+                  </div>
+                </a>
               </div>
-            </a>
-          ))}
-        </Slider>
-      </div>
+            ))}
+          </Slider>
+        </div>
+      )}
     </div>
   );
 }

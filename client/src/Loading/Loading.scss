@@ -1,0 +1,15 @@
+.loading {
+  width: 180px;
+  img {
+    width: 80%;
+    animation: rotation 2s ease-in-out infinite;
+  }
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}

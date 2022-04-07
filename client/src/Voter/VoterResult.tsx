@@ -9,6 +9,7 @@ import Counter from "./Counter";
 import VoterRealtime from "./VoterRealtime";
 import { useSelector, useDispatch } from "react-redux";
 import { patchGetVote, RootState } from "../store/index";
+import Loading from "../Loading/Loading";
 
 const adj = [
   "사랑스러운",
@@ -64,7 +65,7 @@ function VoterResult() {
   const [errorMode, setErrorMode] = useState(false);
   const [nonUser, setNonUser] = useState(false);
   const [overtime, setOvertime] = useState(60);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   // const [voteData, setVoteData] = useState(dummVoteData);
   const dispatch = useDispatch();
   const voteData = useSelector((state: RootState) => state.getVote);
@@ -85,7 +86,6 @@ function VoterResult() {
           },
         });
         if (response.status === 200) {
-          setIsLoading(true);
           let getVoteBody;
           // 회원 생성한 설문일 때 body
           if (response.data.user_data) {
@@ -105,7 +105,7 @@ function VoterResult() {
               undergoing: response.data.vote_data.undergoing,
               isPublic: response.data.vote_data.isPublic,
               created_at: response.data.vote_data.created_at,
-              sumCount: response.data.sumCount || 0,
+              sumCount: response.data.vote_data.sumCount || 0,
             };
           } else {
             getVoteBody = {
@@ -122,11 +122,12 @@ function VoterResult() {
               undergoing: response.data.vote_data.undergoing,
               created_at: response.data.vote_data.created_at,
               overtime: response.data.overtime,
-              sumCount: response.data.sumCount || 0,
+              sumCount: response.data.vote_data.sumCount || 0,
             };
           }
           dispatch(patchGetVote(getVoteBody));
           setTitle(response.data.vote_data.title);
+          if (!response.data.vote_data.undergoing) setErrorMode(true);
           if (response.data.user_data) {
             setNickName(response.data.user_data.nickname);
             if (
@@ -144,7 +145,7 @@ function VoterResult() {
           setIsLoading(false);
         }
       } catch (e) {
-        console.log(e);
+        setIsLoading(false);
         setErrorMode(true);
       }
     };
@@ -153,31 +154,42 @@ function VoterResult() {
 
   return (
     <div className="votingCon">
-      {errorMode ? (
+      {isLoading ? (
+        <Loading />
+      ) : errorMode ? (
         <>
           <div className="voteResultContent">
             <div className="errorCon">
               <div className="imgCon">
                 <img src={vtCry} alt="something wrong" />
               </div>
-              <div>
+              <div className="errorTextCon">
                 <span className="errorTitle">
                   Ooooops... Something went wrong.
                 </span>
-                <br />
-                해당 코드를 가진 설문이 없거나 만료된 설문입니다.
-                <br />
-                설문 코드를 다시 확인해주시기 바랍니다. <br />
+                <div className="errorSubtitle">
+                  해당 코드를 가진 설문을 찾을 수 없습니다.
+                </div>
+                <div className="errorDescribe">
+                  1. 설문 코드가 정확한지 다시 한 번 확인해주세요. <br />
+                  2. 만료되거나 중지된 설문이 아닌지 확인해주세요. <br />
+                  3. 일시적인 네트워크 에러일 수 있으니 잠시 후 다시
+                  시도해주세요.
+                </div>
+                <div className="errorMailto">
+                  에러가 지속된다면, 해당 접속 코드를 vting.yof@gmail.com 으로
+                  보내주세요.
+                  <br />
+                  Vting 서비스를 유지 보수하는데에 큰 도움이 됩니다!
+                </div>
               </div>
             </div>
           </div>
         </>
-      ) : isLoading ? (
-        <>로딩중...</>
       ) : (
         <>
           <div className="votingHeader">
-            <div className="votingProfile">
+            <div className="votingProfile" data-aos="flip-left">
               <div className="votingProfileImg">
                 <img src={profileImg ? profileImg : logo} alt="profile" />
               </div>

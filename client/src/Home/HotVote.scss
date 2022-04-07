@@ -1,11 +1,30 @@
 @import "../index.scss";
 
 .hotVotes {
-  width: 1000px;
+  // z-index: 5;
+  width: 1200px;
   padding: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  .slick-dots {
+    margin-top: 30px;
+  }
+  .slick-list {
+    width: 1000px;
+    margin: auto;
+  }
+  .slick-prev {
+    left: 3% !important;
+    z-index: 1;
+  }
+  .slick-next {
+    right: 3% !important;
+    z-index: 1;
+  }
+  .slick-arrow:before {
+    color: $vting-blue;
+  }
   .hotVotesTitle {
     margin-top: 50px;
     font-size: 20px;
@@ -94,4 +113,13 @@
 
 a {
   text-decoration: none;
+}
+
+@media (max-width: 1439px) {
+  .hotVotes {
+    width: 960px;
+    .slick-list {
+      width: 800px;
+    }
+  }
 }
