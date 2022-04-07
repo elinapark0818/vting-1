@@ -35,6 +35,8 @@ export let VoteController = {
     },
   },
 
+  // 현재 보트 생성(post) 요청 후 url 데이터만 client에서 사용하고 있음
+  // TODO: refactoring시 보내는 데이터 수정할 것
   create: {
     post: async (req: Request & { body: any }, res: Response) => {
       let {
@@ -104,6 +106,7 @@ export let VoteController = {
                     manytimes,
                     undergoing: true,
                     isPublic: true,
+                    sumCount: 0,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -192,6 +195,7 @@ export let VoteController = {
                     items,
                     undergoing: true,
                     isPublic: true,
+                    sumCount: 0,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -234,7 +238,7 @@ export let VoteController = {
                     manytimes,
                     items,
                     undergoing: true,
-                    isPublic: true,
+                    sumCount: 0,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -291,6 +295,7 @@ export let VoteController = {
                 multiple,
                 manytimes,
                 undergoing: true,
+                sumCount: 0,
                 created_at: new Date(),
               },
               async (err: Error, data: any) => {
@@ -377,6 +382,7 @@ export let VoteController = {
                 manytimes,
                 items,
                 undergoing: true,
+                sumCount: 0,
                 created_at: new Date(),
               },
               async (err: Error, data: any) => {
@@ -419,6 +425,7 @@ export let VoteController = {
                 manytimes,
                 items,
                 undergoing: true,
+                sumCount: 0,
                 created_at: new Date(),
               },
               async (err: Error, data: any) => {
@@ -457,6 +464,7 @@ export let VoteController = {
       }
     },
   },
+
   // FIXME: Show Vote
   // 회원, 비회원 분기해서 보여주기
   show_vote: {
@@ -490,16 +498,15 @@ export let VoteController = {
                 .findOne(
                   { user_id: data.user_id, _id: new ObjectId(voteId) },
                   (err: Error, data: any) => {
-                    console.log("data", data);
-                    if (data.format !== "open") {
-                      let sumCount: number = 0;
-                      for (let el of data.items) {
-                        sumCount += el.count;
-                      }
-                      return res.status(200).json({ data: data, sumCount });
-                    } else {
-                      return res.status(200).json({ data: data });
-                    }
+                    // if (data.format !== "open") {
+                    //   let sumCount: number = 0;
+                    //   for (let el of data.items) {
+                    //     sumCount += el.count;
+                    //   }
+                    //   return res.status(200).json({ data: data, sumCount });
+                    // } else {
+                    return res.status(200).json({ data: data });
+                    // }
                   }
                 );
             }
@@ -524,15 +531,15 @@ export let VoteController = {
                 60;
               overtime = Math.round(overtime);
 
-              if (data.format !== "open") {
-                let sumCount: number = 0;
-                for (let el of data.items) {
-                  sumCount += el.count;
-                }
-                return res.status(200).json({ data: data, overtime, sumCount });
-              } else {
-                return res.status(200).json({ data: data, overtime });
-              }
+              // if (data.format !== "open") {
+              //   let sumCount: number = 0;
+              //   for (let el of data.items) {
+              //     sumCount += el.count;
+              //   }
+              //   return res.status(200).json({ data: data, overtime, sumCount });
+              // } else {
+              return res.status(200).json({ data: data, overtime });
+              // }
             });
         } else {
           // 로그인이 풀리는 경우(accessToken 만료 됬을때)
