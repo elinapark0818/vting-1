@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./Navbar.scss";
 import Logo from "../assets/vt_logo_1.png";
-import Profile from "../assets/yof_logo-17.jpg";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, setIsLogin, setUserInfo } from "../store/index";
@@ -45,6 +44,7 @@ function Navbar() {
                 _id: res.data.data._id,
                 nickname: res.data.data.nickname,
                 email: res.data.data.user_id,
+                image: res.data.data.image,
               })
             );
           } else {
@@ -92,13 +92,13 @@ function Navbar() {
         {loginState ? (
           <div className="NavRight">
             <Link className="nav-link link" to="/">
-              Home
+              홈
             </Link>
             <Link className="nav-link link" to="dashboard">
-              Dashboard
+              대시보드
             </Link>
             <Link className="nav-link link" to="new">
-              Vote
+              설문만들기
             </Link>
 
             <div className="profile">
@@ -106,18 +106,23 @@ function Navbar() {
                 <img
                   src={userInfo.image}
                   alt="profile_img"
-                  style={{ width: "60px", borderRadius: "50%" }}
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                  }}
                 />
 
                 <ul className="subMenu">
                   <div className="subMenuLi">
                     <div className="username">{userInfo.nickname} 님 🧡</div>
                     <Link className="nav-link link" to="myPage">
-                      MyPage
+                      마이페이지
                     </Link>
                   </div>
                   <div className="nav-link link" onClick={() => handleLogout()}>
-                    SingOut
+                    로그아웃
                   </div>
                 </ul>
               </div>
@@ -126,13 +131,13 @@ function Navbar() {
         ) : (
           <div className="NavRight">
             <Link className="nav-link link" to="/">
-              Home
+              홈
             </Link>
             <Link className="nav-link link" to="new">
-              Vote
+              설문만들기
             </Link>
             <Link className="nav-link link" to="signIn">
-              SignIn
+              로그인
             </Link>
           </div>
         )}

@@ -26,18 +26,56 @@
 
   & .edit_userProfile {
     flex: 50%;
-    border: 5px solid $vting-orange;
+    // flex-direction: column;
+
+    // border: 5px solid $vting-orange;
+    // margin: 1em;
+    // padding: 1em;
+    .img_input {
+      display: none;
+    }
+  }
+
+  .edit_userProfile_wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     margin: 1em;
-    padding: 1em;
+  }
+
+  .edit_userProfile_form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 1em;
+  }
+
+  .img_uploaderWrap {
+    display: flex;
+    flex-direction: row;
+
+    .img_uploader {
+      font-size: 3em;
+      color: $vting-orange;
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        color: $vting-blue;
+      }
+    }
   }
 
   & .edit_userInfo {
     flex: 50%;
-    margin: 1em;
-    padding: 1em;
+    // margin: 1em;
+    // padding: 1em;
     display: flex;
     flex-direction: column;
-    border: 5px solid $vting-orange;
+    justify-content: center;
+    align-items: center;
+    // border: 5px solid $vting-orange;
   }
 
   & h3 {
