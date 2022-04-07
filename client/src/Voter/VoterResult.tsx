@@ -9,6 +9,7 @@ import Counter from "./Counter";
 import VoterRealtime from "./VoterRealtime";
 import { useSelector, useDispatch } from "react-redux";
 import { patchGetVote, RootState } from "../store/index";
+import Loading from "../Loading/Loading";
 
 const adj = [
   "사랑스러운",
@@ -64,7 +65,7 @@ function VoterResult() {
   const [errorMode, setErrorMode] = useState(false);
   const [nonUser, setNonUser] = useState(false);
   const [overtime, setOvertime] = useState(60);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   // const [voteData, setVoteData] = useState(dummVoteData);
   const dispatch = useDispatch();
   const voteData = useSelector((state: RootState) => state.getVote);
@@ -85,7 +86,6 @@ function VoterResult() {
           },
         });
         if (response.status === 200) {
-          setIsLoading(true);
           let getVoteBody;
           // 회원 생성한 설문일 때 body
           if (response.data.user_data) {
@@ -145,7 +145,7 @@ function VoterResult() {
           setIsLoading(false);
         }
       } catch (e) {
-        console.log(e);
+        setIsLoading(false);
         setErrorMode(true);
       }
     };
@@ -154,7 +154,9 @@ function VoterResult() {
 
   return (
     <div className="votingCon">
-      {errorMode ? (
+      {isLoading ? (
+        <Loading />
+      ) : errorMode ? (
         <>
           <div className="voteResultContent">
             <div className="errorCon">
@@ -176,14 +178,14 @@ function VoterResult() {
                 </div>
                 <div className="errorMailto">
                   에러가 지속된다면, 해당 접속 코드를 vting.yof@gmail.com 으로
-                  보내주시면 Vting 서비스를 유지 보수하는데에 큰 도움이 됩니다!
+                  보내주세요.
+                  <br />
+                  Vting 서비스를 유지 보수하는데에 큰 도움이 됩니다!
                 </div>
               </div>
             </div>
           </div>
         </>
-      ) : isLoading ? (
-        <>로딩중...</>
       ) : (
         <>
           <div className="votingHeader">

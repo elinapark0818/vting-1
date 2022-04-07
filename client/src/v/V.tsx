@@ -22,6 +22,7 @@ import Counter from "../Voter/Counter";
 import vtCry from "../assets/vt_cry.png";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, patchGetVote, ResultVoteInfo } from "../store/index";
+import { report } from "process";
 
 const imgAlertContext = createContext<any | null>(null);
 
@@ -75,52 +76,15 @@ function V() {
   const [togglePublic, setTogglePublic] = useState(true);
   const [toggleOngoing, setToggleOngoing] = useState(true);
   const [voteTitle, setVoteTitle] = useState("");
-  const [voteInfo, setVoteInfo] = useState(dummyVote);
-  const [voteSumCount, setVoteSumCount] = useState(0);
   const [isNonUser, setIsNonUser] = useState(false);
   const [overtime, setOvertime] = useState(0);
   const [somethingWrong, setSometingWrong] = useState(false);
+  const voteInfo = useSelector((state: RootState) => state.getVote);
+  const votePass = voteInfo.password;
   const dispatch = useDispatch();
 
   const serverURL = process.env.REACT_APP_SERVER_URL;
   const accessToken = localStorage.getItem("accessToken");
-
-  // useEffect(() => {
-  //   const voteResult = async () => {
-  //     try {
-  //       const response = await axios.get(`${serverURL}/vting/${code}`, {
-  //         headers: {
-  //           Authorization: accessToken ? `Bearer ${accessToken}` : "",
-  //           withCredentials: true,
-  //         },
-  //       });
-
-  //       // 응답 객체에 password가 있으면 -> 비회원 설문조사임
-  //       if (response.status === 200 && response.data.data.password) {
-  //         setVoteInfo(response.data.data);
-  //         setVoteTitle(response.data.data.title);
-  //         setToggleOngoing(response.data.data.undergoing);
-  //         setTogglePublic(response.data.data.isPublic);
-  //         setOvertime(response.data.overtime);
-  //         // 비회원 설문조사 모드 (비밀번호 입력창) 활성화
-  //         setIsNonUser(true);
-  //       } else if (response.status === 200 && response.data.data.user_id) {
-  //         setVoteInfo(response.data.data);
-  //         setVoteTitle(response.data.data.title);
-  //         setToggleOngoing(response.data.data.undergoing);
-  //         setTogglePublic(response.data.data.isPublic);
-  //         // sumCount가 있는 설문이면 가져오기
-  //         if (response.data.sumCount) setVoteSumCount(response.data.sumCount);
-  //       } else {
-  //         setSometingWrong(true);
-  //       }
-  //     } catch (e) {
-  //       setSometingWrong(true);
-  //     }
-  //   };
-
-  //   voteResult();
-  // }, []);
 
   useEffect(() => {
     const voteResult = async () => {
@@ -132,7 +96,6 @@ function V() {
         });
         if (response.status === 200) {
           let getVoteBody: ResultVoteInfo;
-          // 회원 생성한 설문일 때 body
           if (response.data.user_data) {
             getVoteBody = {
               _id: response.data.vote_data._id,
@@ -168,20 +131,17 @@ function V() {
               created_at: response.data.vote_data.created_at,
               overtime: response.data.overtime,
               sumCount: response.data.vote_data.sumCount || 0,
+              password: response.data.vote_data.password,
             };
           }
           dispatch(patchGetVote(getVoteBody));
-          setVoteTitle(response.data.vote_data.title);
           if (response.data.user_data) {
-            setVoteInfo(getVoteBody);
-            setVoteTitle(response.data.vote_data.title);
+            // 회원일 때 토글버튼 두개를 db에 있는 상태로 초기화합니다.
             setToggleOngoing(response.data.vote_data.undergoing);
             setTogglePublic(response.data.vote_data.isPublic);
           } else {
-            // 비회원 설문임
-            // 1. 비회원모드 설정
+            // 비회원일 때 비회원모드를 활성화합니다.
             setIsNonUser(true);
-            // 2. 남은시간 설정
             setOvertime(response.data.overtime);
           }
         }
@@ -260,7 +220,6 @@ function V() {
     }
   };
 
-  // Alert Options
   const options: AlertOptions = {
     position: positions.TOP_CENTER,
     timeout: 3000,
@@ -343,7 +302,7 @@ function V() {
                     실시간 응답 보기
                   </div>
                 </div>
-                {voteInfo.password ? (
+                {votePass ? (
                   <div className="options">
                     <div>
                       <Counter overtime={overtime} />
@@ -549,7 +508,9 @@ function Howto() {
   );
 }
 
-function PasswordCheck({ setIsNonUser, votePass }: Props) {
+function PasswordCheck({ setIsNonUser }: Props) {
+  const voteInfo = useSelector((state: RootState) => state.getVote);
+  const votePass = voteInfo.password;
   const [password, setPassword] = useState("");
   const alert = useAlert();
 

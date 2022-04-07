@@ -211,6 +211,24 @@ const getVoteSlice = createSlice({
   },
 });
 
+export interface VoteAlert {
+  isOn: boolean;
+}
+
+const voteAlertInitialState = {
+  isOn: false,
+};
+
+const voteAlert = createSlice({
+  name: "voteAlert",
+  initialState: voteAlertInitialState,
+  reducers: {
+    setVoteAlert(state, action: PayloadAction<boolean>) {
+      state.isOn = action.payload;
+    },
+  },
+});
+
 // 여기서부터 다른 파일에서 import 해오기 위해 사용하는 공용 부분입니다.
 const store = configureStore({
   reducer: {
@@ -219,19 +237,17 @@ const store = configureStore({
     makeNewVote: newVoteSlice.reducer,
     getVote: getVoteSlice.reducer,
     userInfo: UserInfoSlice.reducer,
+    voteAlert: voteAlert.reducer,
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 
 export const { setIsLogin } = isLogInSlice.actions;
-
 export const { setUserInfo } = UserInfoSlice.actions;
-
 export const { setIsModalOpen } = isModalSlice.actions;
-
 export const { patchGetVote } = getVoteSlice.actions;
-
+export const { setVoteAlert } = voteAlert.actions;
 export const {
   setFormat,
   setTitle,

@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import "./HotVote.scss";
 
 function HotVote() {
-  const isLogin = useSelector((state: RootState) => state.isLogin);
+  const isLogin = useSelector((state: RootState) => state.isLogin.login);
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
   const [Content, setContent] = useState("newest");
