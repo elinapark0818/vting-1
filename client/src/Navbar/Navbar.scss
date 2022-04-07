@@ -186,6 +186,22 @@
   }
 }
 
+@media (max-width: 1439px) {
+  .NavBar {
+    width: 960px;
+  }
+  .votingBannerCon {
+    .votingBanner {
+      width: 960px;
+      .votingBannerInput {
+        input {
+          width: 600px;
+        }
+      }
+    }
+  }
+}
+
 // .btn {
 // &::before {
 //   content: "";
