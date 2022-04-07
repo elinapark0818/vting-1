@@ -112,7 +112,13 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
         close();
       }
     } catch (e) {
-      console.log(e);
+      return (
+        <div>
+          설문 생성에 실패했습니다.
+          <br />
+          잠시 후 다시 확인해주세요.
+        </div>
+      );
     }
   };
 

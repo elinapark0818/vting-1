@@ -92,7 +92,13 @@ function VoterRealtime() {
           );
         }
       } catch (e) {
-        console.log(e);
+        dispatch(
+          patchGetVote({
+            title: "",
+            items: [],
+            format: "",
+          })
+        );
       }
     }
     getAnswers();
@@ -243,7 +249,12 @@ function VoterRealtime() {
     case "word":
       return <ReactWordcloud words={words} options={options} />;
     default:
-      return <div>데이터 불러오기 실패</div>;
+      return (
+        <div>
+          데이터를 불러오는데 실패했습니다. <br />
+          잠시 후 다시 시도해주세요.
+        </div>
+      );
   }
 }
 
