@@ -3,6 +3,7 @@ import "./Edit.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, setUserInfo } from "../../store/index";
 import axios from "axios";
+import { FaFileUpload } from "react-icons/fa";
 
 interface PatchUser {
   name: string;
@@ -21,7 +22,7 @@ function Edit() {
     const getUserInfo = async () => {
       let accessToken = localStorage.getItem("accessToken");
       try {
-        const res = await axios
+        await axios
           .get(`${serverURL}/user`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -31,10 +32,10 @@ function Edit() {
           .then((res) => {
             if (res.data.data.provider === undefined) {
               setOauthUser(false);
-              console.log("oauth유저인지", oauthUser);
+              // console.log("oauth유저인지", oauthUser);
               // Oauth
-              console.log("userInfo===", userInfo);
-              console.log("프로바이더", res.data.data.provider);
+              // console.log("userInfo===", userInfo);
+              // console.log("프로바이더", res.data.data.provider);
             } else {
               setOauthUser(true);
             }
@@ -104,20 +105,7 @@ function Edit() {
       </header>
 
       <main className="edit_wrap">
-        <div className="edit_userProfile">
-          <div className="edit_profile">
-            <label htmlFor="file" className="edit_btn">
-              업로드
-            </label>
-            <input
-              id="file"
-              name="profile"
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-            />
-          </div>
-        </div>
+        <EditUserImage />
 
         {oauthUser ? (
           <div className="edit_userInfo">
@@ -162,6 +150,71 @@ function Edit() {
       </div>
     </div>
   );
+
+  function EditUserImage() {
+    let accessToken = localStorage.getItem("accessToken");
+
+    const onChangeImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+
+      if (e.target.files) {
+        const uploadFile = e.target.files[0];
+        const formData = new FormData();
+        formData.append("files", uploadFile);
+        console.log(formData.getAll("files"));
+
+        const response = await axios.patch(
+          `${serverURL}/image/${userInfo._id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${accessToken}`,
+              withCredentials: true,
+            },
+          }
+        );
+        if (response.status === 200) {
+          console.log("가져 온 이미지 주소는 ====>", response.data.data);
+          setUserInfo({
+            _id: String(userInfo._id),
+            image: response.data.data,
+          });
+          console.log("저장된이미지", userInfo);
+        }
+      }
+    };
+
+    return (
+      <div className="edit_userProfile">
+        <form className="edit_userProfile_form">
+          <input
+            type="file"
+            id="profile-upload"
+            accept="image/*"
+            className="img_input"
+            onChange={(e) => onChangeImg(e)}
+          />
+          <img
+            src={userInfo.image}
+            alt="preView_profile"
+            style={{
+              width: "300px",
+              height: "300px",
+              objectFit: "cover",
+              borderRadius: "50%",
+            }}
+          />
+        </form>
+        <div className="edit_userProfile_wrap">
+          <h3>프로필</h3>
+          <label htmlFor="profile-upload" className="img_uploaderWrap">
+            <FaFileUpload className="img_uploader" />
+          </label>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default Edit;

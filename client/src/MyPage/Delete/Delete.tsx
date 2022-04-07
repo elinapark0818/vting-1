@@ -79,8 +79,13 @@ function Delete() {
         <div className="delete_profile">
           <img
             src={userInfo.image}
-            alt="프로필이미지"
-            style={{ width: "10em" }}
+            alt="프로필"
+            style={{
+              width: "300px",
+              height: "300px",
+              objectFit: "cover",
+              borderRadius: "50%",
+            }}
           />
         </div>
         <div className="delete_userInfo">
