@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { patchGetVote, RootState, setRestart } from "../store/index";
+import {
+  patchGetVote,
+  RootState,
+  setRestart,
+  setVoteAlert,
+} from "../store/index";
 import VoteBody from "./VoteBody";
 import VoteFormats from "./VoteFormats";
 import axios from "axios";
@@ -73,6 +78,10 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
   const serverURL = process.env.REACT_APP_SERVER_URL;
 
   useEffect(() => {
+    dispatch(setVoteAlert(true));
+  }, []);
+
+  useEffect(() => {
     if (newVotePassword === newVotePasswordRe) {
       setIsMatch(true);
     } else {
@@ -99,6 +108,7 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
           })
         );
         navigate(`/v/${response.data.data.url}`);
+        dispatch(setVoteAlert(false));
         close();
       }
     } catch (e) {
@@ -148,9 +158,13 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
         };
         return sendVoteBody;
       default:
-        console.log("오류 발생 : 투표 포맷이 선택되지 않음");
-        return;
+        return <>"오류 발생 : 투표 포맷이 선택되지 않음"</>;
     }
+  };
+
+  const closeAlertHandler = () => {
+    dispatch(setVoteAlert(false));
+    close();
   };
 
   return (
@@ -201,12 +215,12 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
           </div>
         </div>
       </div>
-      <button className="vtingButton" onClick={close}>
+      <button className="vtingButton" onClick={closeAlertHandler}>
         생성 화면으로 돌아가기
       </button>
       <button
         className={isMatch ? "vtingButton" : "vtingButtonGray"}
-        onClick={() => sendNewVote()}
+        onClick={sendNewVote}
       >
         설문 생성 완료
       </button>

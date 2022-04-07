@@ -311,6 +311,7 @@
     .options {
       display: flex;
       flex-direction: row;
+      align-items: center;
       .toggleBtn {
         margin-left: 10px;
         background-color: $vting-gray;

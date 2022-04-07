@@ -12,12 +12,12 @@ interface Props {
 }
 
 function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
+  const isAlertOpen = useSelector((state: RootState) => state.voteAlert.isOn);
   const navigate = useNavigate();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const isLogin = useSelector((state: RootState) => state.isLogin);
   const newVote = useSelector((state: RootState) => state.makeNewVote);
   const newVoteFormat = newVote.format;
-
   const alert = useAlert();
   const dispatch = useDispatch();
 
@@ -53,7 +53,7 @@ function VoteButton({ everytingIsOk, setTitleShake, setItemShake }: Props) {
         } catch (e) {
           console.log(e);
         }
-      } else {
+      } else if (!isAlertOpen) {
         alert.show();
       }
     }
