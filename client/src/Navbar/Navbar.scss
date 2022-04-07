@@ -62,10 +62,10 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
 }
 
 .NavLeft {
-  flex: 40%;
   display: flex;
   // padding-right: 50px;
   flex-direction: row;
