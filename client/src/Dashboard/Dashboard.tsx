@@ -369,7 +369,7 @@ function Dashboard() {
                 alt="vt_cry"
                 style={{ width: "300px", marginBottom: "5em" }}
               />
-              <div className="empty">아직 만들어진 V-ting이 없어요 🥲</div>
+              <div className="empty">아직 만들어진 V-ting이 없어요.</div>
               {/* <AiOutlineArrowDown className="empty_arrowDown" /> */}
               <div
                 onClick={() => navigate("/new")}

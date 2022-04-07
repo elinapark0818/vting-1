@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./Edit.scss";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, setUserInfo } from "../../store/index";
+import { RootState, setUserInfo, setIsLogin } from "../../store/index";
 import axios from "axios";
-import { FaFileUpload } from "react-icons/fa";
+import { FaPlusCircle } from "react-icons/fa";
+import { FaAngleDoubleRight } from "react-icons/fa";
 
 interface PatchUser {
   name: string;
@@ -14,6 +16,8 @@ const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
 function Edit() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
   const [oauthUser, setOauthUser] = useState(false);
@@ -30,12 +34,12 @@ function Edit() {
             },
           })
           .then((res) => {
+            setUserInfo({
+              _id: res.data.data._id,
+              image: res.data.data.image,
+            });
             if (res.data.data.provider === undefined) {
               setOauthUser(false);
-              // console.log("oauth유저인지", oauthUser);
-              // Oauth
-              // console.log("userInfo===", userInfo);
-              // console.log("프로바이더", res.data.data.provider);
             } else {
               setOauthUser(true);
             }
@@ -45,7 +49,7 @@ function Edit() {
       }
     };
     getUserInfo();
-  }, []);
+  }, [userInfo]);
 
   const [patchUserInfo, setPatchUserInfo] = useState<PatchUser>({
     name: "",
@@ -98,55 +102,115 @@ function Edit() {
     }
   };
 
+  const handleLogout = async () => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      const res = await axios.get(serverURL + "/session", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
+      });
+      if (res.status === 200) {
+        const token = res.data.data.accessToken;
+        localStorage.setItem("accessToken", token);
+        dispatch(setIsLogin(false));
+        navigate("/");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="edit_container">
       <header className="edit_header">
-        <h1>회원정보 관리</h1>
+        <img
+          src={userInfo.image}
+          alt="preView_profile"
+          style={{
+            width: "100px",
+            height: "100px",
+            objectFit: "cover",
+            borderRadius: "50%",
+          }}
+        />
+        <div className="edit_header_desc">
+          <h2>{userInfo.nickname}</h2>
+          <h3>회원님, 안녕하세요!</h3>
+        </div>
       </header>
 
-      <main className="edit_wrap">
-        <EditUserImage />
+      <div className="edit_containerWrap">
+        <nav className="userInfo_nav">
+          <button
+            className="userInfo_navBtn_active"
+            onClick={() => navigate("/myPage")}
+          >
+            회원정보 관리
+          </button>
+          <button
+            className="userInfo_navBtn"
+            onClick={() => navigate("/myPage/delete")}
+          >
+            회원탈퇴 관리
+          </button>
+          <button className="userInfo_logout" onClick={() => handleLogout()}>
+            로그아웃
+          </button>
+        </nav>
 
-        {oauthUser ? (
-          <div className="edit_userInfo">
-            <div className="edit_nickname">
-              <h3>닉네임 </h3>
-              <input
-                name="name"
-                onChange={edit_onChangeName}
-                type="text"
-                placeholder={userInfo.nickname}
-              />
+        <main className="edit_wrap">
+          {oauthUser ? (
+            <div className="edit_userInfo">
+              <EditUserImage />
+              <div className="edit_nickname">
+                <h3>
+                  닉네임 <FaAngleDoubleRight />
+                </h3>
+                <input
+                  name="name"
+                  onChange={edit_onChangeName}
+                  type="text"
+                  placeholder={userInfo.nickname}
+                />
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="edit_userInfo">
-            <div className="edit_nickname">
-              <h3>닉네임 </h3>
-              <input
-                name="name"
-                onChange={edit_onChangeName}
-                type="text"
-                placeholder={userInfo.nickname}
-              />
+          ) : (
+            <div className="edit_userInfo">
+              <EditUserImage />
+              <div className="edit_nickname">
+                <h3>
+                  닉네임 <FaAngleDoubleRight />
+                </h3>
+                <input
+                  className="edit_nickname_input"
+                  name="name"
+                  onChange={edit_onChangeName}
+                  type="text"
+                  placeholder={userInfo.nickname}
+                />
+              </div>
+              <div className="edit_password">
+                <h3>
+                  비밀번호 <FaAngleDoubleRight />
+                </h3>
+                <input
+                  type="password"
+                  name="password"
+                  onChange={edit_onChangePassword}
+                  placeholder="변경하실 비밀번호를 입력해주세요."
+                />
+              </div>
             </div>
+          )}
 
-            <div className="edit_password">
-              <h3>비밀번호</h3>
-              <input
-                type="password"
-                name="password"
-                onChange={edit_onChangePassword}
-                placeholder="변경하실 비밀번호를 입력해주세요."
-              />
-            </div>
+          <div className="edit_btnWrap">
+            <button className="edit_btn" onClick={() => EditUserInfo()}>
+              수정하기
+            </button>
           </div>
-        )}
-      </main>
-      <div className="edit_btnWrap">
-        <button className="edit_btn" onClick={() => EditUserInfo()}>
-          수정하기
-        </button>
+        </main>
       </div>
     </div>
   );
@@ -175,41 +239,42 @@ function Edit() {
           }
         );
         if (response.status === 200) {
-          console.log("가져 온 이미지 주소는 ====>", response.data.data);
           setUserInfo({
             _id: String(userInfo._id),
             image: response.data.data,
           });
-          console.log("저장된이미지", userInfo);
+          navigate("/myPage");
         }
       }
     };
 
     return (
       <div className="edit_userProfile">
-        <form className="edit_userProfile_form">
-          <input
-            type="file"
-            id="profile-upload"
-            accept="image/*"
-            className="img_input"
-            onChange={(e) => onChangeImg(e)}
-          />
-          <img
-            src={userInfo.image}
-            alt="preView_profile"
-            style={{
-              width: "300px",
-              height: "300px",
-              objectFit: "cover",
-              borderRadius: "50%",
-            }}
-          />
-        </form>
         <div className="edit_userProfile_wrap">
-          <h3>프로필</h3>
+          <form className="edit_userProfile_form">
+            <input
+              type="file"
+              id="profile-upload"
+              accept="image/*"
+              className="img_input"
+              onChange={(e) => onChangeImg(e)}
+            />
+          </form>
+
+          <div className="edit_userProfile_image">
+            <img
+              src={userInfo.image}
+              alt="preView_profile"
+              style={{
+                width: "300px",
+                height: "300px",
+                objectFit: "cover",
+                borderRadius: "50%",
+              }}
+            />
+          </div>
           <label htmlFor="profile-upload" className="img_uploaderWrap">
-            <FaFileUpload className="img_uploader" />
+            <FaPlusCircle className="img_uploader" />
           </label>
         </div>
       </div>
