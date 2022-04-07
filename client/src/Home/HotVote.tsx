@@ -19,9 +19,6 @@ function HotVote() {
     { key: "newest", value: "트랜디한" },
     { key: "most", value: "대세를 따르는" },
     { key: "diff", value: "나만의 생각을 가진" },
-    { key: "newest", value: "트랜디한" },
-    { key: "most", value: "대세를 따르는" },
-    { key: "diff", value: "나만의 생각을 가진" },
   ];
 
   return (
