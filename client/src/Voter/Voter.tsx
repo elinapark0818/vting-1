@@ -8,6 +8,7 @@ import {
   Provider as AlertProvider,
 } from "react-alert";
 import { AlertTemplate } from "../v/AlertTemplate";
+import AOS from "aos";
 
 // Alert Options
 const options: AlertOptions = {
@@ -18,6 +19,8 @@ const options: AlertOptions = {
 };
 
 function Voter() {
+  AOS.init();
+
   return (
     <AlertProvider template={AlertTemplate} {...options}>
       <div className="voteCodePageCon">

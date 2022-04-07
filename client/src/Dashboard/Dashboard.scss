@@ -1,11 +1,15 @@
 @import "../index.scss";
 
+.body-container {
+  padding-bottom: 200px;
+}
+
 .dashboard_container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 5em 5em 200px 5em;
+  margin: 5em;
 
   box-shadow: 0 7px 7px -4px $vting-orange;
 }
