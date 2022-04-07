@@ -76,41 +76,43 @@ function MyPage() {
   }, []);
 
   return (
-    <div className="myPage_container">
-      <div className="link_wrap">
-        <Link to="" className="link_btn">
-          회원정보 수정
-        </Link>
-        <Link to="delete" className="link_btn">
-          회원탈퇴
-        </Link>
-      </div>
+    <div className="body-container">
+      <div className="myPage_container">
+        <div className="link_wrap">
+          <Link to="" className="link_btn">
+            회원정보 수정
+          </Link>
+          <Link to="delete" className="link_btn">
+            회원탈퇴
+          </Link>
+        </div>
 
-      {checkPwd ? (
-        <div className="outlet_wrap">
-          <Outlet />
-        </div>
-      ) : (
-        <div className="passwordCheck_container">
-          <header className="passwordCheck_header">
-            <h1>비밀번호 확인</h1>
-          </header>
-          <main className="passwordCheck_wrap">
-            <h3> </h3>
-            <input
-              value={myPagePwd}
-              type="password"
-              name="password"
-              onChange={myPage_onChangePassword}
-            />
-          </main>
-          <div className="passwordCheck_btnWrap">
-            <button className="check_btn" onClick={handlePasswordCheck}>
-              비밀번호 확인
-            </button>
+        {checkPwd ? (
+          <div className="outlet_wrap">
+            <Outlet />
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="passwordCheck_container">
+            <header className="passwordCheck_header">
+              <h1>비밀번호 확인</h1>
+            </header>
+            <main className="passwordCheck_wrap">
+              <h3> </h3>
+              <input
+                value={myPagePwd}
+                type="password"
+                name="password"
+                onChange={myPage_onChangePassword}
+              />
+            </main>
+            <div className="passwordCheck_btnWrap">
+              <button className="check_btn" onClick={handlePasswordCheck}>
+                비밀번호 확인
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

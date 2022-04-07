@@ -127,6 +127,7 @@ function VoterResult() {
           }
           dispatch(patchGetVote(getVoteBody));
           setTitle(response.data.vote_data.title);
+          if (!response.data.vote_data.undergoing) setErrorMode(true);
           if (response.data.user_data) {
             setNickName(response.data.user_data.nickname);
             if (
@@ -160,14 +161,23 @@ function VoterResult() {
               <div className="imgCon">
                 <img src={vtCry} alt="something wrong" />
               </div>
-              <div>
+              <div className="errorTextCon">
                 <span className="errorTitle">
                   Ooooops... Something went wrong.
                 </span>
-                <br />
-                해당 코드를 가진 설문이 없거나 만료된 설문입니다.
-                <br />
-                설문 코드를 다시 확인해주시기 바랍니다. <br />
+                <div className="errorSubtitle">
+                  해당 코드를 가진 설문을 찾을 수 없습니다.
+                </div>
+                <div className="errorDescribe">
+                  1. 설문 코드가 정확한지 다시 한 번 확인해주세요. <br />
+                  2. 만료되거나 중지된 설문이 아닌지 확인해주세요. <br />
+                  3. 일시적인 네트워크 에러일 수 있으니 잠시 후 다시
+                  시도해주세요.
+                </div>
+                <div className="errorMailto">
+                  에러가 지속된다면, 해당 접속 코드를 vting.yof@gmail.com 으로
+                  보내주시면 Vting 서비스를 유지 보수하는데에 큰 도움이 됩니다!
+                </div>
               </div>
             </div>
           </div>
@@ -177,7 +187,7 @@ function VoterResult() {
       ) : (
         <>
           <div className="votingHeader">
-            <div className="votingProfile">
+            <div className="votingProfile" data-aos="flip-left">
               <div className="votingProfileImg">
                 <img src={profileImg ? profileImg : logo} alt="profile" />
               </div>

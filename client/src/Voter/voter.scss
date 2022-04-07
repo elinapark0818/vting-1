@@ -1,7 +1,8 @@
 @import "../index.scss";
 
 .voteCodePageCon {
-  height: 100vh;
+  padding-top: 100px;
+  padding-bottom: 300px;
   background-color: $vting-orange;
   display: flex;
   justify-content: center;
@@ -233,7 +234,7 @@
     .votingContent {
       padding: 50px 0;
       width: 100%;
-      min-height: 200px;
+      min-height: 350px;
       background-color: $vting-gray;
       display: flex;
       flex-direction: column;
@@ -355,6 +356,20 @@
     line-height: 80px;
     background-color: $vting-gray;
     padding: 10px 20px;
+  }
+  .errorSubtitle {
+    font-size: 17px;
+    // padding: 10px;
+  }
+  .errorDescribe {
+    padding: 10px;
+    font-size: 15px;
+    line-height: 25px;
+  }
+  .errorMailto {
+    font-weight: 300;
+    padding-top: 20px;
+    font-size: 13px;
   }
   .imgCon {
     width: 200px;
@@ -572,5 +587,16 @@
     width: 30px;
     height: 30px;
     border-radius: 60px;
+  }
+}
+
+@media (max-width: 1439px) {
+  .voteCodePageCon {
+    width: 100%;
+    .voteCodePage {
+      width: 860px;
+      .votingCon {
+      }
+    }
   }
 }

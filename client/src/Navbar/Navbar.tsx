@@ -53,6 +53,37 @@ function Navbar() {
         });
     } catch (err) {
       console.log(err);
+
+    if (document.location.href.includes("vote")) {
+      // vote. 경로로 접속한 경우이므로 로그인 요청을 보내지 않습니다.
+    } else {
+      let accessToken = localStorage.getItem("accessToken");
+      try {
+        await axios
+          .get(`${serverURL}/auth`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              withCredentials: true,
+            },
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              settingLogin();
+              dispatch(
+                setUserInfo({
+                  _id: res.data.data._id,
+                  nickname: res.data.data.nickname,
+                  email: res.data.data.user_id,
+                })
+              );
+            } else {
+              console.error("400 Error");
+            }
+          });
+      } catch (err) {
+        console.log(err);
+      }
+
     }
   };
 
@@ -120,9 +151,14 @@ function Navbar() {
                     <Link className="nav-link link" to="myPage">
                       마이페이지
                     </Link>
-                  </div>
-                  <div className="nav-link link" onClick={() => handleLogout()}>
-                    로그아웃
+
+                    <div
+                      className="nav-link link"
+                      onClick={() => handleLogout()}
+                    >
+                      SingOut
+                    </div>
+
                   </div>
                 </ul>
               </div>
@@ -162,7 +198,7 @@ function VotingBanner() {
           ></input>
         </div>
         <a
-          href={`${process.env.CLIENT_URL}/${vtingCode}`}
+          href={`${process.env.REACT_APP_CLIENT_URL}/${vtingCode}`}
           target="_blank"
           rel="noopener noreferrer"
         >

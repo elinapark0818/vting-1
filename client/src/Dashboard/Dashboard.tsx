@@ -247,7 +247,7 @@ function Dashboard() {
   };
 
   return (
-    <>
+    <div className="body-container">
       {signInState ? (
         <div className="dashboard_container">
           <header className="dashboard_header">
@@ -413,7 +413,7 @@ function Dashboard() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
