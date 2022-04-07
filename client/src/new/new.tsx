@@ -95,7 +95,7 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
           patchGetVote({
             title: response.data.data.title,
             items: response.data.data.items || response.data.data.response,
-            sumCount: response.data.sumCount || 0,
+            sumCount: response.data.data.sumCount || 0,
           })
         );
         navigate(`/v/${response.data.data.url}`);
