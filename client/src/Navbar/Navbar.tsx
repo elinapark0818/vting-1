@@ -27,33 +27,6 @@ function Navbar() {
   }, [location]);
 
   const NavbarUserInfo = async () => {
-    let accessToken = localStorage.getItem("accessToken");
-    try {
-      await axios
-        .get(`${serverURL}/auth`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            withCredentials: true,
-          },
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            settingLogin();
-            dispatch(
-              setUserInfo({
-                _id: res.data.data._id,
-                nickname: res.data.data.nickname,
-                email: res.data.data.user_id,
-                image: res.data.data.image,
-              })
-            );
-          } else {
-            console.error("400 Error");
-          }
-        });
-    } catch (err) {
-      console.log(err);
-
     if (document.location.href.includes("vote")) {
       // vote. 경로로 접속한 경우이므로 로그인 요청을 보내지 않습니다.
     } else {
@@ -83,7 +56,6 @@ function Navbar() {
       } catch (err) {
         console.log(err);
       }
-
     }
   };
 
@@ -158,7 +130,6 @@ function Navbar() {
                     >
                       SingOut
                     </div>
-
                   </div>
                 </ul>
               </div>
@@ -208,5 +179,4 @@ function VotingBanner() {
     </div>
   );
 }
-
 export default Navbar;
