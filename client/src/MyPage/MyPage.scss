@@ -2,27 +2,10 @@
 
 .myPage_container {
   display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 5em 1em;
   width: 100%;
-}
-
-.link_wrap {
-  display: flex;
-  flex-direction: column;
-  // flex: 1;
-}
-
-.link_btn {
-  text-decoration: none;
-  color: $vting-orange;
-  font-size: larger;
-  font-weight: bold;
-  background-color: transparent;
-  box-shadow: 3px 7px 7px -5px $vting-orange;
-  padding: 10px 10px;
-  width: 10em;
-  margin-left: 10px;
-  margin-bottom: 10px;
 }
 
 .outlet_wrap {
@@ -34,48 +17,50 @@
 
 // * 비밀번호 확인
 .passwordCheck_container {
-  margin: 0 6em;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  box-shadow: 0 7px 7px -4px $vting-orange;
+  margin: 3em;
+  // border: 1px solid $vting-orange;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
 .passwordCheck_header {
   display: flex;
+  height: 120px;
   width: 100%;
-  height: 100px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   background-color: $vting-orange;
 
-  & h1 {
-    font-size: 2.5rem;
+  .passwordCheck_desc {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: 3em;
     color: #fff;
-    padding: 0.5em 1em;
   }
 }
 
 .passwordCheck_wrap {
   display: flex;
-  height: 20em;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: $vting-orange;
-
+  margin: 10em;
+  border: 1px solid $vting-gray;
+  border-radius: 5px;
   & input {
-    border: none;
+    font-size: 20px;
+    border-radius: 10px;
+    padding: 0.5em 1em 0.5em 1em;
     background-color: transparent;
     border: 1px solid $vting-gray;
-    // box-shadow: 3px 7px 7px -2px $vting-gray;
-    border-radius: 10px;
-    width: 10em;
-    font-size: 30px;
-  }
-
-  & div {
-    color: red;
+    margin: 5em 2em 3em 2em;
   }
 }
 
@@ -84,17 +69,21 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 10em;
+  margin-bottom: 5em;
 }
 
 .check_btn {
   cursor: pointer;
   border: none;
-  background-color: $vting-orange;
+  background-color: $vting-gray;
   color: #fff;
   font-size: 20px;
   font-weight: bold;
   border-radius: 30px;
-  padding: 10px 50px;
+  padding: 5px 20px;
   transition: all 0.5s ease;
+
+  &:hover {
+    background-color: $vting-orange;
+  }
 }

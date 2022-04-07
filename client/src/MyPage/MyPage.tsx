@@ -76,43 +76,36 @@ function MyPage() {
   }, []);
 
   return (
-    <div className="body-container">
-      <div className="myPage_container">
-        <div className="link_wrap">
-          <Link to="" className="link_btn">
-            회원정보 수정
-          </Link>
-          <Link to="delete" className="link_btn">
-            회원탈퇴
-          </Link>
+    <div className="myPage_container">
+      {checkPwd ? (
+        <div className="outlet_wrap">
+          <Outlet />
         </div>
-
-        {checkPwd ? (
-          <div className="outlet_wrap">
-            <Outlet />
-          </div>
-        ) : (
-          <div className="passwordCheck_container">
-            <header className="passwordCheck_header">
+      ) : (
+        <div className="passwordCheck_container">
+          <header className="passwordCheck_header">
+            <div className="passwordCheck_desc">
               <h1>비밀번호 확인</h1>
-            </header>
-            <main className="passwordCheck_wrap">
-              <h3> </h3>
-              <input
-                value={myPagePwd}
-                type="password"
-                name="password"
-                onChange={myPage_onChangePassword}
-              />
-            </main>
+            </div>
+          </header>
+
+          <main className="passwordCheck_wrap">
+            <input
+              value={myPagePwd}
+              type="password"
+              name="password"
+              onChange={myPage_onChangePassword}
+              placeholder="비밀번호를 입력하세요."
+            />
             <div className="passwordCheck_btnWrap">
               <button className="check_btn" onClick={handlePasswordCheck}>
-                비밀번호 확인
+                확인
               </button>
             </div>
-          </div>
-        )}
-      </div>
+          </main>
+        </div>
+      )}
+
     </div>
   );
 }

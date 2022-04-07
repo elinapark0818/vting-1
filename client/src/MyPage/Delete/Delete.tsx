@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setIsLogin, RootState, setUserInfo } from "../../store/index";
 import { useNavigate } from "react-router-dom";
 import "./Delete.scss";
+import vtCry from "../../assets/vt_cry.png";
 
 const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
@@ -69,36 +70,98 @@ function Delete() {
     }
   };
 
+  const handleLogout = async () => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      const res = await axios.get(serverURL + "/session", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
+      });
+      if (res.status === 200) {
+        const token = res.data.data.accessToken;
+        localStorage.setItem("accessToken", token);
+        dispatch(setIsLogin(false));
+        navigate("/");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="delete_container">
       <header className="delete_header">
-        <h1>회원탈퇴</h1>
+        <img
+          src={userInfo.image}
+          alt="preView_profile"
+          style={{
+            width: "100px",
+            height: "100px",
+            objectFit: "cover",
+            borderRadius: "50%",
+          }}
+        />
+        <div className="delete_header_desc">
+          <h2>{userInfo.nickname}</h2>
+          <h3>회원님, 안녕하세요!</h3>
+        </div>
       </header>
 
       <main className="delete_wrap">
+        <nav className="userInfo_nav">
+          <button
+            className="userInfo_navBtn"
+            onClick={() => navigate("/myPage")}
+          >
+            회원정보 관리
+          </button>
+          <button
+            className="userInfo_navBtn_active"
+            onClick={() => navigate("/myPage/delete")}
+          >
+            회원탈퇴 관리
+          </button>
+          <button className="userInfo_logout" onClick={() => handleLogout()}>
+            로그아웃
+          </button>
+        </nav>
+
         <div className="delete_profile">
           <img
-            src={userInfo.image}
-            alt="프로필"
-            style={{
-              width: "300px",
-              height: "300px",
-              objectFit: "cover",
-              borderRadius: "50%",
-            }}
+            src={vtCry}
+            alt="cry_img"
+            style={{ width: "300px", marginTop: "1em", marginBottom: "3em" }}
           />
-        </div>
-        <div className="delete_userInfo">
-          <h1>닉네임 : {userInfo.nickname}</h1>
-          <h1>이메일 : {userInfo.email}</h1>
+          <div className="delete_profile_wrap">
+            {/* <div className="delete_userProfile_image">
+              <img
+                src={userInfo.image}
+                alt="프로필"
+                style={{
+                  width: "300px",
+                  height: "300px",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                }}
+              />
+            </div> */}
+
+            <div className="delete_userInfo">
+              <h1>닉네임 : {userInfo.nickname}</h1>
+              <h1>이메일 : {userInfo.email}</h1>
+            </div>
+          </div>
+
+          <div className="delete_btnWrap">
+            <button className="delete_btn" onClick={openModal}>
+              탈퇴하기
+            </button>
+          </div>
         </div>
       </main>
 
-      <div className="delete_btnWrap">
-        <button className="delete_btn" onClick={openModal}>
-          탈퇴하기
-        </button>
-      </div>
       {modalState ? (
         <div className="deleteModal_container">
           <div className="deleteModal_background">

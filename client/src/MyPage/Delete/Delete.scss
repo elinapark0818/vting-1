@@ -3,42 +3,60 @@
 .delete_container {
   display: flex;
   flex-direction: column;
-  margin: 0 100px;
-  box-shadow: 0 7px 7px -4px $vting-orange;
+  margin: 3em;
+  // border: 1px solid $vting-orange;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
 .delete_header {
   display: flex;
-  height: 100px;
+  height: 120px;
+  width: 100%;
+  padding: 1em 1em 0 2em;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   background-color: $vting-orange;
 
-  & h1 {
-    font-size: 2.5rem;
+  .delete_header_desc {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: 1em;
     color: #fff;
-    padding: 0.5em 1em;
   }
 }
 
 .delete_wrap {
   display: flex;
   color: $vting-orange;
-  margin: 3em;
+}
 
+.delete_profile {
+  margin: 5em 5em 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 5;
+  border: 1px solid $vting-gray;
+  border-radius: 5px;
   & .delete_userInfo {
-    flex: 50%;
-    border: 5px solid $vting-orange;
-    margin: 1em;
-    padding: 1em;
-  }
-
-  & .delete_profile {
-    flex: 50%;
-    margin: 1em;
-    padding: 1em;
-    display: flex;
+    margin-top: 3em;
     justify-content: center;
     align-items: center;
-    border: 5px solid $vting-orange;
+  }
+
+  & .delete_userProfile_image {
+    margin: 3em;
+  }
+
+  & .delete_profile_wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -47,24 +65,24 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 3em 0;
-
-  & h1 {
-    color: red;
-    margin: 2em 0;
-  }
+  margin-top: 5em;
+  margin-bottom: 3em;
 }
 
 .delete_btn {
   cursor: pointer;
   border: none;
-  background-color: $vting-orange;
+  background-color: $vting-gray;
   color: #fff;
   font-size: 20px;
   font-weight: bold;
   border-radius: 30px;
-  padding: 10px 55px;
+  padding: 10px 30px;
   transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $vting-orange;
+  }
 }
 
 .deleteModal_closeBtn {

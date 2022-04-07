@@ -9,21 +9,27 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 5em;
 
-  box-shadow: 0 7px 7px -4px $vting-orange;
+  margin: 3em 2em 200px 4em;
+
+
+  // box-shadow: 0 7px 7px -4px $vting-orange;
 }
 
 .dashboard_header {
   display: flex;
-  height: 100px;
+  align-items: center;
+  height: 120px;
   width: 100%;
-  background-color: $vting-orange;
+  margin-top: 5em;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: $vting-blue;
 
   & h1 {
-    font-size: 2.5rem;
+    font-size: 2em;
     color: #fff;
-    padding: 0.5em 1em;
+    margin-left: 1.5em;
   }
 }
 
