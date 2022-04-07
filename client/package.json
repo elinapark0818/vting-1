@@ -76,8 +76,5 @@
     "prettier": "^2.6.0",
     "redux-toolkit": "^1.1.2",
     "yup": "^0.32.11"
-  },
-  "peerDependencies": {
-    "react-facebook-login": "^4.1.1"
   }
 }
