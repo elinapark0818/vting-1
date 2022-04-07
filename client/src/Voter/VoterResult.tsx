@@ -125,7 +125,6 @@ function VoterResult() {
               sumCount: response.data.sumCount || 0,
             };
           }
-          console.log("주관식일때 바디 어떻게 생성되나 ====>", getVoteBody);
           dispatch(patchGetVote(getVoteBody));
           setTitle(response.data.vote_data.title);
           if (!response.data.vote_data.undergoing) setErrorMode(true);

@@ -114,3 +114,12 @@
 a {
   text-decoration: none;
 }
+
+@media (max-width: 1439px) {
+  .hotVotes {
+    width: 960px;
+    .slick-list {
+      width: 800px;
+    }
+  }
+}
