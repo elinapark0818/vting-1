@@ -105,7 +105,7 @@ function VoterResult() {
               undergoing: response.data.vote_data.undergoing,
               isPublic: response.data.vote_data.isPublic,
               created_at: response.data.vote_data.created_at,
-              sumCount: response.data.sumCount || 0,
+              sumCount: response.data.vote_data.sumCount || 0,
             };
           } else {
             getVoteBody = {
@@ -122,7 +122,7 @@ function VoterResult() {
               undergoing: response.data.vote_data.undergoing,
               created_at: response.data.vote_data.created_at,
               overtime: response.data.overtime,
-              sumCount: response.data.sumCount || 0,
+              sumCount: response.data.vote_data.sumCount || 0,
             };
           }
           dispatch(patchGetVote(getVoteBody));
