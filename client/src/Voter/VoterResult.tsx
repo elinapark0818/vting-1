@@ -188,7 +188,7 @@ function VoterResult() {
       ) : (
         <>
           <div className="votingHeader">
-            <div className="votingProfile">
+            <div className="votingProfile" data-aos="flip-left">
               <div className="votingProfileImg">
                 <img src={profileImg ? profileImg : logo} alt="profile" />
               </div>
