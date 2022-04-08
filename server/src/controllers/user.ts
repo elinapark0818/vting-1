@@ -19,36 +19,6 @@ const bcrypt = require("bcrypt");
 
 const multerS3 = require("multer-s3");
 
-// const clientID = process.env.GITHUB_CLIENT_ID;
-// const clientSecret = process.env.GITHUB_CLIENT_SECRET;
-// const axios = require("axios");
-
-// export default {
-//   post: async (req: Request, res: Response) => {
-//     const { email } = req.body;
-
-//     try {
-//       if (email) {
-//         const accessToken = jwt.sign({ email }, process.env.ACCESS_SECRET, {
-//           expiresIn: "10h",
-//         });
-
-//         console.log("1", accessToken);
-
-//         // email을 playload에 담은 토큰을 쿠키로 전달
-
-//         res.cookie("accessToken", accessToken, {
-//           sameSite: "none",
-//         });
-
-//         return res.status(200).send("OK");
-//       }
-//     } catch {
-//       return res.status(400).send("NOT OK");
-//     }
-//   },
-// };
-
 interface UserType {
   user_id: string;
   nickname: string;
@@ -93,7 +63,6 @@ export let UserController = {
             .collection("user")
             .findOne({ user_id: user_id });
 
-          console.log(findUserWithId);
           if (!findUserWithId) {
             return res.status(200).json({
               message: "It doesn't match",
@@ -126,8 +95,6 @@ export let UserController = {
                 findUserWithPw.password
               );
 
-              console.log("check", check);
-
               if (!check) {
                 return res.status(200).json({
                   message: "It doesn't match",
@@ -157,11 +124,7 @@ export let UserController = {
             if (err) {
               console.log("genSalt Error: " + err);
             } else {
-              console.log("salt", salt);
-
               bcrypt.hash(password, salt, function (err: Error, hash: string) {
-                console.log("hash", hash);
-
                 db.collection("user").insertOne(
                   {
                     user_id: req.body.user_id,
@@ -183,8 +146,6 @@ export let UserController = {
                     let findUserId = await db
                       .collection("user")
                       .findOne({ user_id: req.body.user_id });
-
-                    console.log(findUserId._id);
 
                     return res.status(201).json({
                       data: {
@@ -272,15 +233,11 @@ export let UserController = {
             const findUser = await db
               .collection("user")
               .findOne({ user_id: decoded.user_id });
-            // console.log("decoded", decoded);
-            // console.log("finduser", findUser);
 
             const countUserVote = await db
               .collection("vote")
               .find({ user_id: decoded.user_id })
               .count();
-
-            // console.log(countUserVote);
 
             return res.status(200).json({
               data: {
@@ -300,15 +257,13 @@ export let UserController = {
               .find({ user_id: decoded.user_id })
               .toArray();
 
-            // console.log("findUserVote", findUserVote);
-
             var voteInfo = [];
 
             const countUserVote = await db
               .collection("vote")
               .find({ user_id: decoded.user_id })
               .count();
-            console.log(countUserVote);
+
             // countUserVote가 예를 들면 32이면
             // q=4 일때 0~1까지 q=3일때 2~11까지 q=2일때 12~21(20뺀거~11뺀거)까지 q=1일때 22~31(10뺀거~1뺀거)
             // countUserVote가 예를 들면 15이면
@@ -318,7 +273,6 @@ export let UserController = {
               i <= countUserVote - 10 * q + 9;
               i++
             ) {
-              console.log(findUserVote[4]);
               if (findUserVote[i] === undefined) continue;
               const vote: any = {
                 title: findUserVote[i].title,
@@ -376,14 +330,10 @@ export let UserController = {
               if (err) {
                 console.log("genSalt Error: " + err);
               } else {
-                // console.log("salt", salt);
-
                 bcrypt.hash(
                   req.body.password,
                   salt,
                   function (err: Error, hash: string) {
-                    // console.log("hash", hash);
-
                     db.collection("user").updateOne(
                       { user_id: decoded.user_id },
                       {

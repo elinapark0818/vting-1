@@ -39,8 +39,6 @@ export let OauthController = {
           .findOne({ user_id: user_id });
 
         if (findUser) {
-          console.log(findUser);
-
           const accessToken = jwt.sign(
             { user_id },
             process.env.ACCESS_SECRET as jwt.Secret,
@@ -93,8 +91,6 @@ export let OauthController = {
               );
 
               let findUserId = await db.collection("user").findOne({ user_id });
-
-              console.log(findUserId._id);
 
               return res.status(201).json({
                 data: {
