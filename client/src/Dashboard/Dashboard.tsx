@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import "./Dashboard.scss";
-// import { AiOutlineArrowDown } from "react-icons/ai";
+import Loading from "../Loading/Loading";
 import vtCry from "../assets/vt_cry.png";
 
 const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
@@ -130,6 +130,8 @@ function Dashboard() {
 
   const [empty, setEmpty] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     if (!isLogin.login) {
       setSignInState(false);
@@ -158,6 +160,7 @@ function Dashboard() {
         console.log(err);
       }
     };
+
     getUserVoteData();
     getVoteCount();
   }, [userVoteCount]);
@@ -373,7 +376,6 @@ function Dashboard() {
                 style={{ width: "300px", marginBottom: "5em" }}
               />
               <div className="empty">아직 만들어진 V-ting이 없어요.</div>
-              {/* <AiOutlineArrowDown className="empty_arrowDown" /> */}
               <div
                 onClick={() => navigate("/new")}
                 className="dashboard_btnWrap"
