@@ -317,8 +317,10 @@ export let UserController = {
               voteInfo.push(vote);
             }
 
+            const reverseVote = voteInfo.reverse();
+
             return res.status(200).json({
-              vote: voteInfo,
+              vote: reverseVote,
             });
           } else {
             return res.status(400).json({ message: "Bad request" });
