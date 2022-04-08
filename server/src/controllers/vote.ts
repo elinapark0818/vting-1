@@ -240,6 +240,7 @@ export let VoteController = {
                     format,
                     manytimes,
                     items,
+                    isPublic: true,
                     undergoing: true,
                     sumCount: 0,
                     voterCount: 0,
@@ -503,15 +504,7 @@ export let VoteController = {
                 .findOne(
                   { user_id: data.user_id, _id: new ObjectId(voteId) },
                   (err: Error, data: any) => {
-                    // if (data.format !== "open") {
-                    //   let sumCount: number = 0;
-                    //   for (let el of data.items) {
-                    //     sumCount += el.count;
-                    //   }
-                    //   return res.status(200).json({ data: data, sumCount });
-                    // } else {
                     return res.status(200).json({ data: data });
-                    // }
                   }
                 );
             }
