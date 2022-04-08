@@ -66,6 +66,7 @@ function Edit() {
     setPatchUserInfo({ ...patchUserInfo, [name]: value });
   };
 
+  const [editOkModal, setEditOkModal] = useState<boolean>(false);
   const EditUserInfo = async () => {
     let accessToken = localStorage.getItem("accessToken");
     let sendBody;
@@ -94,7 +95,7 @@ function Edit() {
                 nickname: patchUserInfo.name || userInfo.nickname,
               })
             );
-            alert("회원정보가 수정되었습니다.");
+            setEditOkModal(true);
           }
         });
     } catch (err) {
@@ -177,6 +178,37 @@ function Edit() {
             </button>
           </div>
         </main>
+        {editOkModal && (
+          <div className="editOkModal_container">
+            <div className="editOkModal_background">
+              <div className="editOkModal_modal">
+                <button
+                  className="editOkModal_closeBtn"
+                  onClick={() => setEditOkModal(false)}
+                >
+                  X
+                </button>
+                <div className="editOkModal_desc">
+                  <h3>회원정보가 수정되었습니다.</h3>
+                </div>
+                <div className="editOkModal_btnWrap">
+                  <button
+                    className="editOkModal_ok"
+                    onClick={() => setEditOkModal(false)}
+                  >
+                    확인
+                  </button>
+                  <button
+                    className="editOkModal_cancel"
+                    onClick={() => setEditOkModal(false)}
+                  >
+                    취소
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
