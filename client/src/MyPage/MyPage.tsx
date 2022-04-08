@@ -5,7 +5,7 @@ import { Link, Outlet } from "react-router-dom";
 // import { RootState } from "../store/index";
 import "./MyPage.scss";
 
-const serverURL: string = "http://localhost:8000";
+const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
 function MyPage() {
   // const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -105,7 +105,6 @@ function MyPage() {
           </main>
         </div>
       )}
-
     </div>
   );
 }
