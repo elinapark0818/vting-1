@@ -71,15 +71,24 @@ export let VoterController = {
   // bar => 해당 idx countup
   vote: {
     patch: async (req: Request & { body: any }, res: Response) => {
-      const { idx, content }: PatchVote = req.body;
+      let { idx, content }: PatchVote = req.body;
+      let resultContent = "";
+      if (content) {
+        for (let el of content) {
+          if (el === " ") {
+            continue;
+          } else {
+            resultContent += el.toLowerCase();
+          }
+        }
+      }
 
-      console.log("req.body", req.body);
       try {
         const findMemberVote = await db
           .collection("vote")
           .findOne({ url: Number(req.params.accessCode) });
 
-        // 회원인지 비회원인지,  확인
+        // 회원인지 비회원인지 확인
         if (findMemberVote !== null) {
           // format이 'bar', 'versus' 일때
           if (
@@ -104,7 +113,7 @@ export let VoterController = {
               .collection("vote")
               .findOne({ url: Number(req.params.accessCode) });
 
-            let sumCount = updatedMemberVote.sumCount;
+            let sumCount = 0;
             for (let el of updatedMemberVote.items) {
               sumCount += el.count;
             }
@@ -186,7 +195,7 @@ export let VoterController = {
               await db.collection("vote").updateOne(
                 {
                   url: Number(req.params.accessCode),
-                  "items.content": content,
+                  "items.content": resultContent,
                 },
                 { $inc: { "items.$.count": 1 } }
               );
@@ -196,7 +205,7 @@ export let VoterController = {
                 .collection("vote")
                 .findOne({ url: Number(req.params.accessCode) });
 
-              let sumCount = updatedMemberVote.sumCount;
+              let sumCount = 0;
               for (let el of updatedMemberVote.items) {
                 sumCount += el.count;
               }
@@ -326,7 +335,7 @@ export let VoterController = {
               .collection("non-member")
               .findOne({ url: Number(req.params.accessCode) });
 
-            let sumCount = updatedNonMemberVote.sumCount;
+            let sumCount = 0;
             for (let el of updatedNonMemberVote.items) {
               sumCount += el.count;
             }
@@ -379,7 +388,7 @@ export let VoterController = {
                 .collection("non-member")
                 .findOne({ url: Number(req.params.accessCode) });
 
-              let sumCount = updatedNonMemberVote.sumCount;
+              let sumCount = 0;
               for (let el of updatedNonMemberVote.items) {
                 sumCount += el.count;
               }
