@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, setIsLogin, setUserInfo } from "../store/index";
 import axios from "axios";
 import ProgressBar from "../Info/ProgressBar";
+import { BiMenu } from "react-icons/bi";
 
 const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
@@ -149,6 +150,73 @@ function Navbar() {
             </Link>
           </div>
         )}
+      </div>
+      <div className="NavBarMobile">
+        <div className="NavLeft">
+          <Link to="/">
+            <img src={Logo} alt="logo" style={{ width: "100px" }} />
+          </Link>
+        </div>
+        <div className="NavMobileMenuBtn">
+          <BiMenu />
+        </div>
+        <div className="NavMobileMenu">
+          {loginState ? (
+            <div className="NavRight">
+              <Link className="nav-link link" to="/">
+                홈
+              </Link>
+              <Link className="nav-link link" to="dashboard">
+                대시보드
+              </Link>
+              <Link className="nav-link link" to="new">
+                설문만들기
+              </Link>
+              <div className="profile">
+                <div>
+                  <img
+                    src={userInfo.image}
+                    alt="profile_img"
+                    style={{
+                      width: "60px",
+                      height: "60px",
+                      objectFit: "cover",
+                      borderRadius: "50%",
+                    }}
+                  />
+
+                  <ul className="subMenu">
+                    <div className="subMenuLi">
+                      <div className="username">{userInfo.nickname} 님 🧡</div>
+                      <Link className="nav-link link" to="myPage">
+                        마이페이지
+                      </Link>
+
+                      <div
+                        className="nav-link link"
+                        onClick={() => handleLogout()}
+                      >
+                        SingOut
+                      </div>
+                    </div>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="NavRight">
+              <Link className="nav-link link" to="/">
+                홈
+              </Link>
+              <Link className="nav-link link" to="new">
+                설문만들기
+              </Link>
+              <Link className="nav-link link" to="signIn">
+                로그인
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
       <ProgressBar />
     </div>

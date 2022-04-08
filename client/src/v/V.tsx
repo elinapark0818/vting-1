@@ -22,31 +22,10 @@ import Counter from "../Voter/Counter";
 import vtCry from "../assets/vt_cry.png";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, patchGetVote, ResultVoteInfo } from "../store/index";
-import { report } from "process";
+import AOS from "aos";
+AOS.init();
 
 const imgAlertContext = createContext<any | null>(null);
-
-interface Item {
-  idx: number;
-  content: string;
-  count?: number;
-}
-
-interface VoteInfo {
-  _id?: string;
-  user_id?: string;
-  password?: string;
-  url?: number;
-  title?: string;
-  format?: string;
-  type?: string;
-  items?: Item[];
-  multiple?: boolean;
-  manytimes?: boolean;
-  undergoing?: boolean;
-  isPublic?: boolean;
-  created_at?: string;
-}
 
 interface Props {
   setIsNonUser: Dispatch<SetStateAction<boolean>>;
@@ -119,6 +98,7 @@ function V() {
             };
           }
           dispatch(patchGetVote(getVoteBody));
+          setVoteTitle(response.data.vote_data.title);
           if (response.data.user_data) {
             // 회원일 때 토글버튼 두개를 db에 있는 상태로 초기화합니다.
             setToggleOngoing(response.data.vote_data.undergoing);
@@ -447,9 +427,11 @@ function Howto() {
       <div className="voteResultChild voteResultShort">
         <div className="voteResultChildTitle">Short URL</div>
         <div className="voteResultChildContent">
-          vote.v-ting.net/
-          <br />
-          {code}
+          <div data-aos="flip-left">
+            vote.v-ting.net/
+            <br />
+            {code}
+          </div>
         </div>
         <div className="voteResultChildShare">
           <div className="copy" onClick={() => shortUrlClip()}>
@@ -467,7 +449,9 @@ function Howto() {
       <div className="hrVer"></div>
       <div className="voteResultChild voteResultCode">
         <div className="voteResultChildTitle">Vting Code</div>
-        <div className="voteResultChildContent">{code}</div>
+        <div className="voteResultChildContent">
+          <div data-aos="flip-left">{code}</div>
+        </div>
         <div className="voteResultChildShare">
           <div className="copy" onClick={() => codeClip()}>
             <BiCopy />
@@ -485,7 +469,12 @@ function Howto() {
       <div className="voteResultChild voteResultQr">
         <div className="voteResultChildTitle">QR Code</div>
         <div className="voteResultChildContent voteResultChildQr">
-          <img src={imgUrl} alt="qr" onClick={() => zoomQr()} />
+          <img
+            src={imgUrl}
+            alt="qr"
+            onClick={() => zoomQr()}
+            data-aos="flip-left"
+          />
         </div>
         <div className="voteResultChildShare">
           <div className="copy" onClick={() => quBlobClip()}>

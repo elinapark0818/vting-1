@@ -10,6 +10,10 @@
   align-items: center;
 }
 
+.NavBarMobile {
+  display: none;
+}
+
 .votingBannerCon {
   padding: 20px 0;
   display: flex;
@@ -197,6 +201,32 @@
         input {
           width: 600px;
         }
+      }
+    }
+  }
+}
+
+@media (max-width: 567px) {
+  .container {
+    height: 30px;
+    .NavBar {
+      display: none;
+    }
+    .NavBarMobile {
+      justify-content: space-between;
+      align-items: center;
+      width: 320px;
+      display: flex;
+      .NavLeft {
+        padding: 0;
+      }
+      .NavMobileMenuBtn {
+        height: 40px;
+        font-size: 40px;
+        color: $vting-orange;
+      }
+      .NavMobileMenu {
+        display: none;
       }
     }
   }

@@ -7,6 +7,8 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { patchGetVote, RootState } from "../store/index";
+import AOS from "aos";
+AOS.init();
 
 type IntervalFunction = () => unknown | void;
 
@@ -45,7 +47,7 @@ function Vresult() {
   const { code } = useParams();
   const voteData = useSelector((state: RootState) => state.getVote);
   const items = voteData.items;
-  const sum = voteData.sumCount || 0;
+  const [sum, setSum] = useState(voteData.sumCount || 0);
   const format = voteData.format;
   const type = voteData.type;
   const dispatch = useDispatch();
@@ -91,6 +93,7 @@ function Vresult() {
               type: response.data.vote_data.type || "",
             })
           );
+          setSum(response.data.vote_data.sumCount);
         }
       } catch (e) {
         dispatch(
@@ -111,7 +114,7 @@ function Vresult() {
     if (response.status === 200) {
       if (
         response.data.vote_data.format === "word" &&
-        response.data.vote_data.sumCount === voteData.sumCount
+        response.data.vote_data.sumCount === sum
       ) {
         // do nothing
       } else {
@@ -219,6 +222,7 @@ function Vresult() {
             {items ? (
               items.map((el, idx) => (
                 <div
+                  data-aos="flip-left"
                   className={
                     idx < 4
                       ? `openendIcon border${idx + 1}`
@@ -239,11 +243,11 @@ function Vresult() {
       return (
         <div className="realTimeCon">
           <div className="versusCon">
-            <div className="item1" style={fontSizeChange1}>
+            <div className="item1" style={fontSizeChange1} data-aos="flip-left">
               {items.length ? items[0].content : ""}
             </div>
             <div className="vs">vs</div>
-            <div className="item2" style={fontSizeChange2}>
+            <div className="item2" style={fontSizeChange2} data-aos="flip-left">
               {items.length ? items[1].content : ""}
             </div>
           </div>

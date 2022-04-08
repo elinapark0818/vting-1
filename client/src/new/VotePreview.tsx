@@ -5,6 +5,8 @@ import "tippy.js/animations/scale.css";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import vtinglogo from "../assets/vt_logo_2.png";
+import AOS from "aos";
+AOS.init();
 
 function VotePreview() {
   const newVoteFormat = useSelector(
@@ -22,7 +24,7 @@ function VotePreview() {
       return <WordCloud />;
     default:
       return (
-        <div className="votePreviewCon">
+        <div className="votePreviewCon" data-aos="flip-left">
           <img src={vtinglogo} className="vting-logo" alt="vting-logo" />
         </div>
       );
@@ -56,7 +58,7 @@ function Bar() {
   switch (type) {
     case "vertical":
       return (
-        <div className="votePreviewCon">
+        <div className="votePreviewCon" data-aos="flip-left">
           <div className="votePreview">
             <div className="votePreviewTitle">
               {newVote.title || "설문 제목"}
@@ -80,7 +82,7 @@ function Bar() {
 
     case "horizontal":
       return (
-        <div className="votePreviewCon">
+        <div className="votePreviewCon" data-aos="flip-left">
           <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
           <div className="votePreviewBack">
             <div className="votePreview-barHor-con">
@@ -107,7 +109,7 @@ function OpenEnded() {
   const newVote = useSelector((state: RootState) => state.makeNewVote);
 
   return (
-    <div className="votePreviewCon">
+    <div className="votePreviewCon" data-aos="flip-left">
       <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
       <div className="votePreviewBack">
         <div className="openItems">
@@ -128,7 +130,7 @@ function Versus() {
   const newVote = useSelector((state: RootState) => state.makeNewVote);
 
   return (
-    <div className="votePreviewCon">
+    <div className="votePreviewCon" data-aos="flip-left">
       <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
       <div className="votePreviewBack">
         <div className="versusItemCon">
@@ -174,7 +176,7 @@ function WordCloud() {
   };
 
   return (
-    <div className="votePreviewCon">
+    <div className="votePreviewCon" data-aos="flip-left">
       <div className="votePreviewTitle wordTitle">
         {newVote.title || "설문 제목"}
       </div>

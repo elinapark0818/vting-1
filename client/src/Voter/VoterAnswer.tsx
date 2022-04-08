@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { patchGetVote, RootState } from "../store/index";
 import { useAlert } from "react-alert";
+import AOS from "aos";
+AOS.init();
 
 interface Props {
   answerMode?: boolean;
@@ -142,7 +144,6 @@ function Bar({ multiple, setAnswerMode }: Options) {
       } else {
         reqBodyIdx.push(clicked);
       }
-
       try {
         const response = await axios.patch(`${serverURL}/voter/${code}`, {
           idx: reqBodyIdx,
@@ -179,6 +180,7 @@ function Bar({ multiple, setAnswerMode }: Options) {
           {multipleMode
             ? multiClicked.map((el: Item, idx: number) => (
                 <div
+                  data-aos="flip-left"
                   className="voteAnswer"
                   onClick={() => handleMClicked(el.idx)}
                   key={idx}
@@ -205,6 +207,7 @@ function Bar({ multiple, setAnswerMode }: Options) {
               ))
             : voteData.items.map((el: Item, idx: number) => (
                 <div
+                  data-aos="flip-left"
                   className="voteAnswer"
                   onClick={() => setClicked(el.idx)}
                   key={idx}
@@ -281,8 +284,11 @@ function Open({ setAnswerMode }: Options) {
   return (
     <div className="votingBody">
       <div className="votingContent" id="subjectiveContent">
-        <label htmlFor="answerInput">당신의 답변은?</label>
+        <label htmlFor="answerInput" data-aos="flip-left">
+          당신의 답변은?
+        </label>
         <input
+          data-aos="flip-left"
           type="text-area"
           id="answerInput"
           className={shake ? "subjectiveInput shakeInput" : "subjectiveInput"}
