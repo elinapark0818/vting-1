@@ -170,6 +170,7 @@ function Vresult() {
                         <div className="triangle"></div>
                       </div>
                       <div
+                        title={el.count?.toString()}
                         className="barVer-itemBar"
                         style={makeRandomHeight(
                           el.count as number,
@@ -198,6 +199,7 @@ function Vresult() {
                         <div className="triangle"></div>
                       </div>
                       <div
+                        title={el.count?.toString()}
                         className="barHor-itemBar"
                         style={makeRandomWidth(
                           el.count as number,
@@ -243,11 +245,21 @@ function Vresult() {
       return (
         <div className="realTimeCon">
           <div className="versusCon">
-            <div className="item1" style={fontSizeChange1} data-aos="flip-left">
+            <div
+              className="item1"
+              style={fontSizeChange1}
+              data-aos="flip-left"
+              title={items[0].count?.toString()}
+            >
               {items.length ? items[0].content : ""}
             </div>
             <div className="vs">vs</div>
-            <div className="item2" style={fontSizeChange2} data-aos="flip-left">
+            <div
+              className="item2"
+              style={fontSizeChange2}
+              data-aos="flip-left"
+              title={items[0].count?.toString()}
+            >
               {items.length ? items[1].content : ""}
             </div>
           </div>
