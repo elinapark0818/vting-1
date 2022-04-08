@@ -95,6 +95,7 @@ export let VoterController = {
     patch: async (req: Request & { body: any }, res: Response) => {
       const { idx, content }: PatchVote = req.body;
 
+      console.log("req.body", req.body);
       try {
         const findMemberVote = await db
           .collection("vote")
@@ -141,25 +142,20 @@ export let VoterController = {
               );
 
             // variance update
-            let variance = findMemberVote.map((vote: any) => {
-              vote.map((items: any) => {
-                let total = 0;
-                for (let el of items.count) {
-                  total += el;
-                }
-                let average = total / items.length;
+            let total = 0;
+            for (let el of findMemberVote.items) {
+              total += el.count;
+            }
+            let average = total / findMemberVote.items.length;
 
-                total = 0;
+            total = 0;
 
-                for (let i = 0; i < items.length; i++) {
-                  let deviation = items[i].count - average;
+            for (let i = 0; i < findMemberVote.items.length; i++) {
+              let deviation = findMemberVote.items[i].count - average;
 
-                  total += deviation * deviation;
-                }
-                let variance = total / (items.length - 1);
-                return variance;
-              });
-            });
+              total += deviation * deviation;
+            }
+            let variance = total / (findMemberVote.items.length - 1);
 
             await db
               .collection("vote")
@@ -234,25 +230,20 @@ export let VoterController = {
                 );
 
               // variance update
-              let variance = findMemberVote.map((vote: any) => {
-                vote.map((items: any) => {
-                  let total = 0;
-                  for (let el of items.count) {
-                    total += el;
-                  }
-                  let average = total / items.length;
+              let total = 0;
+              for (let el of findMemberVote.items) {
+                total += el.count;
+              }
+              let average = total / findMemberVote.items.length;
 
-                  total = 0;
+              total = 0;
 
-                  for (let i = 0; i < items.length; i++) {
-                    let deviation = items[i].count - average;
+              for (let i = 0; i < findMemberVote.items.length; i++) {
+                let deviation = findMemberVote.items[i].count - average;
 
-                    total += deviation * deviation;
-                  }
-                  let variance = total / (items.length - 1);
-                  return variance;
-                });
-              });
+                total += deviation * deviation;
+              }
+              let variance = total / (findMemberVote.items.length - 1);
 
               await db
                 .collection("vote")
@@ -285,6 +276,29 @@ export let VoterController = {
                 .updateOne(
                   { url: Number(req.params.accessCode) },
                   { $inc: { voterCount: 1 } }
+                );
+
+              // variance update
+              let total = 0;
+              for (let el of findMemberVote.items) {
+                total += el.count;
+              }
+              let average = total / findMemberVote.items.length;
+
+              total = 0;
+
+              for (let i = 0; i < findMemberVote.items.length; i++) {
+                let deviation = findMemberVote.items[i].count - average;
+
+                total += deviation * deviation;
+              }
+              let variance = total / (findMemberVote.items.length - 1);
+
+              await db
+                .collection("vote")
+                .updateOne(
+                  { url: Number(req.params.accessCode) },
+                  { $set: { variance } }
                 );
 
               return res
