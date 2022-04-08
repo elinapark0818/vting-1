@@ -5,9 +5,6 @@ import express, {
   Response,
   NextFunction,
 } from "express";
-import { request } from "http";
-import { read } from "fs";
-import { ObjectId } from "mongodb";
 const jwt = require("jsonwebtoken");
 import dotenv from "dotenv";
 dotenv.config();
@@ -72,13 +69,14 @@ export let VoterController = {
   vote: {
     patch: async (req: Request & { body: any }, res: Response) => {
       let { idx, content }: PatchVote = req.body;
-      let resultContent = "";
+      console.log("content", content);
+      let viewContent = "";
       if (content) {
         for (let el of content) {
           if (el === " ") {
             continue;
           } else {
-            resultContent += el.toLowerCase();
+            viewContent += el.toLowerCase();
           }
         }
       }
@@ -187,7 +185,7 @@ export let VoterController = {
           } else if (findMemberVote.format === "word") {
             const findContent = await db.collection("vote").findOne({
               url: Number(req.params.accessCode),
-              "items.content": content,
+              "items.content": viewContent,
             });
 
             // 작성된 content와 동일한 content가 있을때 => count up
@@ -195,7 +193,7 @@ export let VoterController = {
               await db.collection("vote").updateOne(
                 {
                   url: Number(req.params.accessCode),
-                  "items.content": resultContent,
+                  "items.content": viewContent,
                 },
                 { $inc: { "items.$.count": 1 } }
               );
@@ -258,7 +256,7 @@ export let VoterController = {
                   $push: {
                     items: {
                       idx: findMemberVote.items.length,
-                      content,
+                      content: viewContent,
                       count: 0,
                     },
                   },
@@ -370,15 +368,15 @@ export let VoterController = {
           } else if (findNonMemberVote.format === "word") {
             const findContent = await db.collection("non-member").findOne({
               url: Number(req.params.accessCode),
-              "items.content": content,
+              "items.content": viewContent,
             });
 
             // 작성된 content와 동일한 content가 있을때 => count up
             if (findContent) {
-              await db.collection("non-member").updateOne(
+              await db.collection("vote").updateOne(
                 {
                   url: Number(req.params.accessCode),
-                  "items.content": content,
+                  "items.content": viewContent,
                 },
                 { $inc: { "items.$.count": 1 } }
               );
@@ -410,7 +408,7 @@ export let VoterController = {
                   $push: {
                     items: {
                       idx: findNonMemberVote.items.length,
-                      content,
+                      content: viewContent,
                       count: 0,
                     },
                   },
