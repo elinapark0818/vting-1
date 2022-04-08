@@ -102,42 +102,11 @@ function Edit() {
     }
   };
 
-  const handleLogout = async () => {
-    let accessToken = localStorage.getItem("accessToken");
-    try {
-      const res = await axios.get(serverURL + "/session", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          withCredentials: true,
-        },
-      });
-      if (res.status === 200) {
-        const token = res.data.data.accessToken;
-        localStorage.setItem("accessToken", token);
-        dispatch(setIsLogin(false));
-        navigate("/");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   return (
     <div className="edit_container">
       <header className="edit_header">
-        <img
-          src={userInfo.image}
-          alt="preView_profile"
-          style={{
-            width: "100px",
-            height: "100px",
-            objectFit: "cover",
-            borderRadius: "50%",
-          }}
-        />
         <div className="edit_header_desc">
-          <h2>{userInfo.nickname}</h2>
-          <h3>회원님, 안녕하세요!</h3>
+          <h3>{userInfo.nickname} 님, 안녕하세요!</h3>
         </div>
       </header>
 
@@ -154,9 +123,6 @@ function Edit() {
             onClick={() => navigate("/myPage/delete")}
           >
             회원탈퇴 관리
-          </button>
-          <button className="userInfo_logout" onClick={() => handleLogout()}>
-            로그아웃
           </button>
         </nav>
 
