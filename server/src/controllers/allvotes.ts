@@ -1,7 +1,5 @@
 import { db } from "..";
 import express, { Request, Response } from "express";
-import dotenv from "dotenv";
-dotenv.config();
 
 interface AnswerVoteType {
   title: string;
@@ -14,68 +12,53 @@ interface AnswerVoteType {
 export let allVoteController = {
   get: async (req: Request, res: Response) => {
     try {
-      const findAllVotes = await db
-        .collection("vote")
-        .find({ isPublic: true, undergoing: true })
-        .sort({ _id: -1 })
-        .limit(20)
-        .toArray();
-      const voteInfo = [];
+      const params: string = req.params.content;
 
-      for (let vote of findAllVotes) {
-        if (vote.format === "bar" || vote.format === "versus") {
-          let result = 0;
-          if (vote.items) {
-            for (let item of vote.items) {
-              result += item.count;
-            }
-          } else {
-            result = 0;
-          }
-          const voteType1: AnswerVoteType = {
-            title: vote.title,
-            format: vote.format,
-            created_at: vote.created_at,
-            url: vote.url,
-            sumCount: result,
-          };
-          voteInfo.push(voteType1);
-        } else if (vote.format === "open") {
-          let result = 0;
-          if (vote.response) {
-            result = vote.response.length;
-          }
-          const voteType2: AnswerVoteType = {
-            title: vote.title,
-            format: vote.format,
-            created_at: vote.created_at,
-            url: vote.url,
-            sumCount: result,
-          };
-          voteInfo.push(voteType2);
-        } else if (vote.format === "word") {
-          let result = 0;
-          if (vote.items) {
-            for (let item of vote.items) {
-              result += item.count + 1;
-            }
-          } else {
-            result = 0;
-          }
-          const voteType1: AnswerVoteType = {
-            title: vote.title,
-            format: vote.format,
-            created_at: vote.created_at,
-            url: vote.url,
-            sumCount: result,
-          };
-          voteInfo.push(voteType1);
-        }
+      // FIXME: content type = "newest"
+      if (params === "newest") {
+        const findAllVotes = await db
+          .collection("vote")
+          .find({ isPublic: true, undergoing: true })
+          .sort({ created_at: -1 })
+          .limit(20)
+          .toArray();
+
+        return res.status(200).json({
+          vote: findAllVotes,
+        });
       }
 
-      return res.status(200).json({
-        vote: voteInfo,
-      });
+      // FIXME: content type = "most"
+      else if (params === "most") {
+        const findAllVotes = await db
+          .collection("vote")
+          .find({ isPublic: true, undergoing: true })
+          .sort({ voterCount: -1 })
+          .limit(20)
+          .toArray();
+
+        return res.status(200).json({
+          vote: findAllVotes,
+        });
+      }
+
+      // FIXME: content type = "diff"
+      else if (params === "diff") {
+        const findAllVotes = await db
+          .collection("vote")
+          .find({
+            isPublic: true,
+            undergoing: true,
+            format: { $in: ["bar", "word", "versus"] },
+          })
+          .sort({ variance: 1 })
+          .limit(20)
+          .toArray();
+
+        return res.status(200).json({
+          vote: findAllVotes,
+        });
+      }
     } catch {
       return res.status(400).json({ message: "Bad Request" });
     }

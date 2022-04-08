@@ -105,6 +105,8 @@ export let VoteController = {
                     undergoing: true,
                     isPublic: true,
                     sumCount: 0,
+                    voterCount: 0,
+                    variance: 0,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -150,6 +152,7 @@ export let VoteController = {
                     response,
                     undergoing: true,
                     isPublic: true,
+                    voterCount: 0,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -194,6 +197,8 @@ export let VoteController = {
                     undergoing: true,
                     isPublic: true,
                     sumCount: 0,
+                    voterCount: 0,
+                    variance: 0,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
@@ -237,6 +242,8 @@ export let VoteController = {
                     items,
                     undergoing: true,
                     sumCount: 0,
+                    voterCount: 0,
+                    variance: 0,
                     created_at: new Date(),
                   },
                   async (err: Error, data: any) => {
