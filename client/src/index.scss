@@ -82,6 +82,19 @@ $vting-gray: #dfe9f3;
   }
 }
 
+@media (max-width: 567px) {
+  body {
+    min-width: 320px;
+    width: 100%;
+  }
+  .bodyContainer {
+    width: 100%;
+    display: flex;
+    min-height: 568px;
+    justify-content: center;
+  }
+}
+
 body {
   -ms-overflow-style: none;
   scrollbar-width: none;

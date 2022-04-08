@@ -547,3 +547,44 @@
     }
   }
 }
+
+@media (max-width: 567px) {
+  .newVoteCon {
+    width: 320px;
+    padding: 30px 0;
+    flex-direction: column;
+    padding-bottom: 100px;
+    box-shadow: none;
+    .voteFormatsCon {
+      justify-content: center;
+      ul {
+        width: 100%;
+        padding-bottom: 30px;
+      }
+    }
+    .voteMakerCon {
+      padding: 0;
+    }
+    .vote-info {
+      margin-left: 0px;
+      width: 320px;
+    }
+    .vote-info:after {
+      left: 153px;
+    }
+    .vote-body {
+      width: 320px;
+      flex-direction: column-reverse;
+      .voteMakerCon {
+        padding-bottom: 50px;
+      }
+      .votePreviewCon {
+        width: 320px;
+        padding-bottom: 50px;
+        .openItems {
+          flex-direction: column;
+        }
+      }
+    }
+  }
+}

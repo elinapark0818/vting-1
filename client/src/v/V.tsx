@@ -48,22 +48,6 @@ interface VoteInfo {
   created_at?: string;
 }
 
-const dummyVote: VoteInfo = {
-  _id: "",
-  user_id: "",
-  password: "",
-  url: 0,
-  title: "",
-  format: "",
-  type: "",
-  items: [],
-  multiple: false,
-  manytimes: false,
-  undergoing: false,
-  isPublic: false,
-  created_at: "",
-};
-
 interface Props {
   setIsNonUser: Dispatch<SetStateAction<boolean>>;
   votePass: string | undefined;
@@ -82,7 +66,6 @@ function V() {
   const voteInfo = useSelector((state: RootState) => state.getVote);
   const votePass = voteInfo.password;
   const dispatch = useDispatch();
-  const alert = useAlert();
 
   const serverURL = process.env.REACT_APP_SERVER_URL;
   const accessToken = localStorage.getItem("accessToken");
@@ -172,7 +155,11 @@ function V() {
         setTogglePublic(response.data.isPublic);
       }
     } catch (e) {
-      alert.show("네트워크 오류 발생. 잠시 후 다시 시도해주세요.");
+      return (
+        <div className="error">
+          네트워크 오류 발생. 잠시 후 다시 시도해주세요.
+        </div>
+      );
     }
   };
 
@@ -195,7 +182,11 @@ function V() {
           setToggleOngoing(response.data.isActive);
         }
       } catch (e) {
-        alert.show("네트워크 오류 발생. 잠시 후 다시 시도해주세요.");
+        return (
+          <div className="error">
+            네트워크 오류 발생. 잠시 후 다시 시도해주세요.
+          </div>
+        );
       }
     } else {
       try {
@@ -216,7 +207,11 @@ function V() {
           setToggleOngoing(response.data.isActive);
         }
       } catch (e) {
-        alert.show("네트워크 오류 발생. 잠시 후 다시 시도해주세요.");
+        return (
+          <div className="error">
+            네트워크 오류 발생. 잠시 후 다시 시도해주세요.
+          </div>
+        );
       }
     }
   };
