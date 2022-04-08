@@ -1,14 +1,13 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Link, Outlet } from "react-router-dom";
-// import { useSelector } from "react-redux";
-// import { RootState } from "../store/index";
+import { Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./MyPage.scss";
 
 const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
 function MyPage() {
-  // const userInfo = useSelector((state: RootState) => state.userInfo);
+  const navigate = useNavigate();
   const [myPagePwd, setMyPagePwd] = useState<string>("");
 
   const myPage_onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,6 +18,8 @@ function MyPage() {
 
   // * 패스워드 체크
   // todo: serverURL + "/user/check" { password: myPagePwd }, { withCredentials: true }
+
+  const [passwordWrong, setPasswordWrong] = useState<boolean>(false);
   const handlePasswordCheck = async () => {
     let accessToken = localStorage.getItem("accessToken");
     try {
@@ -36,7 +37,8 @@ function MyPage() {
       );
 
       if (res.status === 200 && res.data.message === "It doesn't match") {
-        alert("비밀번호가 일치하지 않습니다.");
+        setPasswordWrong(true);
+        setMyPagePwd("");
       }
       if (res.status === 200 && res.data.message === "Success verified") {
         setCheckPwd(true);
@@ -102,6 +104,37 @@ function MyPage() {
                 확인
               </button>
             </div>
+            {passwordWrong && (
+              <div className="passwordWrongModal_container">
+                <div className="passwordWrongModal_background">
+                  <div className="passwordWrongModal_modal">
+                    <button
+                      className="passwordWrongModal_closeBtn"
+                      onClick={() => setPasswordWrong(false)}
+                    >
+                      X
+                    </button>
+                    <div className="passwordWrongModal_desc">
+                      <h3>비밀번호를 확인해주세요.</h3>
+                    </div>
+                    <div className="passwordWrongModal_btnWrap">
+                      <button
+                        className="passwordWrongModal_ok"
+                        onClick={() => setPasswordWrong(false)}
+                      >
+                        확인
+                      </button>
+                      <button
+                        className="passwordWrongModal_cancel"
+                        onClick={() => setPasswordWrong(false)}
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </main>
         </div>
       )}

@@ -49,6 +49,7 @@ function Delete() {
     setModalState(false);
   };
 
+  const [withdrawalOk, setWithdrawalOk] = useState<boolean>(false);
   const deleteUser = async () => {
     let accessToken = localStorage.getItem("accessToken");
     try {
@@ -62,29 +63,9 @@ function Delete() {
       if (res.status === 200) {
         console.log(res.data.message);
         localStorage.removeItem("accessToken");
-        alert("회원탈퇴가 완료되었습니다.");
         dispatch(setIsLogin(false));
-        navigate("/");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const handleLogout = async () => {
-    let accessToken = localStorage.getItem("accessToken");
-    try {
-      const res = await axios.get(serverURL + "/session", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          withCredentials: true,
-        },
-      });
-      if (res.status === 200) {
-        const token = res.data.data.accessToken;
-        localStorage.setItem("accessToken", token);
-        dispatch(setIsLogin(false));
-        navigate("/");
+        setWithdrawalOk(true);
+        setModalState(false);
       }
     } catch (err) {
       console.log(err);
@@ -135,7 +116,7 @@ function Delete() {
         </div>
       </main>
 
-      {modalState ? (
+      {modalState && (
         <div className="deleteModal_container">
           <div className="deleteModal_background">
             <div className="deleteModal_modal">
@@ -160,8 +141,37 @@ function Delete() {
             </div>
           </div>
         </div>
-      ) : (
-        <div></div>
+      )}
+      {withdrawalOk && (
+        <div className="withdrawalOk_container">
+          <div className="withdrawalOk_background">
+            <div className="withdrawalOk_modal">
+              <button
+                className="withdrawalOk_closeBtn"
+                onClick={() => navigate(-1)}
+              >
+                X
+              </button>
+              <div className="withdrawalOk_desc">
+                <h3>회원탈퇴 되었습니다.</h3>
+              </div>
+              <div className="withdrawalOk_btnWrap">
+                <button
+                  className="withdrawalOk_ok"
+                  onClick={() => navigate("/")}
+                >
+                  확인
+                </button>
+                <button
+                  className="withdrawalOk_cancel"
+                  onClick={() => navigate(-1)}
+                >
+                  취소
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

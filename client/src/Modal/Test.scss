@@ -1,0 +1,483 @@
+@import "../index.scss";
+
+// * 회원가입 모달
+
+.SignUpOkModal_closeBtn {
+  color: #aaa;
+  background-color: transparent;
+  line-height: 80px;
+  font-size: 20px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 70px;
+  text-decoration: none;
+  &:hover {
+    color: black;
+  }
+}
+
+.SignUpOkModal_container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+.SignUpOkModal_container .SignUpOkModal_background {
+  display: table-cell;
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.SignUpOkModal_container .SignUpOkModal_background .SignUpOkModal_modal {
+  background: #fff;
+  padding: 50px;
+  margin-bottom: 30px;
+  display: inline-block;
+  border-radius: 3px;
+  position: relative;
+
+  & .SignUpOkModal_desc {
+    margin-top: 3em;
+    & h3 {
+      font-size: 20px;
+    }
+  }
+}
+
+.SignUpOkModal_background {
+  & button {
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.SignUpOkModal_btnWrap {
+  margin-top: 3em;
+
+  .SignUpOkModal_ok {
+    background-color: $vting-gray;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0.5em;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $vting-blue;
+    }
+  }
+
+  .SignUpOkModal_cancel {
+    background-color: $vting-gray;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0.5em;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $vting-blue;
+    }
+  }
+}
+
+// * 로그인 모달
+
+.loginOkModal_closeBtn {
+  color: #aaa;
+  background-color: transparent;
+  line-height: 80px;
+  font-size: 20px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 70px;
+  text-decoration: none;
+  &:hover {
+    color: black;
+  }
+}
+
+.loginOkModal_container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+.loginOkModal_container .loginOkModal_background {
+  display: table-cell;
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.loginOkModal_container .loginOkModal_background .loginOkModal_modal {
+  background: #fff;
+  padding: 50px;
+  margin-bottom: 30px;
+  display: inline-block;
+  border-radius: 3px;
+  position: relative;
+
+  & .loginOkModal_desc {
+    margin-top: 3em;
+    & h3 {
+      font-size: 20px;
+    }
+  }
+}
+
+.loginOkModal_background {
+  & button {
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.loginOkModal_btnWrap {
+  margin-top: 3em;
+
+  .loginOkModal_ok {
+    background-color: $vting-gray;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0.5em;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $vting-blue;
+    }
+  }
+
+  .loginOkModal_cancel {
+    background-color: $vting-gray;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0.5em;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $vting-blue;
+    }
+  }
+}
+
+// * 비밀번호 틀림 모달
+
+.passwordWrongModal_closeBtn {
+  color: #aaa;
+  background-color: transparent;
+  line-height: 80px;
+  font-size: 20px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 70px;
+  text-decoration: none;
+  &:hover {
+    color: black;
+  }
+}
+
+.passwordWrongModal_container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+.passwordWrongModal_container .passwordWrongModal_background {
+  display: table-cell;
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.passwordWrongModal_container
+  .passwordWrongModal_background
+  .passwordWrongModal_modal {
+  background: #fff;
+  padding: 50px;
+  margin-bottom: 30px;
+  display: inline-block;
+  border-radius: 3px;
+  position: relative;
+
+  & .passwordWrongModal_desc {
+    margin-top: 3em;
+    & h3 {
+      font-size: 20px;
+    }
+  }
+}
+
+.passwordWrongModal_background {
+  & button {
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.passwordWrongModal_btnWrap {
+  margin-top: 3em;
+
+  .passwordWrongModal_ok {
+    background-color: $vting-gray;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0.5em;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $vting-blue;
+    }
+  }
+
+  .passwordWrongModal_cancel {
+    background-color: $vting-gray;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0.5em;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $vting-blue;
+    }
+  }
+}
+
+// * 회원정보 수정 완료
+
+.editOkModal_closeBtn {
+  color: #aaa;
+  background-color: transparent;
+  line-height: 80px;
+  font-size: 20px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 70px;
+  text-decoration: none;
+  &:hover {
+    color: black;
+  }
+}
+
+.editOkModal_container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+.editOkModal_container .editOkModal_background {
+  display: table-cell;
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.editOkModal_container .editOkModal_background .editOkModal_modal {
+  background: #fff;
+  padding: 50px;
+  margin-bottom: 30px;
+  display: inline-block;
+  border-radius: 3px;
+  position: relative;
+
+  & .editOkModal_desc {
+    margin-top: 3em;
+    & h3 {
+      font-size: 20px;
+    }
+  }
+}
+
+.editOkModal_background {
+  & button {
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.editOkModal_btnWrap {
+  margin-top: 3em;
+
+  .editOkModal_ok {
+    background-color: $vting-gray;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0.5em;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $vting-blue;
+    }
+  }
+
+  .editOkModal_cancel {
+    background-color: $vting-gray;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0.5em;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $vting-blue;
+    }
+  }
+}
+
+// * 회원탈퇴 완료 모달
+
+.withdrawalOk_closeBtn {
+  color: #aaa;
+  background-color: transparent;
+  line-height: 80px;
+  font-size: 20px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 70px;
+  text-decoration: none;
+  &:hover {
+    color: black;
+  }
+}
+
+.withdrawalOk_container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+.withdrawalOk_container .withdrawalOk_background {
+  display: table-cell;
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.withdrawalOk_container .withdrawalOk_background .withdrawalOk_modal {
+  background: #fff;
+  padding: 50px;
+  margin-bottom: 30px;
+  display: inline-block;
+  border-radius: 3px;
+  position: relative;
+
+  & .withdrawalOk_desc {
+    margin-top: 3em;
+    & h3 {
+      font-size: 20px;
+    }
+  }
+}
+
+.withdrawalOk_background {
+  & button {
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.withdrawalOk_btnWrap {
+  margin-top: 3em;
+
+  .withdrawalOk_ok {
+    background-color: $vting-gray;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0.5em;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $vting-blue;
+    }
+  }
+
+  .withdrawalOk_cancel {
+    background-color: $vting-gray;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0.5em;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $vting-blue;
+    }
+  }
+}
