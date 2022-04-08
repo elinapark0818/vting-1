@@ -430,3 +430,61 @@
     }
   }
 }
+
+@media (max-width: 567px) {
+  .voteResultPageCon {
+    display: flex;
+    flex-direction: column-reverse;
+    padding-bottom: 200px;
+    width: 320px;
+    align-items: center;
+    .voteResultPage {
+      border: none;
+      filter: none;
+      .voteResultTitle {
+        width: 100%;
+        background-color: $vting-blue;
+      }
+      .voteResultContent {
+        border: 1px solid $vting-blue;
+        height: auto;
+        flex-direction: column;
+        justify-content: flex-start;
+        .voteResultChild {
+          .voteResultChildTitle {
+            width: 100%;
+            background-color: $vting-orange;
+            color: white;
+          }
+          .voteResultChildContent {
+            font-size: 20px;
+            width: 100%;
+            height: 100px;
+          }
+          .voteResultChildQr {
+            height: 270px;
+            background-color: $vting-gray;
+          }
+        }
+        .hrVer {
+          height: 0;
+          width: 300px;
+          border-bottom: 1px solid $vting-blue;
+          margin: 30px 0;
+        }
+      }
+    }
+    .voteResultFooter {
+      display: flex;
+      flex-direction: column;
+      margin-top: 0;
+      align-items: center;
+      .modeChange {
+        padding-bottom: 30px;
+      }
+      .options {
+        padding-bottom: 30px;
+      }
+    }
+  }
+}

@@ -3,7 +3,6 @@ import axios from "axios";
 import "./Home.scss";
 import HotVote from "./HotVote";
 import Info from "../Info/Info";
-import Loading from "../Loading/Loading";
 
 axios.defaults.withCredentials = true;
 
