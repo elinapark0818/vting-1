@@ -26,7 +26,9 @@ function Navbar() {
   }, [location]);
 
   const NavbarUserInfo = async () => {
-    if (document.location.href.includes("vote")) {
+    let accessToken = localStorage.getItem("accessToken");
+
+    if (document.location.href.includes("vote") || !accessToken) {
       // vote. 경로로 접속한 경우이므로 로그인 요청을 보내지 않습니다.
     } else {
       let accessToken = localStorage.getItem("accessToken");

@@ -9,7 +9,7 @@ function HotVote() {
   const isLogin = useSelector((state: RootState) => state.isLogin.login);
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
-  const [Content, setContent] = useState("newest");
+  const [content, setContent] = useState("newest");
 
   const onChangeHandler = (e: any) => {
     setContent(e.currentTarget.value);
@@ -30,7 +30,7 @@ function HotVote() {
             <select
               id="newVoteFilter"
               onChange={onChangeHandler}
-              value={Content}
+              value={content}
             >
               {Options.map((item, index) => (
                 <option key={item.key} value={item.key}>
@@ -46,7 +46,7 @@ function HotVote() {
             <select
               id="newVoteFilter"
               onChange={onChangeHandler}
-              value={Content}
+              value={content}
             >
               {Options.map((item, index) => (
                 <option key={item.key} value={item.key}>
@@ -58,7 +58,7 @@ function HotVote() {
           </div>
         )}
       </div>
-      <VoteSlider />
+      <VoteSlider content={content} />
       <Link to="/new">
         <div className="newVoteBtn vtingButton">설문 생성하기</div>
       </Link>
