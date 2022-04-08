@@ -1,0 +1,387 @@
+@import "../index.scss";
+
+.body-container {
+  padding-bottom: 200px;
+}
+
+.dashboard_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  margin: 3em 2em 200px 4em;
+
+
+  // box-shadow: 0 7px 7px -4px $vting-orange;
+}
+
+.dashboard_header {
+  display: flex;
+  align-items: center;
+  height: 120px;
+  width: 100%;
+  margin-top: 5em;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: $vting-blue;
+
+  & h1 {
+    font-size: 2em;
+    color: #fff;
+    margin-left: 1.5em;
+  }
+}
+
+.dashboard_wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 3em;
+  min-height: 800px;
+  // text-align: center;
+
+  & .dashboard_table {
+    min-width: 30em;
+    width: 100%;
+    margin-top: 5em;
+    padding-top: 5em;
+    font-size: 1em;
+
+    & thead {
+      background-color: $vting-blue;
+      color: #fff;
+      padding-top: 1em;
+      border-bottom: 3px solid gray;
+    }
+
+    & tbody {
+      padding-top: 1em;
+      background-color: #e9eefd;
+      text-align: center;
+    }
+
+    & tr {
+      border-bottom: 1px solid $vting-gray;
+    }
+
+    & th {
+      width: 150px;
+      padding: 0.5em 1em;
+      font-size: 1.1em;
+
+      & .idx {
+        width: 50px;
+      }
+    }
+
+    & td {
+      padding: 0.5em 1em;
+      border-bottom: 1px solid $vting-gray;
+    }
+
+    .toggleBtn {
+      margin-left: 10px;
+      background-color: #fff;
+      width: 50px;
+      height: 20px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.5s ease-in-out;
+    }
+    .toggleCircle {
+      background-color: $vting-orange;
+      width: 18px;
+      height: 18px;
+      border-radius: 50px;
+      position: absolute;
+      left: 5%;
+      transition: all 0.5s ease-in-out;
+      color: white;
+      text-align: center;
+      line-height: 38px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .toggleOn {
+      background-color: #9c9a9a;
+      color: black;
+      transform: translate(26px, 0);
+      transition: all 0.5s ease-in-out;
+    }
+
+    .td_title {
+      cursor: pointer;
+    }
+  }
+}
+
+.empty_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 10em;
+  // padding-bottom: 30em;
+}
+.empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 3em;
+  font-weight: bold;
+  color: $vting-orange;
+}
+
+.empty_arrowDown {
+  color: $vting-orange;
+  font-size: 6em;
+  animation: rainbow 2.5s linear;
+  animation-iteration-count: infinite;
+}
+
+// * 페이지네이션
+.pagination {
+  margin-top: 5em;
+  display: flex;
+  list-style: none;
+  flex-direction: row;
+
+  .page_btn {
+    cursor: pointer;
+    border: none;
+    font-size: large;
+    font-weight: bold;
+    padding: 3.5px 10px;
+    color: $vting-blue;
+    margin: 5px;
+    background-color: transparent;
+
+    &:hover {
+      cursor: pointer;
+      background-color: $vting-blue;
+      color: #fff;
+      border-radius: 50%;
+    }
+
+    &:active {
+      cursor: pointer;
+      background-color: $vting-blue;
+      color: #fff;
+      border-radius: 50%;
+    }
+  }
+}
+
+.dashboard_deleteBtn {
+  cursor: pointer;
+  border: none;
+  background-color: $vting-orange;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 20px;
+  padding: 5px 15px;
+  transition: all 0.3s ease;
+}
+
+.dashboard_btnWrap {
+  transition: all 0.3s ease;
+}
+
+.dashboard_plusBtn {
+  cursor: pointer;
+  border: 3px solid $vting-blue;
+  border-radius: 20px;
+  background-color: transparent;
+  margin-top: 2em;
+  font-size: 1.5em;
+  padding: 5px 15px;
+  color: $vting-blue;
+  transition: all 0.3s ease;
+}
+
+.dashboard_plusBtn:hover {
+  background-color: $vting-blue;
+  color: #fff;
+}
+
+// * 삭제 클릭시 모달
+
+.dashboard_deleteModal_container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  // transform: scale(0);
+}
+
+.dashboard_deleteModal_container .dashboard_deleteModal_background {
+  display: table-cell;
+  background: rgba(241, 247, 252, 0.1);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.dashboard_deleteModal_container
+  .dashboard_deleteModal_background
+  .dashboard_deleteModal_modal {
+  background: #fff;
+  // padding: 30px 10px;
+  display: inline-block;
+  border-radius: 3px;
+  position: relative;
+
+  & .dashboard_deleteModal_desc {
+    margin: 3em 2em;
+    & h3 {
+      font-size: 20px;
+    }
+  }
+}
+
+.dashboard_deleteModal_background {
+  & button {
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.dashboard_delete_ok {
+  background-color: $vting-gray;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0.5em;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $vting-orange;
+  }
+}
+
+.dashboard_delete_cancel {
+  background-color: $vting-gray;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0.5em;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $vting-orange;
+  }
+}
+
+// * 비로그인 시 모달
+
+.dashboardModal_closeBtn {
+  color: #aaa;
+  background-color: transparent;
+  line-height: 80px;
+  font-size: 20px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 70px;
+  text-decoration: none;
+  &:hover {
+    color: black;
+  }
+}
+
+.dashboardModal_container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+.dashboardModal_container .dashboardModal_background {
+  display: table-cell;
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.dashboardModal_container .dashboardModal_background .dashboardModal_modal {
+  background: #fff;
+  padding: 50px;
+  margin-bottom: 30px;
+  display: inline-block;
+  border-radius: 3px;
+  position: relative;
+
+  & .dashboardModal_desc {
+    margin-top: 3em;
+    & h3 {
+      font-size: 20px;
+    }
+  }
+}
+
+.dashboardModal_background {
+  & button {
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.dashboardModal_btnWrap {
+  margin-top: 3em;
+}
+
+.dashboardModal_ok {
+  background-color: $vting-gray;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0.5em;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $vting-blue;
+  }
+}
+
+.dashboardModal_cancel {
+  background-color: $vting-gray;
+  cursor: pointer;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0.5em;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $vting-blue;
+  }
+}

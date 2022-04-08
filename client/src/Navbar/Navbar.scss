@@ -1,80 +1,269 @@
+@import "../index.scss";
+
 .container {
   width: 100%;
-  height: 100px;
-  background-color: #c0ecf7;
+  min-height: 100px;
+  background-color: $vting-gray;
   display: flex;
-  // flex-direction: column;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-.NavLeft {
-  flex: 40%;
-  /* display: block; */
+.votingBannerCon {
+  padding: 20px 0;
   display: flex;
-  padding-right: 50px;
   flex-direction: row;
-  padding-left: 30px;
+  width: 100%;
+  background-color: $vting-orange;
+  justify-content: center;
+  color: white;
+  .votingBanner {
+    padding: 0 35px;
+    width: 1200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    .votingBannerText {
+      font-weight: 500;
+    }
+    .votingBannerInput {
+      input {
+        font-size: 17px;
+        padding: 0 5px;
+        width: 700px;
+        text-align: center;
+        // border: none;
+        border-radius: 3px;
+        border: 1px solid transparent;
+        border: 1px solid $vting-orange;
+        border-top: none;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.39),
+          0 -1px 1px $vting-orange, 0 1px 0 $vting-orange;
+      }
+    }
+    button {
+      background-color: $vting-blue;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      border-style: none;
+      outline: 0;
+      cursor: pointer;
+      box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.NavBar {
+  height: 100px;
+  width: 1200px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.NavLeft {
+  display: flex;
+  // padding-right: 50px;
+  flex-direction: row;
+  padding-left: 10px;
 }
 
 .NavRight {
-  flex: 60%;
-  align-items: center;
+  // flex: 60%;
+  // align-items: center;
   display: flex;
-  justify-content: flex-end;
-  padding-right: 100px;
+  // justify-content: flex-end;
+  // padding-right: 100px;
+  // border-bottom: 1px solid $vting-gray;
 }
 
-.link {
-  color: #3395f0;
-  font-size: large;
+.nav-link {
+  font-weight: bold;
+  font-size: 20px;
+  text-transform: uppercase;
   text-decoration: none;
-  padding: 10px 20px;
-
-  &:hover {
-    background-color: #7baef0;
-    color: #fff;
-    transition: 0.5s ease-in;
-  }
-  // @media (max-width: 700px) {
-  //   display: none;
-  // }
+  color: $vting-blue;
+  padding: 20px 0;
+  margin: 0px 40px;
+  display: inline-block;
+  position: relative;
+  opacity: 0.75;
 }
 
-.subMenu {
-  text-decoration: none;
+.nav-link:hover {
+  opacity: 1;
+}
+
+.nav-link::before {
+  transition: 300ms;
+  height: 5px;
+  content: "";
   position: absolute;
-  overflow: hidden;
-  height: 0px;
-  transition: height 0.2s;
-  list-style: none;
-  padding: 0px 10px;
-  margin-bottom: 20px;
+  background-color: $vting-blue;
 }
+
+.link::before {
+  width: 0%;
+  bottom: 20px;
+}
+
+.link:hover::before {
+  width: 100%;
+}
+
+// *
 
 .profile {
-  margin-left: 10px;
-}
-
-.profile:hover .subMenu {
-  border: 1px solid #7baef0;
-  width: 100px;
-  height: 150px;
-  text-align: center;
-}
-
-.subMenuLink {
-  color: #3395f0;
-  font-size: large;
-  text-decoration: none;
-  padding: 10px 10px;
-  cursor: pointer;
-
-  &:hover {
-    transition: 0.5s ease-in;
+  margin-right: 20px;
+  margin-left: 40px;
+  display: flex;
+  flex-direction: row;
+  .subMenu {
+    text-decoration: none;
+    position: absolute;
+    overflow: hidden;
+    height: 0;
+    transition: height 0.2s;
+    list-style: none;
+    padding: 0px 10px;
+    // margin-bottom: 20px;
+    // text-align: center;
+    .username {
+      display: none;
+    }
+    .nav-link {
+      display: none;
+      font-size: 16px;
+      font-weight: 400;
+      color: black;
+      margin: 0 20px;
+      padding: 10px;
+    }
   }
 }
 
-.subMenuLi {
-  margin: 10px;
+.profile:hover {
+  text-align: center;
+  .subMenu {
+    margin-left: -35px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: white;
+    // text-align: center;
+    // width: 200px;
+    height: 180px;
+    box-shadow: 2px 0 8px $vting-gray;
+    z-index: 3;
+    .username {
+      display: block;
+      font-size: 16px;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid black;
+    }
+    .nav-link {
+      cursor: pointer;
+      display: block;
+      font-size: 16px;
+      font-weight: 400;
+      color: black;
+      margin: 0 20px;
+      padding: 10px;
+    }
+    .nav-link::before {
+      display: none;
+    }
+    .nav-link::after {
+      display: none;
+      // z-index: -1;
+    }
+  }
 }
+
+@media (max-width: 1439px) {
+  .NavBar {
+    width: 960px;
+  }
+  .votingBannerCon {
+    .votingBanner {
+      width: 960px;
+      .votingBannerInput {
+        input {
+          width: 600px;
+        }
+      }
+    }
+  }
+}
+
+// .btn {
+// &::before {
+//   content: "";
+//   background: linear-gradient(
+//     45deg,
+//     #ff0000,
+//     #ff7300,
+//     #fffb00,
+//     #48ff00,
+//     #00ffd5,
+//     #002bff,
+//     #7a00ff,
+//     #ff00c8,
+//     #ff0000
+//   );
+//   position: absolute;
+//   top: -2px;
+//   left: -2px;
+//   background-size: 400%;
+//   z-index: -1;
+//   filter: blur(5px);
+//   width: calc(100% + 4px);
+//   height: calc(100% + 4px);
+//   animation: glowing 20s linear infinite;
+//   opacity: 0;
+//   transition: opacity 0.3s ease-in-out;
+//   border-radius: 10px;
+// }
+
+//   &:active {
+//     color: #000;
+//   }
+
+//   &:active::after {
+//     background: transparent;
+//   }
+
+//   &:hover::before {
+//     opacity: 1;
+//   }
+
+//   &::after {
+//     z-index: -1;
+//     content: "";
+//     position: absolute;
+//     width: 100%;
+//     height: 100%;
+//     background: #111;
+//     left: 0;
+//     top: 0;
+//     border-radius: 10px;
+//   }
+
+//   @keyframes glowing {
+//     0% {
+//       background-position: 0 0;
+//     }
+//     50% {
+//       background-position: 400% 0;
+//     }
+//     100% {
+//       background-position: 0 0;
+//     }
+//   }
+// }

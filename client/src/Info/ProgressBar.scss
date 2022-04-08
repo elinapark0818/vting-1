@@ -1,0 +1,11 @@
+@import "../index.scss";
+
+.progressbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 5px;
+  background: linear-gradient(to right, #fff, $vting-blue);
+  z-index: 100;
+  transition: 0.1s ease;
+}

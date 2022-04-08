@@ -36,10 +36,14 @@ function Bar() {
 
   const [randomNums, setRandomNums] = useState<number[]>([90]);
 
-  const rand_0_99 = Math.floor(Math.random() * 100);
   useEffect(() => {
-    setRandomNums([...randomNums, rand_0_99]);
+    let newNums: number[] = [];
+    for (let i = 0; i < voteItems.length; i++) {
+      newNums.push(Math.floor(Math.random() * 100));
+    }
+    setRandomNums(newNums);
   }, [voteItems]);
+
   const makeRandomHeight = (idx: number): React.CSSProperties => {
     let heightProprety = { height: randomNums[idx] + "%" };
     return heightProprety;
@@ -53,18 +57,22 @@ function Bar() {
     case "vertical":
       return (
         <div className="votePreviewCon">
-          <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
-          <div className="votePreviewBack">
-            <div className="votePreview-barVer-con">
-              {voteItems.map((el, idx) => (
-                <div key={idx} id="votePreview-barVer-bar">
-                  <div className="barVer-itemName">{el.content}</div>
-                  <div
-                    className="barVer-itemBar"
-                    style={makeRandomHeight(idx)}
-                  ></div>
-                </div>
-              ))}
+          <div className="votePreview">
+            <div className="votePreviewTitle">
+              {newVote.title || "설문 제목"}
+            </div>
+            <div className="votePreviewBack">
+              <div className="votePreview-barVer-con">
+                {voteItems.map((el, idx) => (
+                  <div key={idx} id="votePreview-barVer-bar">
+                    <div className="barVer-itemName">{el.content}</div>
+                    <div
+                      className="barVer-itemBar"
+                      style={makeRandomHeight(el.idx)}
+                    ></div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -101,7 +109,17 @@ function OpenEnded() {
   return (
     <div className="votePreviewCon">
       <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
-      <div className="votePreviewBack"></div>
+      <div className="votePreviewBack">
+        <div className="openItems">
+          <div className="openItem">이것은 예시 답변입니다.</div>
+          <div className="openItem">
+            다양한 길이의 주관식 답변을 박스형태로 받을 수 있습니다.
+          </div>
+          <div className="openItem">
+            답변은 이런식으로 하나씩 쌓이게 됩니다.
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -113,12 +131,14 @@ function Versus() {
     <div className="votePreviewCon">
       <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
       <div className="votePreviewBack">
-        <div className="versusItem">
-          {newVote.items[0] ? newVote.items[0].content : ""}
-        </div>
-        <div className="versusVs">vs</div>
-        <div className="versusItem">
-          {newVote.items[1] ? newVote.items[1].content : ""}
+        <div className="versusItemCon">
+          <div className="versusItem">
+            {newVote.items[0] ? newVote.items[0].content : ""}
+          </div>
+          <div className="versusVs">vs</div>
+          <div className="versusItem">
+            {newVote.items[1] ? newVote.items[1].content : ""}
+          </div>
         </div>
       </div>
     </div>
@@ -155,8 +175,10 @@ function WordCloud() {
 
   return (
     <div className="votePreviewCon">
-      <div className="votePreviewTitle">{newVote.title || "설문 제목"}</div>
-      <div className="votePreviewBack">
+      <div className="votePreviewTitle wordTitle">
+        {newVote.title || "설문 제목"}
+      </div>
+      <div className="votePreviewBack wordBack">
         <ReactWordcloud words={words} options={options} />
       </div>
     </div>

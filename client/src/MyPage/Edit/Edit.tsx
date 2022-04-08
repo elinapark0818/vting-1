@@ -1,57 +1,285 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Edit.scss";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, setUserInfo, setIsLogin } from "../../store/index";
+import axios from "axios";
+import { FaPlusCircle } from "react-icons/fa";
+import { FaAngleDoubleRight } from "react-icons/fa";
 
-interface Props {
-  text: string;
+interface PatchUser {
+  name: string;
+  password: string;
 }
 
-function Edit({ text }: Props) {
-  // const [password, setPassword] = useState("");
-  // const [passwordCheck, setPasswordCheck] = useState("true");
+const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
+
+function Edit() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+
+  const [oauthUser, setOauthUser] = useState(false);
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      let accessToken = localStorage.getItem("accessToken");
+      try {
+        await axios
+          .get(`${serverURL}/user`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              withCredentials: true,
+            },
+          })
+          .then((res) => {
+            setUserInfo({
+              _id: res.data.data._id,
+              image: res.data.data.image,
+            });
+            if (res.data.data.provider === undefined) {
+              setOauthUser(false);
+            } else {
+              setOauthUser(true);
+            }
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUserInfo();
+  }, [userInfo]);
+
+  const [patchUserInfo, setPatchUserInfo] = useState<PatchUser>({
+    name: "",
+    password: "",
+  });
+
+  const edit_onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPatchUserInfo({ ...patchUserInfo, [name]: value });
+  };
+
+  const edit_onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPatchUserInfo({ ...patchUserInfo, [name]: value });
+  };
+
+  const EditUserInfo = async () => {
+    let accessToken = localStorage.getItem("accessToken");
+    let sendBody;
+    if (patchUserInfo.password !== "")
+      sendBody = {
+        nickname: patchUserInfo.name || userInfo.nickname,
+        password: patchUserInfo.password,
+      };
+    else
+      sendBody = {
+        nickname: patchUserInfo.name || userInfo.nickname,
+      };
+    try {
+      await axios
+        .patch(`${serverURL}/user`, sendBody, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            dispatch(
+              setUserInfo({
+                _id: String(userInfo._id),
+                nickname: patchUserInfo.name || userInfo.nickname,
+              })
+            );
+            alert("회원정보가 수정되었습니다.");
+          }
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleLogout = async () => {
+    let accessToken = localStorage.getItem("accessToken");
+    try {
+      const res = await axios.get(serverURL + "/session", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
+      });
+      if (res.status === 200) {
+        const token = res.data.data.accessToken;
+        localStorage.setItem("accessToken", token);
+        dispatch(setIsLogin(false));
+        navigate("/");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
-    <div className="checkPwd_container">
+    <div className="edit_container">
       <header className="edit_header">
-        <h1>회원정보 관리</h1>
+        <img
+          src={userInfo.image}
+          alt="preView_profile"
+          style={{
+            width: "100px",
+            height: "100px",
+            objectFit: "cover",
+            borderRadius: "50%",
+          }}
+        />
+        <div className="edit_header_desc">
+          <h2>{userInfo.nickname}</h2>
+          <h3>회원님, 안녕하세요!</h3>
+        </div>
       </header>
 
-      <div className="edit_passwordCheck">
-        <input
-          className="edit_input"
-          type="password"
-          // onChange={(e) => {
-          //   setPassword(e.target.value);
-          // }}
-        />
-        <div className="passwordCheck">! 비밀번호가 틀렸습니다.</div>
-        <button className="edit_checkBtn">비밀번호 확인</button>
-      </div>
+      <div className="edit_containerWrap">
+        <nav className="userInfo_nav">
+          <button
+            className="userInfo_navBtn_active"
+            onClick={() => navigate("/myPage")}
+          >
+            회원정보 관리
+          </button>
+          <button
+            className="userInfo_navBtn"
+            onClick={() => navigate("/myPage/delete")}
+          >
+            회원탈퇴 관리
+          </button>
+          <button className="userInfo_logout" onClick={() => handleLogout()}>
+            로그아웃
+          </button>
+        </nav>
 
-      <div className="edit_container">
-        <h3>프로필 변경</h3>
-        <img alt="profile_img" />
-        <label htmlFor="file">업로드</label>
-        <input
-          id="file"
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-        />
+        <main className="edit_wrap">
+          {oauthUser ? (
+            <div className="edit_userInfo">
+              <EditUserImage />
+              <div className="edit_nickname">
+                <h3>
+                  닉네임 <FaAngleDoubleRight />
+                </h3>
+                <input
+                  name="name"
+                  onChange={edit_onChangeName}
+                  type="text"
+                  placeholder={userInfo.nickname}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="edit_userInfo">
+              <EditUserImage />
+              <div className="edit_nickname">
+                <h3>
+                  닉네임 <FaAngleDoubleRight />
+                </h3>
+                <input
+                  className="edit_nickname_input"
+                  name="name"
+                  onChange={edit_onChangeName}
+                  type="text"
+                  placeholder={userInfo.nickname}
+                />
+              </div>
+              <div className="edit_password">
+                <h3>
+                  비밀번호 <FaAngleDoubleRight />
+                </h3>
+                <input
+                  type="password"
+                  name="password"
+                  onChange={edit_onChangePassword}
+                  placeholder="변경하실 비밀번호를 입력해주세요."
+                />
+              </div>
+            </div>
+          )}
 
-        <h3>닉네임 변경</h3>
-        <input type="text" />
-
-        <h3>비밀번호 변경</h3>
-        <input type="password" />
-        <input type="password" />
-        <button>수정하기</button>
+          <div className="edit_btnWrap">
+            <button className="edit_btn" onClick={() => EditUserInfo()}>
+              수정하기
+            </button>
+          </div>
+        </main>
       </div>
     </div>
   );
-}
 
-Edit.defaultProps = {
-  text: "This is Edit!",
-};
+  function EditUserImage() {
+    let accessToken = localStorage.getItem("accessToken");
+
+    const onChangeImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+
+      if (e.target.files) {
+        const uploadFile = e.target.files[0];
+        const formData = new FormData();
+        formData.append("files", uploadFile);
+        console.log(formData.getAll("files"));
+
+        const response = await axios.patch(
+          `${serverURL}/image/${userInfo._id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${accessToken}`,
+              withCredentials: true,
+            },
+          }
+        );
+        if (response.status === 200) {
+          setUserInfo({
+            _id: String(userInfo._id),
+            image: response.data.data,
+          });
+          navigate("/myPage");
+        }
+      }
+    };
+
+    return (
+      <div className="edit_userProfile">
+        <div className="edit_userProfile_wrap">
+          <form className="edit_userProfile_form">
+            <input
+              type="file"
+              id="profile-upload"
+              accept="image/*"
+              className="img_input"
+              onChange={(e) => onChangeImg(e)}
+            />
+          </form>
+
+          <div className="edit_userProfile_image">
+            <img
+              src={userInfo.image}
+              alt="preView_profile"
+              style={{
+                width: "300px",
+                height: "300px",
+                objectFit: "cover",
+                borderRadius: "50%",
+              }}
+            />
+          </div>
+          <label htmlFor="profile-upload" className="img_uploaderWrap">
+            <FaPlusCircle className="img_uploader" />
+          </label>
+        </div>
+      </div>
+    );
+  }
+}
 
 export default Edit;

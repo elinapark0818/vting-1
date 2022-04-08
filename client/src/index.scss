@@ -4,8 +4,101 @@ $vting-green: #00e3ae;
 $vting-yellow: #f1f013;
 $vting-gray: #dfe9f3;
 
-body {
+@font-face {
+  font-family: "Noto Sans CJK KR";
+  font-style: normal;
+  font-weight: 100;
+  src: url("./assets/fonts/NotoSansKR-Light.woff2") format("woff2"),
+    url("./assets/fonts/NotoSansKR-Light.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Light.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Sans CJK KR";
+  font-style: normal;
+  font-weight: normal;
+  src: url("./assets/fonts/NotoSansKR-Regular.woff2") format("woff2"),
+    url("./assets/fonts/NotoSansKR-Regular.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Regular.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Sans CJK KR";
+  font-style: normal;
+  font-weight: 500;
+  src: url("./assets/fonts/NotoSansKR-Medium.woff2") format("woff2"),
+    url("./assets/fonts/NotoSansKR-Medium.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Medium.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Sans CJK KR";
+  font-style: normal;
+  font-weight: bold;
+  src: url("./assets/fonts/NotoSansKR-Bold.woff2") format("woff2"),
+    url("./assets/fonts/NotoSansKR-Bold.woff") format("woff"),
+    url("./assets/fonts/NotoSansKR-Bold.otf") format("truetype");
+}
+
+#root {
+  position: relative;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  font-family: "Noto Sans CJK KR";
+}
+
+@media (min-width: 1440px) {
+  body {
+    min-width: 1100px;
+  }
+  .bodyContainer {
+    width: 100%;
+    display: flex;
+    min-height: 800px;
+    justify-content: center;
+    .newVoteCon {
+      width: 1200px;
+      padding-bottom: 400px;
+    }
+  }
+}
+
+@media (max-width: 1439px) {
+  body {
+    min-width: 960px;
+    width: 100%;
+  }
+  .bodyContainer {
+    width: 100%;
+    display: flex;
+    min-height: 800px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 567px) {
+  body {
+    min-width: 320px;
+    width: 100%;
+  }
+  .bodyContainer {
+    width: 100%;
+    display: flex;
+    min-height: 568px;
+    justify-content: center;
+  }
+}
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+body::-webkit-scrollbar {
+  display: none;
 }
