@@ -5,6 +5,6 @@ const router = Router();
 
 // router.post("/", controller.post);
 
-router.get("/", allVoteController.get);
+router.get("/:content", allVoteController.get);
 
 export default router;

@@ -14,7 +14,11 @@ function setVoteFormat(format: string) {
   if (format === "open") return "대화형";
 }
 
-export default function VoteSlider() {
+interface Props {
+  content: string;
+}
+
+export default function VoteSlider({ content }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [errMode, setErrMode] = useState(false);
   const [allVotes, setAllVotes] = useState([
@@ -23,14 +27,16 @@ export default function VoteSlider() {
       format: "",
       sumCount: 0,
       url: 123456,
+      voterCount: 0,
     },
   ]);
 
-  const serverURL: string = process.env.SERVER_URL as string;
+  const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
+
   useEffect(() => {
     async function getAllVotes() {
       try {
-        const response = await axios.get(`${serverURL}/allvotes`);
+        const response = await axios.get(`${serverURL}/allvotes/${content}`);
         if (response.status === 200) {
           setAllVotes(response.data.vote);
         }
@@ -40,7 +46,7 @@ export default function VoteSlider() {
       setIsLoading(false);
     }
     getAllVotes();
-  }, []);
+  }, [content]);
 
   const settings = {
     dots: true,
@@ -76,7 +82,7 @@ export default function VoteSlider() {
                     {setVoteFormat(el.format)}
                   </div>
                   <div className="hotVoteCardCount">
-                    {el.sumCount}명 참여 중
+                    {el.voterCount}명 참여 중
                   </div>
                 </a>
               </div>

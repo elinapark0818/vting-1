@@ -94,7 +94,6 @@ export let VoterController = {
   vote: {
     patch: async (req: Request & { body: any }, res: Response) => {
       const { idx, content }: PatchVote = req.body;
-      console.log();
 
       try {
         const findMemberVote = await db
@@ -133,6 +132,42 @@ export let VoterController = {
                 { $set: { sumCount } }
               );
 
+            // voterCount update +1
+            await db
+              .collection("vote")
+              .updateOne(
+                { url: Number(req.params.accessCode) },
+                { $inc: { voterCount: 1 } }
+              );
+
+            // variance update
+            let variance = findMemberVote.map((vote: any) => {
+              vote.map((items: any) => {
+                let total = 0;
+                for (let el of items.count) {
+                  total += el;
+                }
+                let average = total / items.length;
+
+                total = 0;
+
+                for (let i = 0; i < items.length; i++) {
+                  let deviation = items[i].count - average;
+
+                  total += deviation * deviation;
+                }
+                let variance = total / (items.length - 1);
+                return variance;
+              });
+            });
+
+            await db
+              .collection("vote")
+              .updateOne(
+                { url: Number(req.params.accessCode) },
+                { $set: { variance } }
+              );
+
             return res.status(200).json({ message: "Successfully reflected" });
 
             // FIXME: format이 'open' 일때 => response 추가
@@ -150,6 +185,14 @@ export let VoterController = {
                 },
               }
             );
+
+            // voterCount update +1
+            await db
+              .collection("vote")
+              .updateOne(
+                { url: Number(req.params.accessCode) },
+                { $inc: { voterCount: 1 } }
+              );
 
             return res.status(200).json({ message: "Successfully reflected" });
 
@@ -182,6 +225,42 @@ export let VoterController = {
                   { $set: { sumCount } }
                 );
 
+              // voterCount update +1
+              await db
+                .collection("vote")
+                .updateOne(
+                  { url: Number(req.params.accessCode) },
+                  { $inc: { voterCount: 1 } }
+                );
+
+              // variance update
+              let variance = findMemberVote.map((vote: any) => {
+                vote.map((items: any) => {
+                  let total = 0;
+                  for (let el of items.count) {
+                    total += el;
+                  }
+                  let average = total / items.length;
+
+                  total = 0;
+
+                  for (let i = 0; i < items.length; i++) {
+                    let deviation = items[i].count - average;
+
+                    total += deviation * deviation;
+                  }
+                  let variance = total / (items.length - 1);
+                  return variance;
+                });
+              });
+
+              await db
+                .collection("vote")
+                .updateOne(
+                  { url: Number(req.params.accessCode) },
+                  { $set: { variance } }
+                );
+
               return res
                 .status(200)
                 .json({ message: "Successfully reflected" });
@@ -199,6 +278,14 @@ export let VoterController = {
                   },
                 }
               );
+
+              // voterCount update +1
+              await db
+                .collection("vote")
+                .updateOne(
+                  { url: Number(req.params.accessCode) },
+                  { $inc: { voterCount: 1 } }
+                );
 
               return res
                 .status(200)
