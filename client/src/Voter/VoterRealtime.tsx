@@ -177,7 +177,11 @@ function VoterRealtime() {
                           el.count as number,
                           sum as number
                         )}
-                      ></div>
+                      >
+                        <div className="tooltiptext">
+                          {el.count?.toString()}
+                        </div>
+                      </div>
                     </div>
                   ))
                 ) : (
@@ -205,7 +209,11 @@ function VoterRealtime() {
                           el.count as number,
                           sum as number
                         )}
-                      ></div>
+                      >
+                        <div className="tooltiptext">
+                          {el.count?.toString()}
+                        </div>
+                      </div>
                     </div>
                   ))
                 ) : (
@@ -243,11 +251,21 @@ function VoterRealtime() {
       return (
         <div className="realTimeCon">
           <div className="versusCon">
-            <div className="item1" data-aos="flip-left" style={fontSizeChange1}>
+            <div
+              className="item1"
+              data-aos="flip-left"
+              style={fontSizeChange1}
+              title={items[0].count?.toString()}
+            >
               {items.length ? items[0].content : ""}
             </div>
             <div className="vs">vs</div>
-            <div className="item2" data-aos="flip-left" style={fontSizeChange2}>
+            <div
+              className="item2"
+              data-aos="flip-left"
+              style={fontSizeChange2}
+              title={items[1].count?.toString()}
+            >
               {items.length ? items[1].content : ""}
             </div>
           </div>

@@ -66,6 +66,7 @@
 
     // 여기부터 실시간 응답보기 관련 css
     .realTimeCon {
+      overflow-y: auto;
       width: 100%;
       height: 400px;
       display: flex;
@@ -119,6 +120,25 @@
             animation-name: barVerAnimation;
             animation-duration: 1s;
             background-color: $vting-blue;
+            position: relative;
+            display: block;
+            .tooltiptext {
+              display: flex;
+              visibility: hidden;
+              height: 100%;
+              width: 50px;
+              font-size: 20px;
+              color: white;
+              position: absolute;
+              z-index: 1;
+              justify-content: center;
+              align-items: center;
+            }
+          }
+          .barVer-itemBar:hover {
+            .tooltiptext {
+              visibility: visible;
+            }
           }
           .barVer-itemNameCon {
             display: flex;
@@ -172,6 +192,23 @@
             animation-name: barAnimation;
             animation-duration: 1s;
             background-color: $vting-blue;
+            position: relative;
+            display: block;
+            .tooltiptext {
+              visibility: hidden;
+              width: 100%;
+              font-size: 20px;
+              color: white;
+              text-align: center;
+              position: absolute;
+              z-index: 1;
+              line-height: 50px;
+            }
+          }
+          .barHor-itemBar:hover {
+            .tooltiptext {
+              visibility: visible;
+            }
           }
           .barHor-itemNameCon {
             display: flex;
@@ -334,11 +371,62 @@
       flex: 1 1 0;
       text-align: center;
       color: $vting-orange;
+      position: relative;
+      display: block;
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+    }
+    .item1:hover {
+      .tooltiptext {
+        visibility: visible;
+      }
     }
     .item2 {
       flex: 1 1 0;
       text-align: center;
       color: $vting-green;
+      position: relative;
+      display: flex;
+      .tooltiptext {
+        visibility: hidden;
+        width: 50px;
+        font-size: 20px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        z-index: 1;
+      }
+      .tooltiptext::after {
+        content: " ";
+        border-style: solid;
+        border-width: 5px;
+      }
+      .tooltip-left {
+        top: -5px;
+        right: 105%;
+      }
+    }
+    .item2:hover {
+      .tooltiptext {
+        visibility: visible;
+      }
+      .tooltip-left::after {
+        top: 50%;
+        left: 100%;
+        margin-top: -5px;
+        border-color: transparent transparent transparent black;
+      }
     }
     .vs {
       color: $vting-blue;
