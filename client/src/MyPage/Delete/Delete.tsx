@@ -63,7 +63,7 @@ function Delete() {
         localStorage.setItem("accessToken", res.data.data.accessToken);
         alert("회원탈퇴가 완료되었습니다.");
         dispatch(setIsLogin(false));
-        navigate(-1);
+        navigate("/");
       }
     } catch (err) {
       console.log(err);
@@ -93,19 +93,8 @@ function Delete() {
   return (
     <div className="delete_container">
       <header className="delete_header">
-        <img
-          src={userInfo.image}
-          alt="preView_profile"
-          style={{
-            width: "100px",
-            height: "100px",
-            objectFit: "cover",
-            borderRadius: "50%",
-          }}
-        />
         <div className="delete_header_desc">
-          <h2>{userInfo.nickname}</h2>
-          <h3>회원님, 안녕하세요!</h3>
+          <h3> {userInfo.nickname} 님, 안녕하세요!</h3>
         </div>
       </header>
 
@@ -123,35 +112,18 @@ function Delete() {
           >
             회원탈퇴 관리
           </button>
-          <button className="userInfo_logout" onClick={() => handleLogout()}>
-            로그아웃
-          </button>
         </nav>
 
         <div className="delete_profile">
           <img
             src={vtCry}
             alt="cry_img"
-            style={{ width: "300px", marginTop: "1em", marginBottom: "3em" }}
+            style={{ width: "300px", marginTop: "1em" }}
           />
-          <div className="delete_profile_wrap">
-            {/* <div className="delete_userProfile_image">
-              <img
-                src={userInfo.image}
-                alt="프로필"
-                style={{
-                  width: "300px",
-                  height: "300px",
-                  objectFit: "cover",
-                  borderRadius: "50%",
-                }}
-              />
-            </div> */}
 
-            <div className="delete_userInfo">
-              <h1>닉네임 : {userInfo.nickname}</h1>
-              <h1>이메일 : {userInfo.email}</h1>
-            </div>
+          <div className="delete_userInfo">
+            <h1>닉네임 : {userInfo.nickname}</h1>
+            <h1>이메일 : {userInfo.email}</h1>
           </div>
 
           <div className="delete_btnWrap">

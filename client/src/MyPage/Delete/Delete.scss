@@ -3,7 +3,9 @@
 .delete_container {
   display: flex;
   flex-direction: column;
-  margin: 3em;
+  align-items: center;
+  min-height: 70em;
+  // margin: 3em;
   // border: 1px solid $vting-orange;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
@@ -11,9 +13,9 @@
 
 .delete_header {
   display: flex;
-  height: 120px;
-  width: 100%;
-  padding: 1em 1em 0 2em;
+  height: 60px;
+  width: 1200px;
+  margin-top: 2em;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background-color: $vting-orange;
@@ -23,7 +25,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    margin-left: 1em;
+    margin-left: 2em;
     color: #fff;
   }
 }
@@ -34,27 +36,15 @@
 }
 
 .delete_profile {
+  min-width: 50em;
+  min-height: 40em;
   margin: 5em 5em 0 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  flex: 5;
-  border: 1px solid $vting-gray;
   border-radius: 5px;
   & .delete_userInfo {
     margin-top: 3em;
-    justify-content: center;
-    align-items: center;
-  }
-
-  & .delete_userProfile_image {
-    margin: 3em;
-  }
-
-  & .delete_profile_wrap {
-    display: flex;
-    flex-direction: row;
     justify-content: center;
     align-items: center;
   }
@@ -65,14 +55,14 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 5em;
+  margin-top: 3em;
   margin-bottom: 3em;
 }
 
 .delete_btn {
   cursor: pointer;
   border: none;
-  background-color: $vting-gray;
+  background-color: $vting-orange;
   color: #fff;
   font-size: 20px;
   font-weight: bold;
