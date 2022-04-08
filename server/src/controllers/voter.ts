@@ -39,21 +39,9 @@ export let VoterController = {
             .collection("user")
             .findOne({ user_id: memberVoteData.user_id });
 
-          // if (memberVoteData.format !== "open") {
-          //   let sumCount: number = 0;
-          //   for (let el of memberVoteData.items) {
-          //     sumCount += el.count;
-          //   }
-          //   return res.status(200).json({
-          //     vote_data: memberVoteData,
-          //     user_data: userData,
-          //     sumCount,
-          //   });
-          // } else {
           return res
             .status(200)
             .json({ vote_data: memberVoteData, user_data: userData });
-          // }
         } else if (!memberVoteData) {
           const nonmemberVoteData = await db
             .collection("non-member")
@@ -67,19 +55,9 @@ export let VoterController = {
             60;
           overtime = Math.round(overtime);
 
-          // if (nonmemberVoteData.format !== "open") {
-          //   let sumCount: number = 0;
-          //   for (let el of nonmemberVoteData.items) {
-          //     sumCount += el.count;
-          //   }
-          //   return res
-          //     .status(200)
-          //     .json({ vote_data: nonmemberVoteData, sumCount, overtime });
-          // } else {
           return res
             .status(200)
             .json({ vote_data: nonmemberVoteData, overtime });
-          // }
         } else {
           return res.status(400).json({ message: "Bad Request" });
         }
@@ -122,8 +100,12 @@ export let VoterController = {
             }
 
             // sumCount update
-            let sumCount = findMemberVote.sumCount;
-            for (let el of findMemberVote.items) {
+            const updatedMemberVote = await db
+              .collection("vote")
+              .findOne({ url: Number(req.params.accessCode) });
+
+            let sumCount = updatedMemberVote.sumCount;
+            for (let el of updatedMemberVote.items) {
               sumCount += el.count;
             }
             await db
@@ -210,8 +192,12 @@ export let VoterController = {
               );
 
               // sumCount update
-              let sumCount = findContent.sumCount;
-              for (let el of findContent.items) {
+              const updatedMemberVote = await db
+                .collection("vote")
+                .findOne({ url: Number(req.params.accessCode) });
+
+              let sumCount = updatedMemberVote.sumCount;
+              for (let el of updatedMemberVote.items) {
                 sumCount += el.count;
               }
               await db
@@ -336,12 +322,16 @@ export let VoterController = {
             }
 
             // sumCount update
-            let sumCount = findNonMemberVote.sumCount;
-            for (let el of findNonMemberVote.items) {
+            const updatedNonMemberVote = await db
+              .collection("non-member")
+              .findOne({ url: Number(req.params.accessCode) });
+
+            let sumCount = updatedNonMemberVote.sumCount;
+            for (let el of updatedNonMemberVote.items) {
               sumCount += el.count;
             }
             await db
-              .collection("vote")
+              .collection("non-member")
               .updateOne(
                 { url: Number(req.params.accessCode) },
                 { $set: { sumCount } }
@@ -385,12 +375,16 @@ export let VoterController = {
               );
 
               // sumCount update
-              let sumCount = findNonMemberVote.sumCount;
-              for (let el of findNonMemberVote.items) {
+              const updatedNonMemberVote = await db
+                .collection("non-member")
+                .findOne({ url: Number(req.params.accessCode) });
+
+              let sumCount = updatedNonMemberVote.sumCount;
+              for (let el of updatedNonMemberVote.items) {
                 sumCount += el.count;
               }
               await db
-                .collection("vote")
+                .collection("non-member")
                 .updateOne(
                   { url: Number(req.params.accessCode) },
                   { $set: { sumCount } }
