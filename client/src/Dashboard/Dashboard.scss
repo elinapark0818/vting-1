@@ -9,19 +9,16 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  margin: 3em 2em 200px 4em;
-
-
-  // box-shadow: 0 7px 7px -4px $vting-orange;
+  margin: 0 20em 200px 20em;
 }
 
 .dashboard_header {
   display: flex;
   align-items: center;
-  height: 120px;
+  height: 60px;
   width: 100%;
-  margin-top: 5em;
+  min-width: 80em;
+  margin-top: 2em;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background-color: $vting-blue;
@@ -37,27 +34,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 3em;
-  min-height: 800px;
-  // text-align: center;
+  // min-height: 600px;
 
   & .dashboard_table {
-    min-width: 30em;
     width: 100%;
-    margin-top: 5em;
-    padding-top: 5em;
+    max-width: 60em;
+    margin-top: 2em;
     font-size: 1em;
 
     & thead {
-      background-color: $vting-blue;
+      background-color: $vting-orange;
       color: #fff;
       padding-top: 1em;
       border-bottom: 3px solid gray;
     }
 
     & tbody {
-      padding-top: 1em;
-      background-color: #e9eefd;
+      padding-top: 0.5em;
+      background-color: transparent;
       text-align: center;
     }
 
@@ -76,13 +70,13 @@
     }
 
     & td {
-      padding: 0.5em 1em;
+      padding: 0.5em;
       border-bottom: 1px solid $vting-gray;
     }
 
     .toggleBtn {
-      margin-left: 10px;
-      background-color: #fff;
+      margin-left: 20px;
+      background-color: $vting-gray;
       width: 50px;
       height: 20px;
       border-radius: 30px;
@@ -127,7 +121,6 @@
   justify-content: center;
   align-items: center;
   margin: 10em;
-  // padding-bottom: 30em;
 }
 .empty {
   display: flex;
@@ -139,16 +132,9 @@
   color: $vting-orange;
 }
 
-.empty_arrowDown {
-  color: $vting-orange;
-  font-size: 6em;
-  animation: rainbow 2.5s linear;
-  animation-iteration-count: infinite;
-}
-
 // * 페이지네이션
 .pagination {
-  margin-top: 5em;
+  margin-top: 3em;
   display: flex;
   list-style: none;
   flex-direction: row;
@@ -182,13 +168,16 @@
 .dashboard_deleteBtn {
   cursor: pointer;
   border: none;
-  background-color: $vting-orange;
+  background-color: $vting-gray;
   color: #fff;
   font-size: 12px;
   font-weight: bold;
   border-radius: 20px;
   padding: 5px 15px;
   transition: all 0.3s ease;
+  &:hover {
+    background-color: $vting-orange;
+  }
 }
 
 .dashboard_btnWrap {
@@ -200,7 +189,7 @@
   border: 3px solid $vting-blue;
   border-radius: 20px;
   background-color: transparent;
-  margin-top: 2em;
+  margin-top: 1.5em;
   font-size: 1.5em;
   padding: 5px 15px;
   color: $vting-blue;

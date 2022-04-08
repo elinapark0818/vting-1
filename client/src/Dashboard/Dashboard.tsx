@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import "./Dashboard.scss";
-import { AiOutlineArrowDown } from "react-icons/ai";
+// import { AiOutlineArrowDown } from "react-icons/ai";
 import vtCry from "../assets/vt_cry.png";
 
-const serverURL: string = "http://localhost:8000";
+const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -46,8 +46,8 @@ function Dashboard() {
 
   const [userVote, setUserVote] = useState(votes);
 
-  let newVotes = userVote.map((vote, index) => ({
-    key: index,
+  let newVotes = userVote.map((vote, idx) => ({
+    key: idx.toString(),
     created_at: vote.created_at.toString().split("T")[0],
     format: changeFormat(vote.format),
     isPublic: vote.isPublic === true ? "공개" : "비공개",
@@ -74,7 +74,7 @@ function Dashboard() {
     let pages: React.ReactElement<any>[] = [];
     for (let i: number = 1; i <= totalPage; i++) {
       pages.push(
-        <li>
+        <li key={i}>
           <button
             className={buttonActive ? "page_btn" : "page_btn"}
             onClick={() => getChangePage(i)}
@@ -130,35 +130,34 @@ function Dashboard() {
 
   const [empty, setEmpty] = useState(false);
 
-  const getVoteCount = async () => {
-    let accessToken = localStorage.getItem("accessToken");
-    try {
-      const res = await axios.get(`${serverURL}/user`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          withCredentials: true,
-        },
-      });
-      if (res.status === 200) {
-        // todo: 보트들 개수 저장해두기
-        setUserVoteCount(res.data.data.voteCount);
-        if (!res.data.data.voteCount) {
-          setEmpty(true);
-        }
-      } else {
-        setUserVote(userVote);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   useEffect(() => {
     if (!isLogin.login) {
       setSignInState(false);
     } else {
       setSignInState(true);
     }
+    const getVoteCount = async () => {
+      let accessToken = localStorage.getItem("accessToken");
+      try {
+        const res = await axios.get(`${serverURL}/user`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            withCredentials: true,
+          },
+        });
+        if (res.status === 200) {
+          // todo: 보트들 개수 저장해두기
+          setUserVoteCount(res.data.data.voteCount);
+          if (!res.data.data.voteCount) {
+            setEmpty(true);
+          }
+        } else {
+          setUserVote(userVote);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
     getUserVoteData();
     getVoteCount();
   }, [userVoteCount]);
@@ -174,7 +173,7 @@ function Dashboard() {
       });
       if (res.status === 200) {
         getUserVoteData();
-        getVoteCount();
+
         closeModal();
       }
     } catch (err) {
@@ -255,113 +254,117 @@ function Dashboard() {
           </header>
 
           {!empty ? (
-            <main className="dashboard_wrap">
-              <div
-                onClick={() => navigate("/new")}
-                className="dashboard_btnWrap"
-              >
-                <button className="dashboard_plusBtn">
-                  나만의 V-ting 만들러 가기!
-                </button>
-              </div>
-              <table className="dashboard_table">
-                <thead>
-                  <tr>
-                    <th style={{ width: "20px" }}>No.</th>
-                    <th style={{ width: "350px" }}>제목</th>
-                    <th style={{ width: "120px" }}>타입</th>
-                    <th style={{ width: "120px" }}>생성일자</th>
-                    <th style={{ width: "120px" }}>코드번호</th>
-                    <th style={{ width: "120px" }}>공개여부</th>
-                    <th style={{ width: "120px" }}>진행여부</th>
-                    <th style={{ width: "120px" }}>삭제하기</th>
-                  </tr>
-                </thead>
-
-                {newVotes.map((vote: any, index) => (
-                  <tbody key={index + (currentPage - 1) * 10 + 1}>
+            <>
+              <main className="dashboard_wrap">
+                <div
+                  onClick={() => navigate("/new")}
+                  className="dashboard_btnWrap"
+                >
+                  <button className="dashboard_plusBtn">
+                    나만의 V-ting 만들러 가기!
+                  </button>
+                </div>
+                <table className="dashboard_table">
+                  <thead>
                     <tr>
-                      <td>{index + (currentPage - 1) * 10 + 1}</td>
-                      <td
-                        onClick={() => navigate(`/v/${vote.url}`)}
-                        className="td_title"
-                      >
-                        {vote.title}
-                      </td>
-                      <td>{vote.format}</td>
-                      <td>{vote.created_at}</td>
-                      <td>{vote.url}</td>
-                      <td onClick={() => memberPublic(vote.url)}>
-                        <button className="toggleBtn">
-                          <div
-                            className={
-                              vote.isPublic === "공개"
-                                ? "toggleCircle"
-                                : "toggleCircle toggleOn"
-                            }
-                          ></div>
-                        </button>
-                      </td>
-                      <td onClick={() => memberActive(vote.url)}>
-                        <button className="toggleBtn">
-                          <div
-                            className={
-                              vote.undergoing === "종료"
-                                ? "toggleCircle"
-                                : "toggleCircle toggleOn"
-                            }
-                          ></div>
-                        </button>
-                      </td>
-                      <td>
-                        <input
-                          className="dashboard_deleteBtn"
-                          type="button"
-                          value="삭제"
-                          onClick={() => deleteHandler(vote.url)}
-                        />
-                      </td>
+                      <th style={{ width: "20px" }}>No.</th>
+                      <th style={{ width: "350px" }}>제목</th>
+                      <th style={{ width: "120px" }}>타입</th>
+                      <th style={{ width: "130px" }}>생성일자</th>
+                      <th style={{ width: "120px" }}>코드번호</th>
+                      <th style={{ width: "120px" }}>공개여부</th>
+                      <th style={{ width: "120px" }}>진행여부</th>
+                      <th style={{ width: "120px" }}>삭제하기</th>
                     </tr>
-                  </tbody>
-                ))}
-              </table>
-              {openModal && (
-                <div className="dashboard_deleteModal_container">
-                  <div className="dashboard_deleteModal_background">
-                    <div className="dashboard_deleteModal_modal">
-                      <button
-                        className="deleteModal_closeBtn"
-                        onClick={closeModal}
-                      >
-                        X
-                      </button>
-                      <div className="dashboard_deleteModal_desc">
-                        <h3>
-                          코드번호 : {deleteURL} <br />
-                          삭제시, 복구되지 않습니다.
-                          <br /> 정말로 삭제하시겠습니까?
-                        </h3>
-                      </div>
-                      <div className="btnWrap">
-                        <button
-                          className="dashboard_delete_ok"
-                          onClick={() => DeleteVote(deleteURL)}
+                  </thead>
+
+                  {newVotes.map((vote: any, index: number) => (
+                    <tbody key={index + (currentPage - 1) * 10 + 1}>
+                      <tr>
+                        <td>{index + (currentPage - 1) * 10 + 1}</td>
+                        <td
+                          onClick={() => navigate(`/v/${vote.url}`)}
+                          className="td_title"
                         >
-                          확인
-                        </button>
+                          {vote.title}
+                        </td>
+                        <td>{vote.format}</td>
+                        <td>{vote.created_at}</td>
+                        <td>{vote.url}</td>
+                        <td onClick={() => memberPublic(vote.url)}>
+                          <button className="toggleBtn">
+                            <div
+                              className={
+                                vote.isPublic === "공개"
+                                  ? "toggleCircle"
+                                  : "toggleCircle toggleOn"
+                              }
+                            ></div>
+                          </button>
+                        </td>
+                        <td onClick={() => memberActive(vote.url)}>
+                          <button className="toggleBtn">
+                            <div
+                              className={
+                                vote.undergoing === "종료"
+                                  ? "toggleCircle"
+                                  : "toggleCircle toggleOn"
+                              }
+                            ></div>
+                          </button>
+                        </td>
+                        <td>
+                          <input
+                            className="dashboard_deleteBtn"
+                            type="button"
+                            value="삭제"
+                            onClick={() => deleteHandler(vote.url)}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  ))}
+                </table>
+                {openModal && (
+                  <div className="dashboard_deleteModal_container">
+                    <div className="dashboard_deleteModal_background">
+                      <div className="dashboard_deleteModal_modal">
                         <button
-                          className="dashboard_delete_cancel"
+                          className="deleteModal_closeBtn"
                           onClick={closeModal}
                         >
-                          취소
+                          X
                         </button>
+                        <div className="dashboard_deleteModal_desc">
+                          <h3>
+                            코드번호 : {deleteURL} <br />
+                            삭제시, 복구되지 않습니다.
+                            <br /> 정말로 삭제하시겠습니까?
+                          </h3>
+                        </div>
+                        <div className="btnWrap">
+                          <button
+                            className="dashboard_delete_ok"
+                            onClick={() => DeleteVote(deleteURL)}
+                          >
+                            확인
+                          </button>
+                          <button
+                            className="dashboard_delete_cancel"
+                            onClick={closeModal}
+                          >
+                            취소
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-              <ul className="pagination">{showPageBtn()}</ul>
-            </main>
+                )}
+              </main>
+              <div className="pagination_container">
+                <ul className="pagination">{showPageBtn()}</ul>
+              </div>
+            </>
           ) : (
             <div className="empty_container">
               <img
