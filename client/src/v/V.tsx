@@ -410,10 +410,11 @@ function Howto() {
     window.Kakao.Link.sendDefault({
       objectType: "feed",
       content: {
-        title: voteInfo.title,
-        description: "지금 당신의 소중한 의견을 반영해보세요!",
+        title: `지금, [${voteInfo.title}](이)라는 주제가 당신의 의견을 기다리고 있어요.`,
+        description:
+          "실시간 설문 플랫폼 Vting에서 클릭 한 번으로 당신의 생각을 전해보세요!",
         imageUrl:
-          "https://vtingimage.s3.ap-northeast-2.amazonaws.com/uploads/yof_logo-17.jpg",
+          "	https://vtingimage.s3.ap-northeast-2.amazonaws.com/uploads/1649393809747_vt_logo_2.png",
         link: {
           webUrl: `https://vote.v-ting.net/${code}`,
           mobileWebUrl: `https://vote.v-ting.net/${code}`,
