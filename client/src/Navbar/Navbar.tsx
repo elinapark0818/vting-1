@@ -130,7 +130,7 @@ function Navbar() {
                       className="nav-link link"
                       onClick={() => handleLogout()}
                     >
-                      SingOut
+                      로그아웃
                     </div>
                   </div>
                 </ul>
