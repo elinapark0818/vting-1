@@ -303,9 +303,23 @@ export let UserController = {
             // console.log("findUserVote", findUserVote);
 
             var voteInfo = [];
-            //q=1 일때 0~9까지 q=2일때 10~19까지 q=3일때 20~29까지 q=10일때 90~99까지 q=100일때 990~999까지
-            for (let i = (q - 1) * 10; i < q * 10; i++) {
-              if (findUserVote[i] === undefined) break;
+
+            const countUserVote = await db
+              .collection("vote")
+              .find({ user_id: decoded.user_id })
+              .count();
+            console.log(countUserVote);
+            // countUserVote가 예를 들면 32이면
+            // q=4 일때 0~1까지 q=3일때 2~11까지 q=2일때 12~21(20뺀거~11뺀거)까지 q=1일때 22~31(10뺀거~1뺀거)
+            // countUserVote가 예를 들면 15이면
+            //  q=2일때 0~4(20뺀거~11뺀거)까지 q=1일때 5~14(10뺀거~1뺀거)
+            for (
+              let i = countUserVote - 10 * q;
+              i <= countUserVote - 10 * q + 9;
+              i++
+            ) {
+              console.log(findUserVote[4]);
+              if (findUserVote[i] === undefined) continue;
               const vote: any = {
                 title: findUserVote[i].title,
                 format: findUserVote[i].format,
