@@ -600,3 +600,33 @@
     }
   }
 }
+
+@media (max-width: 567px) {
+  .voteCodePageCon {
+    min-height: 100vh;
+    padding-top: 0;
+    padding-bottom: 70px;
+    .voteCodePage {
+      width: 100%;
+      .versusCon {
+        flex-direction: column;
+        .item1 {
+          display: flex;
+          align-items: center;
+        }
+        .item2 {
+          display: flex;
+          align-items: center;
+        }
+      }
+      .realTimeCon .votePreviewBack {
+        #votePreview-barHor-bar .barHor-itemNameCon .barHor-itemName {
+          width: 50px;
+        }
+        .votePreview-barHor-con {
+          padding: 10px;
+        }
+      }
+    }
+  }
+}

@@ -10,6 +10,8 @@ import {
 } from "../store/index";
 import vtinglogo from "../assets/vt_logo_2.png";
 import VoteButton from "./VoteButton";
+import AOS from "aos";
+AOS.init();
 
 function VoteMaker() {
   const newVoteFormat = useSelector(
@@ -27,7 +29,7 @@ function VoteMaker() {
       return <WordCloud />;
     default:
       return (
-        <div className="voteMakerCon">
+        <div className="voteMakerCon" data-aos="flip-left">
           <img src={vtinglogo} className="vting-logo" alt="vting-logo" />
         </div>
       );
@@ -74,7 +76,7 @@ function Bar() {
   };
 
   return (
-    <div className="voteMakerCon">
+    <div className="voteMakerCon" data-aos="flip-left">
       <label
         className={titleShake ? "voteLabel shakeIt" : "voteLabel"}
         htmlFor="voteTitle"
@@ -203,7 +205,7 @@ function OpenEnded() {
   }, [newVote.title]);
 
   return (
-    <div className="voteMakerCon">
+    <div className="voteMakerCon" data-aos="flip-left">
       <label
         className={titleShake ? "voteLabel shakeIt" : "voteLabel"}
         htmlFor="voteTitle"
@@ -272,7 +274,7 @@ function Versus() {
   }, [newVote.title, newVote.items]);
 
   return (
-    <div className="voteMakerCon">
+    <div className="voteMakerCon" data-aos="flip-left">
       <label
         className={titleShake ? "voteLabel shakeIt" : "voteLabel"}
         htmlFor="voteTitle"
@@ -382,7 +384,7 @@ function WordCloud() {
   }, [newVote.title]);
 
   return (
-    <div className="voteMakerCon">
+    <div className="voteMakerCon" data-aos="flip-left">
       <label
         className={titleShake ? "voteLabel shakeIt" : "voteLabel"}
         htmlFor="voteTitle"

@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store/index";
 import { setFormat, setType } from "../store/index";
 import { BiPoll, BiChat, BiCloud, BiHorizontalCenter } from "react-icons/bi";
+import AOS from "aos";
+AOS.init();
 
 function VoteFormats() {
   const [clicked, setClicked] = useState<string>("");
@@ -27,6 +29,7 @@ function VoteFormats() {
   return (
     <div className="voteFormatsCon">
       <ul
+        data-aos="flip-left"
         onClickCapture={(e) => {
           setFormatFromIcon(e);
         }}
