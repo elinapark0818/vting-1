@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/index";
 import "./Dashboard.scss";
-import Loading from "../Loading/Loading";
 import vtCry from "../assets/vt_cry.png";
 
 const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
@@ -120,8 +119,6 @@ function Dashboard() {
         setButtonActive(true);
         setCurrentPage(pageNumber);
         setUserVote(res.data.vote);
-      } else {
-        // setUserVote(votes);
       }
     } catch (err) {
       console.log(err);
@@ -129,8 +126,6 @@ function Dashboard() {
   };
 
   const [empty, setEmpty] = useState(false);
-
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!isLogin.login) {
@@ -176,7 +171,6 @@ function Dashboard() {
       });
       if (res.status === 200) {
         getUserVoteData();
-
         closeModal();
       }
     } catch (err) {

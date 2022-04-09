@@ -14,7 +14,6 @@ function Home() {
       <Test />
 
       <div className="services">
-        추후 서비스 소개가 들어갈 영역입니다.
         <Info />
       </div>
     </div>
