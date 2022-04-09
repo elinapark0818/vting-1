@@ -3,6 +3,7 @@ import React from "react";
 import "./Footer.scss";
 import Logo from "../assets/yof_logo-17.jpg";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
 
 function Footer() {
   return (
@@ -40,7 +41,8 @@ function Footer() {
                 window.open("https://github.com/overflowbin", "_blank")
               }
             >
-              OverFlowBIN <FaExternalLinkAlt style={{ width: "0.7em" }} />
+              OverFlowBIN{" "}
+              <FaGithub style={{ width: "1.2em", color: "black" }} />
             </div>
           </div>
 
@@ -54,7 +56,7 @@ function Footer() {
                 window.open("https://github.com/biblepark", "_blank")
               }
             >
-              Bible Park <FaExternalLinkAlt style={{ width: "0.7em" }} />
+              Bible Park <FaGithub style={{ width: "1.2em", color: "black" }} />
             </div>
           </div>
 
@@ -66,7 +68,7 @@ function Footer() {
               className="github"
               onClick={() => window.open("https://github.com/2cho6", "_blank")}
             >
-              2cho6 <FaExternalLinkAlt style={{ width: "0.7em" }} />
+              2cho6 <FaGithub style={{ width: "1.2em", color: "black" }} />
             </div>
           </div>
 
@@ -80,7 +82,7 @@ function Footer() {
                 window.open("https://github.com/elinapark0818", "_blank")
               }
             >
-              Elina Park <FaExternalLinkAlt style={{ width: "0.7em" }} />
+              Elina Park <FaGithub style={{ width: "1.2em", color: "black" }} />
             </div>
           </div>
         </div>

@@ -1,0 +1,22 @@
+@import "../index.scss";
+
+.move_to_new_wrap {
+  transition: all 0.3s ease;
+}
+
+.move_to_new {
+  cursor: pointer;
+  border: 3px solid $vting-blue;
+  border-radius: 20px;
+  background-color: transparent;
+  margin-top: 3em;
+  font-size: 1.5em;
+  padding: 5px 15px;
+  color: $vting-blue;
+  transition: all 0.7s ease;
+
+  &:hover {
+    color: #fff;
+    background-color: $vting-blue;
+  }
+}
