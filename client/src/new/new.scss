@@ -88,8 +88,8 @@
   }
   .voteFormatIcon {
     background-color: $vting-blue;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     border-radius: 30%;
     text-align: center;
     line-height: 75px;
@@ -235,6 +235,7 @@
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
+      align-items: center;
       .fakeCheck {
         display: inline-block;
         width: 20px;
@@ -263,6 +264,35 @@
       .disabledText {
         color: $vting-gray;
       }
+      .option {
+        border: 2px solid $vting-blue;
+        padding: 0 6px;
+        font-size: 15px;
+        font-weight: 500;
+        color: $vting-blue;
+        line-height: 20px;
+        border-radius: 15px;
+        margin-left: 5px;
+        cursor: pointer;
+      }
+    }
+
+    .optionAlt {
+      // display: flex;
+      padding: 15px;
+      background-color: $vting-gray;
+      border-radius: 3px;
+      font-size: 13px;
+      margin: 0 0 10px 5px;
+      display: none;
+      img {
+        width: 40%;
+        margin-right: 10px;
+        background-color: white;
+      }
+    }
+    .block {
+      display: flex;
     }
   }
 }
@@ -298,7 +328,7 @@
       height: 230px;
       display: flex;
       flex-direction: row;
-      justify-content: center;
+      justify-content: flex-start;
       overflow-x: auto;
     }
     #votePreview-barVer-bar {
@@ -338,7 +368,7 @@
       height: 240px;
       display: flex;
       flex-direction: column;
-      justify-content: space-around;
+      justify-content: flex-start;
       overflow-y: auto;
     }
     #votePreview-barHor-bar {
