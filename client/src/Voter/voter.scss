@@ -699,6 +699,7 @@
     padding-bottom: 70px;
     .voteCodePage {
       width: 100%;
+      overflow: hidden;
       .versusCon {
         flex-direction: column;
         .item1 {

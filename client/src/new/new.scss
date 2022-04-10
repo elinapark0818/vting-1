@@ -590,10 +590,19 @@
       ul {
         width: 100%;
         padding-bottom: 30px;
+        .voteFormatIcon {
+          width: 60px;
+          height: 60px;
+        }
       }
     }
     .voteMakerCon {
       padding: 0;
+      .voteOptionItems {
+        .block {
+          width: 300px;
+        }
+      }
     }
     .vote-info {
       margin-left: 0px;
@@ -616,5 +625,16 @@
         }
       }
     }
+  }
+  .bannerCon {
+    .nonUserBanner {
+      padding: 20px;
+      height: 100px;
+    }
+  }
+  .makeVoteAlert {
+    width: 100vw;
+    margin: 0 !important;
+    margin-left: -95px !important;
   }
 }
