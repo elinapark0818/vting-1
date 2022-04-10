@@ -69,7 +69,7 @@ export let VoterController = {
   vote: {
     patch: async (req: Request & { body: any }, res: Response) => {
       let { idx, content }: PatchVote = req.body;
-      console.log("content", content);
+
       let viewContent = "";
       if (content) {
         for (let el of content) {
@@ -257,7 +257,7 @@ export let VoterController = {
                     items: {
                       idx: findMemberVote.items.length,
                       content: viewContent,
-                      count: 0,
+                      count: 1,
                     },
                   },
                 }
@@ -271,21 +271,25 @@ export let VoterController = {
                   { $inc: { voterCount: 1 } }
                 );
 
+              const updatedVote = await db
+                .collection("vote")
+                .findOne({ url: Number(req.params.accessCode) });
+
               // variance update
               let total = 0;
-              for (let el of findMemberVote.items) {
+              for (let el of updatedVote.items) {
                 total += el.count;
               }
-              let average = total / findMemberVote.items.length;
+              let average = total / updatedVote.items.length;
 
               total = 0;
 
-              for (let i = 0; i < findMemberVote.items.length; i++) {
-                let deviation = findMemberVote.items[i].count - average;
+              for (let i = 0; i < updatedVote.items.length; i++) {
+                let deviation = updatedVote.items[i].count - average;
 
                 total += deviation * deviation;
               }
-              let variance = total / (findMemberVote.items.length - 1);
+              let variance = total / (updatedVote.items.length - 1);
 
               await db
                 .collection("vote")
@@ -373,7 +377,7 @@ export let VoterController = {
 
             // 작성된 content와 동일한 content가 있을때 => count up
             if (findContent) {
-              await db.collection("vote").updateOne(
+              await db.collection("non-member").updateOne(
                 {
                   url: Number(req.params.accessCode),
                   "items.content": viewContent,
@@ -409,7 +413,7 @@ export let VoterController = {
                     items: {
                       idx: findNonMemberVote.items.length,
                       content: viewContent,
-                      count: 0,
+                      count: 1,
                     },
                   },
                 }
