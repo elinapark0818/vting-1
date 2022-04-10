@@ -106,7 +106,7 @@
           width: 100%;
           display: flex;
           flex-direction: row;
-          justify-content: space-around;
+          justify-content: flex-start;
           overflow-x: auto;
         }
         #votePreview-barVer-bar {
@@ -178,7 +178,7 @@
           padding: 30px;
           display: flex;
           flex-direction: column;
-          justify-content: space-around;
+          justify-content: flex-start;
           overflow-y: auto;
         }
         #votePreview-barHor-bar {
@@ -256,6 +256,9 @@
       align-items: center;
       .votingProfileImg {
         width: 50px;
+        height: 50px;
+        overflow: hidden;
+        border-radius: 50px;
         margin-right: 10px;
         img {
           width: 100%;
