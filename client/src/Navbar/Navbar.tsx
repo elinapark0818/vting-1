@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, setIsLogin, setUserInfo } from "../store/index";
 import axios from "axios";
 import ProgressBar from "../Info/ProgressBar";
-import { BiMenu } from "react-icons/bi";
+import { BiMenu, BiX } from "react-icons/bi";
 
 const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
@@ -15,6 +15,7 @@ function Navbar() {
   const navigate = useNavigate();
   const [homeMode, setHomeMode] = useState(false);
   let location = useLocation();
+  const [isMoblieMenuClicked, setMoblieMenuClicked] = useState(false);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   let isLoginState = useSelector((state: RootState) => state.isLogin);
   let loginState = isLoginState.login;
@@ -151,29 +152,29 @@ function Navbar() {
           </div>
         )}
       </div>
+
       <div className="NavBarMobile">
         <div className="NavLeft">
           <Link to="/">
             <img src={Logo} alt="logo" style={{ width: "100px" }} />
           </Link>
         </div>
-        <div className="NavMobileMenuBtn">
-          <BiMenu />
+        <div
+          className="NavMobileMenuBtn"
+          onClick={() => setMoblieMenuClicked(!isMoblieMenuClicked)}
+        >
+          {isMoblieMenuClicked ? <BiX /> : <BiMenu />}
         </div>
-        <div className="NavMobileMenu">
+        <div
+          className={
+            isMoblieMenuClicked ? "NavMobileMenu block" : "NavMobileMenu"
+          }
+        >
           {loginState ? (
-            <div className="NavRight">
-              <Link className="nav-link link" to="/">
-                홈
-              </Link>
-              <Link className="nav-link link" to="dashboard">
-                대시보드
-              </Link>
-              <Link className="nav-link link" to="new">
-                설문만들기
-              </Link>
+            <div className="loginUserMenu">
               <div className="profile">
-                <div>
+                <div className="profileCon">
+                  <div className="username">{userInfo.nickname} 님 🧡</div>
                   <img
                     src={userInfo.image}
                     alt="profile_img"
@@ -184,34 +185,69 @@ function Navbar() {
                       borderRadius: "50%",
                     }}
                   />
-
-                  <ul className="subMenu">
-                    <div className="subMenuLi">
-                      <div className="username">{userInfo.nickname} 님 🧡</div>
-                      <Link className="nav-link link" to="myPage">
-                        마이페이지
-                      </Link>
-
-                      <div
-                        className="nav-link link"
-                        onClick={() => handleLogout()}
-                      >
-                        SingOut
-                      </div>
-                    </div>
-                  </ul>
                 </div>
+                <Link
+                  className="nav-link link"
+                  to="myPage"
+                  onClick={() => setMoblieMenuClicked(false)}
+                >
+                  마이페이지
+                </Link>
+                <div
+                  className="nav-link link"
+                  onClick={() => {
+                    handleLogout();
+                    setMoblieMenuClicked(false);
+                  }}
+                >
+                  SingOut
+                </div>
+              </div>
+              <div className="menu">
+                <Link
+                  className="nav-link link"
+                  to="/"
+                  onClick={() => setMoblieMenuClicked(false)}
+                >
+                  홈
+                </Link>
+                <Link
+                  className="nav-link link"
+                  to="dashboard"
+                  onClick={() => setMoblieMenuClicked(false)}
+                >
+                  대시보드
+                </Link>
+                <Link
+                  className="nav-link link"
+                  to="new"
+                  onClick={() => setMoblieMenuClicked(false)}
+                >
+                  설문만들기
+                </Link>
               </div>
             </div>
           ) : (
-            <div className="NavRight">
-              <Link className="nav-link link" to="/">
+            <div className="logoutUserMenu">
+              <Link
+                className="nav-link link"
+                to="/"
+                onClick={() => setMoblieMenuClicked(false)}
+              >
                 홈
               </Link>
-              <Link className="nav-link link" to="new">
+              <Link
+                className="nav-link link"
+                to="new"
+                onClick={() => setMoblieMenuClicked(false)}
+              >
                 설문만들기
               </Link>
-              <Link className="nav-link link" to="signIn">
+              <Link
+                className="nav-link link"
+                to="signIn"
+                onClick={() => setMoblieMenuClicked(false)}
+              >
                 로그인
               </Link>
             </div>
