@@ -15,14 +15,31 @@
 
 <b> Vting 에서는 </b>
 
-📳 핸드폰 및 웹으로 투표에 참여할 수 있어요 <br/>
+![2  설문생성](https://user-images.githubusercontent.com/93892029/162728216-a5c0f34a-8a95-49a4-860f-8ab6a9078f9e.gif)
+✅ 다양한 방식으로 투표를 만들 수 있어요 <br/>
+
+![3  복사 및 카톡공유](https://user-images.githubusercontent.com/93892029/162728369-d6ab6e66-a7f0-4f5c-a17a-92a1510a9f50.gif)
 ✍ 투표에 바로 참여할 수 있도록 QR code 또는 웹서비스 내의 code를 제공해요 <br/>
-✅ 다양한 방식으로 투표 결과를 만들 수 있어요 <br/>
-💬 소셜 로그인 기능이 제공돼요 <br/>
+
+![4  깔짝깔짝 및 실시간응답보기](https://user-images.githubusercontent.com/93892029/162728495-c6246362-71a6-43ea-91e4-93971999f88e.gif)
 📶 결과를 실시간으로 확인할 수 있어요 <br/>
+
+![7  투표하기 및 실시간 보기](https://user-images.githubusercontent.com/93892029/162728552-702e312e-eeb2-4bc3-8eb3-b1ea730e420e.gif)
+쉽고 간단하게 투표에 참여하고 내가 응답한 투표의 결과도 실시간으로 확인할 수 있어요 <br/>
+
+
+📳 핸드폰 및 웹으로 투표에 참여할 수 있어요 <br/>
+
+
+💬 소셜 로그인 기능이 제공돼요 <br/>
+
 😜 귀여운 애니메이션 효과로 재밌게 결과를 지켜볼 수 있어요 <br/>
 
 <br/>
+
+
+
+
 
 # 🛠 기술 스택
 
