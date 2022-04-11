@@ -52,8 +52,6 @@
 
 <img src="https://img.shields.io/badge/MongoDB-4DB33D?style=for-the-badge&logo=MongoDB&logoColor=white">
 
-<img src="https://img.shields.io/badge/Axios-854195?style=for-the-badge&logo=Axios&logoColor=white">
-
 <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white">
 
 <img src="https://img.shields.io/badge/bcrypt-1a1958?style=for-the-badge&logo=bcrypt&logoColor=white">
