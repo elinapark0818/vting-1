@@ -67,7 +67,6 @@ exports.VoterController = {
     vote: {
         patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             let { idx, content } = req.body;
-            console.log("content", content);
             let viewContent = "";
             if (content) {
                 for (let el of content) {
@@ -200,7 +199,7 @@ exports.VoterController = {
                                     items: {
                                         idx: findMemberVote.items.length,
                                         content: viewContent,
-                                        count: 0,
+                                        count: 1,
                                     },
                                 },
                             });
@@ -208,18 +207,21 @@ exports.VoterController = {
                             yield __1.db
                                 .collection("vote")
                                 .updateOne({ url: Number(req.params.accessCode) }, { $inc: { voterCount: 1 } });
+                            const updatedVote = yield __1.db
+                                .collection("vote")
+                                .findOne({ url: Number(req.params.accessCode) });
                             // variance update
                             let total = 0;
-                            for (let el of findMemberVote.items) {
+                            for (let el of updatedVote.items) {
                                 total += el.count;
                             }
-                            let average = total / findMemberVote.items.length;
+                            let average = total / updatedVote.items.length;
                             total = 0;
-                            for (let i = 0; i < findMemberVote.items.length; i++) {
-                                let deviation = findMemberVote.items[i].count - average;
+                            for (let i = 0; i < updatedVote.items.length; i++) {
+                                let deviation = updatedVote.items[i].count - average;
                                 total += deviation * deviation;
                             }
-                            let variance = total / (findMemberVote.items.length - 1);
+                            let variance = total / (updatedVote.items.length - 1);
                             yield __1.db
                                 .collection("vote")
                                 .updateOne({ url: Number(req.params.accessCode) }, { $set: { variance } });
@@ -286,7 +288,7 @@ exports.VoterController = {
                         });
                         // 작성된 content와 동일한 content가 있을때 => count up
                         if (findContent) {
-                            yield __1.db.collection("vote").updateOne({
+                            yield __1.db.collection("non-member").updateOne({
                                 url: Number(req.params.accessCode),
                                 "items.content": viewContent,
                             }, { $inc: { "items.$.count": 1 } });
@@ -312,7 +314,7 @@ exports.VoterController = {
                                     items: {
                                         idx: findNonMemberVote.items.length,
                                         content: viewContent,
-                                        count: 0,
+                                        count: 1,
                                     },
                                 },
                             });
