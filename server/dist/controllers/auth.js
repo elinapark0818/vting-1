@@ -21,26 +21,34 @@ exports.AuthController = {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             if (req.headers.authorization &&
                 req.headers.authorization.split(" ")[0] === "Bearer") {
-                let authorization = req.headers.authorization;
-                let accessToken = authorization.split(" ")[1];
-                try {
-                    const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
-                    const findUser = yield __1.db
-                        .collection("user")
-                        .findOne({ user_id: decoded.user_id });
-                    return res.status(200).json({
-                        data: {
-                            _id: findUser._id,
-                            user_id: findUser.user_id,
-                            nickname: findUser.nickname,
-                            image: findUser.image,
-                            vote: findUser.vote,
-                        },
-                    });
+                // GET 요청이 와도 accessToken이 빈문자열(로그아웃 상태) 400 error code('회원가입이 또는 로그인이 필요한 요청입니다.) 보내기
+                if (req.headers.authorization.split(" ")[1]) {
+                    let authorization = req.headers.authorization;
+                    let accessToken = authorization.split(" ")[1];
+                    try {
+                        const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET);
+                        const findUser = yield __1.db
+                            .collection("user")
+                            .findOne({ user_id: decoded.user_id });
+                        return res.status(200).json({
+                            data: {
+                                _id: findUser._id,
+                                user_id: findUser.user_id,
+                                nickname: findUser.nickname,
+                                image: findUser.image,
+                                vote: findUser.vote,
+                            },
+                        });
+                    }
+                    catch (err) {
+                        console.log(err);
+                        return res.status(400).json({ message: "Bad request" });
+                    }
                 }
-                catch (err) {
-                    console.log(err);
-                    return res.status(400).json({ message: "Bad request" });
+                else {
+                    return res
+                        .status(400)
+                        .json({ message: "회원가입이 또는 로그인이 필요한 요청입니다" });
                 }
             }
             else {

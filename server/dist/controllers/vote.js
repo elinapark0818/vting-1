@@ -24,7 +24,6 @@ exports.VoteController = {
                 test: true,
                 created_at: new Date(),
             });
-            res.send("vote test!!");
         }),
     },
     create: {
@@ -76,6 +75,9 @@ exports.VoteController = {
                                 manytimes,
                                 undergoing: true,
                                 isPublic: true,
+                                sumCount: 0,
+                                voterCount: 0,
+                                variance: 0,
                                 created_at: new Date(),
                             }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                                 // random url(6digit) 만들어 주기
@@ -113,6 +115,7 @@ exports.VoteController = {
                                 response,
                                 undergoing: true,
                                 isPublic: true,
+                                voterCount: 0,
                                 created_at: new Date(),
                             }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                                 // 방금 만든 objectId 보내주기
@@ -149,6 +152,9 @@ exports.VoteController = {
                                 items,
                                 undergoing: true,
                                 isPublic: true,
+                                sumCount: 0,
+                                voterCount: 0,
+                                variance: 0,
                                 created_at: new Date(),
                             }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                                 // 방금 만든 objectId 보내주기
@@ -183,8 +189,11 @@ exports.VoteController = {
                                 format,
                                 manytimes,
                                 items,
-                                undergoing: true,
                                 isPublic: true,
+                                undergoing: true,
+                                sumCount: 0,
+                                voterCount: 0,
+                                variance: 0,
                                 created_at: new Date(),
                             }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                                 // 방금 만든 objectId 보내주기
@@ -231,6 +240,7 @@ exports.VoteController = {
                             multiple,
                             manytimes,
                             undergoing: true,
+                            sumCount: 0,
                             created_at: new Date(),
                         }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                             // random url(6digit) 만들어 주기
@@ -306,6 +316,7 @@ exports.VoteController = {
                             manytimes,
                             items,
                             undergoing: true,
+                            sumCount: 0,
                             created_at: new Date(),
                         }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                             // 방금 만든 objectId 보내주기
@@ -343,6 +354,7 @@ exports.VoteController = {
                             manytimes,
                             items,
                             undergoing: true,
+                            sumCount: 0,
                             created_at: new Date(),
                         }, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
                             // 방금 만든 objectId 보내주기
@@ -401,17 +413,7 @@ exports.VoteController = {
                         yield __1.db
                             .collection("vote")
                             .findOne({ user_id: data.user_id, _id: new mongodb_1.ObjectId(voteId) }, (err, data) => {
-                            console.log("data", data);
-                            if (data.format !== "open") {
-                                let sumCount = 0;
-                                for (let el of data.items) {
-                                    sumCount += el.count;
-                                }
-                                return res.status(200).json({ data: data, sumCount });
-                            }
-                            else {
-                                return res.status(200).json({ data: data });
-                            }
+                            return res.status(200).json({ data: data });
                         });
                     }));
                     // 비회원 vote data 보내기(클라에서 비번으로 접근 여부 판단함)
@@ -432,16 +434,15 @@ exports.VoteController = {
                             (1000 * 60) +
                             60;
                         overtime = Math.round(overtime);
-                        if (data.format !== "open") {
-                            let sumCount = 0;
-                            for (let el of data.items) {
-                                sumCount += el.count;
-                            }
-                            return res.status(200).json({ data: data, overtime, sumCount });
-                        }
-                        else {
-                            return res.status(200).json({ data: data, overtime });
-                        }
+                        // if (data.format !== "open") {
+                        //   let sumCount: number = 0;
+                        //   for (let el of data.items) {
+                        //     sumCount += el.count;
+                        //   }
+                        //   return res.status(200).json({ data: data, overtime, sumCount });
+                        // } else {
+                        return res.status(200).json({ data: data, overtime });
+                        // }
                     });
                 }
                 else {
