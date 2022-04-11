@@ -18,6 +18,12 @@ import Logo from "../assets/vt_logo_2.png";
 import Mobile_1 from "../assets/1_mobile.gif";
 import Mobile_2 from "../assets/2_mobile.gif";
 
+import vote_icon_barver from "../assets/vote_icons/vote_icon_barver.svg";
+import vote_icon_barhor from "../assets/vote_icons/vote_icon_barhor.svg";
+import vote_icon_open from "../assets/vote_icons/vote_icon_open.svg";
+import vote_icon_versus from "../assets/vote_icons/vote_icon_versus.svg";
+import vote_icon_word from "../assets/vote_icons/vote_icon_word.svg";
+
 function Info() {
   useEffect(() => {
     AOS.init();
@@ -105,10 +111,7 @@ function Info() {
           <div className="vote_category">
             <div className="icon_wrap">
               <div className="icon_img">
-                <BiPoll
-                  className="vertical_graph_icon"
-                  style={{ transform: "rotate(-90deg)" }}
-                />
+                <img src={vote_icon_barver} alt="Bar vertical" id="barVer" />
               </div>
               <div className="icon_desc">
                 <p>
@@ -120,7 +123,7 @@ function Info() {
             </div>
             <div className="icon_wrap">
               <div className="icon_img">
-                <BiPoll className="horizontal_graph_icon" />
+                <img src={vote_icon_barhor} alt="Bar horizontal" id="barHor" />
               </div>
               <div className="icon_desc">
                 <p>
@@ -134,7 +137,7 @@ function Info() {
             </div>
             <div className="icon_wrap">
               <div className="icon_img">
-                <BiHorizontalCenter className="versus_icon" />
+                <img src={vote_icon_open} alt="OpenEnded" id="open" />
               </div>
               <div className="icon_desc">
                 <p>
@@ -147,7 +150,7 @@ function Info() {
             </div>
             <div className="icon_wrap">
               <div className="icon_img">
-                <BiChat className="chat_icon" />
+                <img src={vote_icon_versus} alt="Versus" id="versus" />
               </div>
               <div className="icon_desc">
                 <p>
@@ -160,7 +163,7 @@ function Info() {
             </div>
             <div className="icon_wrap">
               <div className="icon_img">
-                <BiCloud className="cloud_icon" />
+                <img src={vote_icon_word} alt="WordCloud" id="word" />
               </div>
               <div className="icon_desc">
                 <p>

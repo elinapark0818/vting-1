@@ -128,8 +128,12 @@
   .icon_wrap {
     display: flex;
     flex-direction: column;
+    align-items: center;
     .icon_img {
+      background-color: #0048e8;
       margin: 20px;
+      border-radius: 20px;
+      width: 100px;
     }
     .icon_desc {
       width: 240px;
