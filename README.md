@@ -1,6 +1,7 @@
 # 👩‍👩‍👧‍👦  Welcome to the Vting
 
-![vting_logo](https://user-images.githubusercontent.com/74189121/158925857-b2730467-7b9f-4365-98f1-8f6d6646cff5.png)
+![banner3](https://user-images.githubusercontent.com/87470206/162757994-06228cc3-f09c-4b99-a17f-914967fc8d40.jpg)
+
 
 ## [Vting 바로가기](v-ting.net)
 
