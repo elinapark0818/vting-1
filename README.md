@@ -23,7 +23,7 @@
 <br/>
 
 <img src="https://user-images.githubusercontent.com/93892029/162728369-d6ab6e66-a7f0-4f5c-a17a-92a1510a9f50.gif" width="600px"  />
-✍ 설문에 바로 참여할 수 있도록 QR code 또는 웹서비스 내의 code를 제공해요 <br/>
+✍ 설문에 바로 참여할 수 있도록 QR code 또는 웹서비스 내의 여섯자리 설문코드를 제공해요 <br/>
 
 <br/>
 <br/>
