@@ -14,7 +14,9 @@ import NonMembers from "../assets/13_non_member_600.gif";
 import { FaRegCheckSquare } from "react-icons/fa";
 import { BiPoll, BiChat, BiCloud, BiHorizontalCenter } from "react-icons/bi";
 import Created_Vote from "./Created_Vote";
-import Smile from "../assets/vt_smile.png";
+import Logo from "../assets/vt_logo_2.png";
+import Mobile_1 from "../assets/1_mobile.gif";
+import Mobile_2 from "../assets/2_mobile.gif";
 
 function Info() {
   useEffect(() => {
@@ -95,7 +97,6 @@ function Info() {
             </div>
           </div>
         </div>
-
         <div className="info_vote_category">
           <div className="info_vote_category_title">
             <h1>여러가지 스타일의 설문을 만들어보세요.</h1>
@@ -174,7 +175,6 @@ function Info() {
           </div>
           <Created_Vote />
         </div>
-
         <div
           className="info_vting_option"
           data-aos="fade-up"
@@ -250,7 +250,9 @@ function Info() {
               </div>
             </div>
           </div>
+        </div>
 
+        <div className="info_member_special_option">
           <div className="info_vote_member_title">
             <h1>회원가입을 통해 V-ting에서 제공하는 특별한 혜택을 누리세요.</h1>
           </div>
@@ -300,9 +302,45 @@ function Info() {
             </div>
           </div>
         </div>
+        {/* //!
+          //!
+          //!
+        //! */}
+
+        <div
+          className="info_mobile_container"
+          data-aos="fade-up"
+          data-aos-anchor-placement="top-center"
+        >
+          <div className="info_mobile_title">
+            <h1>모바일에서도 이용하실 수 있어요.</h1>
+          </div>
+          <div className="info_mobile_wrap">
+            <div
+              className="info_mobile_item"
+              data-aos="fade-left"
+              data-aos-anchor-placement="top-center"
+            >
+              <img className="info_mobile_img" src={Mobile_1} alt="Mobile_1" />
+              <img className="info_mobile_img" src={Mobile_2} alt="Mobile_2" />
+
+              <div className="info_mobile_desc">
+                <div className="info_mobile_desc_title">
+                  <h2>내 손안에서 이루어지는 V-ting</h2>
+                </div>
+                <p>설문 생성 및 공유하기 기능이 가능합니다.</p>
+                <p>모바일에서 간편하게 설문에 참여하세요!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* //!
+          //!
+          //!
+          //! */}
       </div>
       <div className="info_move_to_new">
-        <img src={Smile} alt="Smile" style={{ width: "300px" }} />
+        <img src={Logo} alt="Logo" style={{ width: "300px" }} />
 
         <Created_Vote />
       </div>
