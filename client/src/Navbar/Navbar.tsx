@@ -271,6 +271,10 @@ function VotingBanner() {
             placeholder="6자리 설문 코드를 입력하고 응답에 참여하세요!"
             value={vtingCode}
             onChange={(e) => setVtingCode(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter")
+                window.open(`${process.env.REACT_APP_CLIENT_URL}/${vtingCode}`);
+            }}
           ></input>
         </div>
         <a
