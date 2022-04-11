@@ -1,0 +1,87 @@
+@import "../index.scss";
+
+.myPage_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  // width: 1200px;
+}
+
+.outlet_wrap {
+  display: flex;
+  // width: 100%;
+  // flex: 9;
+}
+
+// * 비밀번호 확인
+.passwordCheck_container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.passwordCheck_header {
+  display: flex;
+  // align-items: center;
+  height: 60px;
+  width: 1200px;
+  margin-top: 2em;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: $vting-orange;
+
+  .passwordCheck_desc {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: 3em;
+    color: #fff;
+  }
+}
+
+.passwordCheck_wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3em;
+  border-radius: 5px;
+  & input {
+    font-size: 20px;
+    border-radius: 10px;
+    padding: 0.5em 1em 0.5em 1em;
+    background-color: transparent;
+    border: 1px solid $vting-gray;
+    margin: 5em 2em 3em 2em;
+  }
+}
+
+.passwordCheck_btnWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5em;
+}
+
+.check_btn {
+  cursor: pointer;
+  border: none;
+  background-color: $vting-orange;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 30px;
+  padding: 5px 20px;
+  transition: all 0.5s ease;
+
+  &:hover {
+    background-color: $vting-orange;
+  }
+}

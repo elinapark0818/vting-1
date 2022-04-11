@@ -1,61 +1,186 @@
-.checkPwd_container {
-  display: flex;
-  flex-direction: column;
-  border: 3px solid rgb(236, 177, 100);
-  margin: 0 200px;
-}
-
-.edit_header {
-  height: 100px;
-  background-color: orange;
-
-  & h1 {
-    margin-left: 40px;
-    color: #fff;
-  }
-}
-
-.edit_passwordCheck {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 500px;
-}
-
-.edit_input {
-  background-color: rgb(184, 184, 184);
-  border: none;
-  height: 30px;
-  width: 300px;
-  font-size: 30px;
-}
-
-.edit_checkBtn {
-  margin: 50px 0;
-  background-color: orange;
-  color: #fff;
-  font-weight: bold;
-  font-size: large;
-  padding: 10px 10px;
-  border: none;
-  width: 200px;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.passwordCheck {
-  font-size: 16px;
-  color: red;
-  border: 1px solid red;
-  padding: 5px 5px;
-  margin: 0;
-  //   display: ${(props) => (props.passwordCheck ? "none" : "block")};
-}
+@import "../../index.scss";
 
 .edit_container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  // margin: 3em;
+  // border: 1px solid $vting-orange;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.edit_header {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  width: 1200px;
+  margin-top: 2em;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: $vting-orange;
+
+  .edit_header_desc {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: 2em;
+    color: #fff;
+  }
+}
+
+.edit_containerWrap {
+  display: flex;
+}
+
+// * UserInfo-Nav
+
+.userInfo_nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 5em;
+  flex: 3;
+
+  .userInfo_navBtn {
+    flex-direction: row;
+    cursor: pointer;
+    font-size: 20px;
+    text-align: left;
+    background-color: #fff;
+    color: gray;
+    padding: 10px 30px;
+    border: 1px solid $vting-gray;
+    border-left: 5px solid $vting-gray;
+    border-bottom-right-radius: 5px;
+  }
+
+  .userInfo_navBtn_active {
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: left;
+    background-color: #fff;
+    color: gray;
+    padding: 10px 30px;
+    border: 1px solid $vting-gray;
+    border-top-right-radius: 5px;
+    border-left: 5px solid $vting-orange;
+  }
+}
+
+.edit_wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 50em;
+  min-height: 60em;
+  border-radius: 5px;
+  flex: 5;
+  margin: 5em 5em 0 0;
+  & .edit_userProfile {
+    margin-bottom: 3em;
+    .img_input {
+      display: none;
+    }
+  }
+
+  .edit_userProfile_wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 1em;
+
+    .edit_userProfile_image {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 1em;
+    }
+  }
+
+  .edit_userProfile_form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .img_uploaderWrap {
+    display: flex;
+    flex-direction: row;
+
+    .img_uploader {
+      cursor: pointer;
+      font-size: 4em;
+      margin-left: -1.2em;
+      margin-top: 3.5em;
+      color: $vting-orange;
+      border-radius: 50%;
+      transition: all 0.3s ease-in-out;
+    }
+  }
+
+  & .edit_userInfo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    .edit_nickname {
+      display: flex;
+      flex-direction: row;
+      margin-left: 10em;
+      width: 40em;
+
+      & .edit_nickname_input {
+        margin-left: 1.2em;
+      }
+    }
+    .edit_password {
+      display: flex;
+      flex-direction: row;
+      margin-left: 10em;
+      width: 40em;
+    }
+  }
+
+  & h3 {
+    font-size: 2em;
+    margin-right: 1em;
+    color: $vting-orange;
+  }
+
+  & input {
+    border: none;
+    background-color: transparent;
+    border-bottom: 1px solid $vting-gray;
+    width: 15em;
+    font-size: 25px;
+    padding-left: 5px;
+  }
+}
+
+.edit_btnWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3em;
+  margin-bottom: 3em;
+  // border: 1px solid black;
+}
+
+.edit_btn {
+  cursor: pointer;
+  border: none;
+  background-color: $vting-orange;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 20px;
+  padding: 10px 30px;
+  transition: all 0.5s ease;
 }

@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, setPassword } from "../store/index";
+import {
+  patchGetVote,
+  RootState,
+  setRestart,
+  setVoteAlert,
+} from "../store/index";
 import VoteBody from "./VoteBody";
 import VoteFormats from "./VoteFormats";
+import axios from "axios";
 import "./new.scss";
 import {
   transitions,
@@ -36,22 +43,43 @@ const AlertTemplate = ({
 };
 
 function NewVote() {
+  const isLogin = useSelector((state: RootState) => state.isLogin);
+
   return (
     <AlertProvider template={AlertTemplate} {...options}>
-      <div className="newVoteCon">
-        <VoteFormats />
-        <VoteBody />
+      <div className="bodyContainer">
+        <div className="bannerCon">
+          {isLogin.login ? (
+            ""
+          ) : (
+            <div className="nonUserBanner">
+              잠깐! 로그인 하지 않은 상태로 생성한 설문은 1시간 후 사라집니다.
+              지금 무료 가입 후 나의 설문을 체계적으로 관리해보세요!
+            </div>
+          )}
+          <div className="newVoteCon">
+            <VoteFormats />
+            <VoteBody />
+          </div>
+        </div>
       </div>
     </AlertProvider>
   );
 }
 
 function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
+  const navigate = useNavigate();
   const newVote = useSelector((state: RootState) => state.makeNewVote);
+  const newVoteFormat = newVote.format;
   const [newVotePassword, setNewVotePassword] = useState("");
   const [newVotePasswordRe, setNewVotePasswordRe] = useState("");
   const [isMatch, setIsMatch] = useState(true);
   const dispatch = useDispatch();
+  const serverURL = process.env.REACT_APP_SERVER_URL;
+
+  useEffect(() => {
+    dispatch(setVoteAlert(true));
+  }, []);
 
   useEffect(() => {
     if (newVotePassword === newVotePasswordRe) {
@@ -61,9 +89,88 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
     }
   }, [newVotePassword, newVotePasswordRe]);
 
-  const sendPassword = () => {
-    dispatch(setPassword(newVotePassword));
-    console.log(newVote);
+  const sendNewVote = async () => {
+    const sendBody = logoutVoteBody();
+
+    try {
+      const response = await axios.post(serverURL + "/vting", sendBody, {
+        headers: {
+          withCredentials: true,
+        },
+      });
+      if (response.status === 201) {
+        dispatch(setRestart("delete all!!"));
+        dispatch(
+          patchGetVote({
+            title: response.data.data.title,
+            items: response.data.data.items || response.data.data.response,
+            sumCount: response.data.data.sumCount || 0,
+          })
+        );
+        navigate(`/v/${response.data.data.url}`);
+        dispatch(setVoteAlert(false));
+        close();
+      }
+    } catch (e) {
+      return (
+        <div>
+          설문 생성에 실패했습니다.
+          <br />
+          잠시 후 다시 확인해주세요.
+        </div>
+      );
+    }
+  };
+
+  const logoutVoteBody = () => {
+    let sendVoteBody = {};
+
+    switch (newVoteFormat) {
+      case "bar":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          type: newVote.type,
+          items: newVote.items,
+          manytimes: newVote.manytimes,
+          multiple: newVote.multiple,
+          password: newVotePassword,
+        };
+        return sendVoteBody;
+      case "open":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          manytimes: newVote.manytimes,
+          password: newVotePassword,
+        };
+        return sendVoteBody;
+      case "versus":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          items: newVote.items,
+          manytimes: newVote.manytimes,
+          multiple: newVote.multiple,
+          password: newVotePassword,
+        };
+        return sendVoteBody;
+      case "word":
+        sendVoteBody = {
+          title: newVote.title,
+          format: newVote.format,
+          manytimes: newVote.manytimes,
+          password: newVotePassword,
+        };
+        return sendVoteBody;
+      default:
+        return <>"오류 발생 : 투표 포맷이 선택되지 않음"</>;
+    }
+  };
+
+  const closeAlertHandler = () => {
+    dispatch(setVoteAlert(false));
+    close();
   };
 
   return (
@@ -114,12 +221,12 @@ function VoteAlert({ message, options, close, style }: AlertTemplateProps) {
           </div>
         </div>
       </div>
-      <button className="vtingButton" onClick={close}>
+      <button className="vtingButton" onClick={closeAlertHandler}>
         생성 화면으로 돌아가기
       </button>
       <button
         className={isMatch ? "vtingButton" : "vtingButtonGray"}
-        onClick={() => sendPassword()}
+        onClick={sendNewVote}
       >
         설문 생성 완료
       </button>

@@ -1,0 +1,128 @@
+@import "../index.scss";
+
+.hotVotes {
+  margin-top: 20px;
+  margin-bottom: 200px;
+  // z-index: 5;
+  width: 1200px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .slick-dots {
+    margin-top: 30px;
+  }
+  .slick-list {
+    width: 1000px;
+    margin: auto;
+  }
+  .slick-prev {
+    left: 3% !important;
+    z-index: 1;
+  }
+  .slick-next {
+    right: 3% !important;
+    z-index: 1;
+  }
+  .slick-arrow:before {
+    color: $vting-blue;
+  }
+  .hotVotesTitle {
+    margin-top: 50px;
+    font-size: 20px;
+    font-weight: 400;
+    padding: 20px 50px;
+    border: 3px solid $vting-orange;
+    #newVoteFilter {
+      height: auto;
+      line-height: normal;
+      padding: 0.8em 0.5em;
+      padding-right: 3em;
+      background: url("../assets/drop_arr.png") no-repeat 90%/10%;
+      // background-color: $vting-green;
+      border: 1px solid $vting-green;
+      border-radius: 0;
+      appearance: none;
+      font-weight: 500;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  }
+  .hotVotesContents {
+    width: 100%;
+    margin: 30px 0;
+    .hotVoteCard {
+      width: 200px;
+      overflow: hidden;
+      padding: 0 10px;
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+      .hotVoteCardTitle {
+        width: 100%;
+        display: inline-block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-align: center;
+        font-weight: 400;
+        background-color: $vting-blue;
+        padding: 20px;
+        color: white;
+      }
+      .hotVoteCardFormat {
+        color: black;
+        padding-top: 20px;
+        background-color: $vting-gray;
+        text-align: center;
+        font-weight: 400;
+      }
+      .hotVoteCardCount {
+        color: black;
+        padding: 10px 0 20px 0;
+        background-color: $vting-gray;
+        text-align: center;
+        font-weight: 400;
+        font-size: 20px;
+      }
+    }
+    a {
+      text-decoration: none;
+    }
+  }
+  .vtingButton {
+    font-size: 15px;
+    font-weight: 400;
+
+    background-color: $vting-orange;
+    color: white;
+    padding: 10px;
+
+    border-style: none;
+    margin-top: 10px;
+    outline: 0;
+    cursor: pointer;
+    box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
+  }
+  .newVoteBtn {
+    text-align: center;
+    width: 300px;
+    padding: 20px;
+    border-radius: 40px;
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+a {
+  text-decoration: none;
+}
+
+@media (max-width: 1439px) {
+  .hotVotes {
+    width: 960px;
+    .slick-list {
+      width: 800px;
+    }
+  }
+}

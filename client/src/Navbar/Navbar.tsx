@@ -1,57 +1,84 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Navbar.scss";
 import Logo from "../assets/vt_logo_1.png";
-import Profile from "../assets/yof_logo-17.jpg";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setIsLogin } from "../store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, setIsLogin, setUserInfo } from "../store/index";
 import axios from "axios";
+import ProgressBar from "../Info/ProgressBar";
+import { BiMenu, BiX } from "react-icons/bi";
 
-interface IsLogin {
-  isLogin: boolean;
-}
-
-const serverURL: string = "http://localhost:8000";
+const serverURL: string = process.env.REACT_APP_SERVER_URL as string;
 
 function Navbar() {
-  const [isLogin, setIsLogging] = useState<IsLogin>({ isLogin: false });
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // const handleLogin = async () => {
-  //   try {
-  //     const res = await axios.post(
-  //       serverURL + "/session",
-  //       {},
-  //       { withCredentials: true }
-  //     );
-  //     if (res.status === 200) {
-  //       dispatch(setIsLogin(true));
-  //       // dispatch(setIsUser(true))
-  //       console.log("로그인 성공===", res.data);
-  //       setIsLogging({ isLogin: true });
-  //       navigate("/dashboard");
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
-  const settingLogin = () => {
-    setIsLogin(true);
-  };
+  const [homeMode, setHomeMode] = useState(false);
+  let location = useLocation();
+  const [isMoblieMenuClicked, setMoblieMenuClicked] = useState(false);
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+  let isLoginState = useSelector((state: RootState) => state.isLogin);
+  let loginState = isLoginState.login;
 
   useEffect(() => {
-    if (document.cookie.includes("accessToken")) settingLogin();
-  }, []);
+    const NavbarUserInfo = async () => {
+      let accessToken = localStorage.getItem("accessToken");
+
+      if (document.location.href.includes("vote") || !accessToken) {
+        // vote. 경로로 접속한 경우이므로 로그인 요청을 보내지 않습니다.
+      } else {
+        let accessToken = localStorage.getItem("accessToken");
+        try {
+          await axios
+            .get(`${serverURL}/auth`, {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                withCredentials: true,
+              },
+            })
+            .then((res) => {
+              if (res.status === 200) {
+                settingLogin();
+                dispatch(
+                  setUserInfo({
+                    _id: res.data.data._id,
+                    nickname: res.data.data.nickname,
+                    email: res.data.data.user_id,
+                    image: res.data.data.image,
+                  })
+                );
+              } else {
+                console.error("400 Error");
+              }
+            });
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+    NavbarUserInfo();
+    // home 화면에서만 Vting 배너 출력
+    if (location.pathname === "/") setHomeMode(true);
+    else setHomeMode(false);
+  }, [location]);
+
+  const settingLogin = () => {
+    dispatch(setIsLogin(true));
+  };
 
   const handleLogout = async () => {
+    let accessToken = localStorage.getItem("accessToken");
     try {
-      const res = await axios.get(serverURL + "/session", {});
+      const res = await axios.get(serverURL + "/session", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          withCredentials: true,
+        },
+      });
       if (res.status === 200) {
+        const token = res.data.data.accessToken;
+        localStorage.setItem("accessToken", token);
         dispatch(setIsLogin(false));
-        console.log("로그아웃됨===", res.data);
-        setIsLogging({ isLogin: false });
         navigate("/");
       }
     } catch (err) {
@@ -61,52 +88,204 @@ function Navbar() {
 
   return (
     <div className="container">
-      <div className="NavLeft">
-        <Link to="/">
-          <img src={Logo} alt="logo" style={{ width: "150px" }} />
-        </Link>
-      </div>
-      {isLogin ? (
-        <div className="NavRight">
-          <Link className="link" to="dashboard">
-            Dashboard
+      {homeMode ? <VotingBanner /> : ""}
+      <div className="NavBar">
+        <div className="NavLeft">
+          <Link to="/">
+            <img src={Logo} alt="logo" style={{ width: "140px" }} />
           </Link>
-          <Link className="link" to="v">
-            Vote
-          </Link>
+        </div>
+        {loginState ? (
+          <div className="NavRight">
+            <Link className="nav-link link" to="/">
+              홈
+            </Link>
+            <Link className="nav-link link" to="dashboard">
+              대시보드
+            </Link>
+            <Link className="nav-link link" to="new">
+              설문만들기
+            </Link>
 
-          <div className="profile">
-            <img
-              src={Profile}
-              alt="profile_img"
-              style={{ width: "60px", borderRadius: "50%" }}
-            />
-            <ul className="subMenu">
-              <li className="subMenuLi">
-                <Link className="subMenuLink" to="myPage">
-                  MyPage
-                </Link>
-              </li>
-              <li>
-                <Link className="subMenuLink" to="signIn">
-                  SignIn
-                </Link>
-              </li>
-              <li className="subMenuLink" onClick={() => handleLogout()}>
-                SingOut
-              </li>
-            </ul>
+            <div className="profile">
+              <div>
+                <img
+                  src={userInfo.image}
+                  alt="profile_img"
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                  }}
+                />
+
+                <ul className="subMenu">
+                  <div className="subMenuLi">
+                    <div className="username">{userInfo.nickname} 님 🧡</div>
+                    <Link className="nav-link link" to="myPage">
+                      마이페이지
+                    </Link>
+
+                    <div
+                      className="nav-link link"
+                      onClick={() => handleLogout()}
+                    >
+                      로그아웃
+                    </div>
+                  </div>
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="NavRight">
-          <Link className="link" to="/">
-            Home
+        ) : (
+          <div className="NavRight">
+            <Link className="nav-link link" to="/">
+              홈
+            </Link>
+            <Link className="nav-link link" to="new">
+              설문만들기
+            </Link>
+            <Link className="nav-link link" to="signIn">
+              로그인
+            </Link>
+          </div>
+        )}
+      </div>
+
+      <div className="NavBarMobile">
+        <div className="NavLeft">
+          <Link to="/">
+            <img src={Logo} alt="logo" style={{ width: "100px" }} />
           </Link>
         </div>
-      )}
+        <div
+          className="NavMobileMenuBtn"
+          onClick={() => setMoblieMenuClicked(!isMoblieMenuClicked)}
+        >
+          {isMoblieMenuClicked ? <BiX /> : <BiMenu />}
+        </div>
+        <div
+          className={
+            isMoblieMenuClicked ? "NavMobileMenu block" : "NavMobileMenu"
+          }
+        >
+          {loginState ? (
+            <div className="loginUserMenu">
+              <div className="profile">
+                <div className="profileCon">
+                  <div className="username">{userInfo.nickname} 님 🧡</div>
+                  <img
+                    src={userInfo.image}
+                    alt="profile_img"
+                    style={{
+                      width: "60px",
+                      height: "60px",
+                      objectFit: "cover",
+                      borderRadius: "50%",
+                    }}
+                  />
+                </div>
+                <Link
+                  className="nav-link link"
+                  to="myPage"
+                  onClick={() => setMoblieMenuClicked(false)}
+                >
+                  마이페이지
+                </Link>
+                <div
+                  className="nav-link link"
+                  onClick={() => {
+                    handleLogout();
+                    setMoblieMenuClicked(false);
+                  }}
+                >
+                  SingOut
+                </div>
+              </div>
+              <div className="menu">
+                <Link
+                  className="nav-link link"
+                  to="/"
+                  onClick={() => setMoblieMenuClicked(false)}
+                >
+                  홈
+                </Link>
+                <Link
+                  className="nav-link link"
+                  to="dashboard"
+                  onClick={() => setMoblieMenuClicked(false)}
+                >
+                  대시보드
+                </Link>
+                <Link
+                  className="nav-link link"
+                  to="new"
+                  onClick={() => setMoblieMenuClicked(false)}
+                >
+                  설문만들기
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="logoutUserMenu">
+              <Link
+                className="nav-link link"
+                to="/"
+                onClick={() => setMoblieMenuClicked(false)}
+              >
+                홈
+              </Link>
+              <Link
+                className="nav-link link"
+                to="new"
+                onClick={() => setMoblieMenuClicked(false)}
+              >
+                설문만들기
+              </Link>
+              <Link
+                className="nav-link link"
+                to="signIn"
+                onClick={() => setMoblieMenuClicked(false)}
+              >
+                로그인
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+      <ProgressBar />
     </div>
   );
 }
 
+function VotingBanner() {
+  const [vtingCode, setVtingCode] = useState("");
+  return (
+    <div className="votingBannerCon">
+      <div className="votingBanner">
+        <div className="votingBannerText">Vting NOW!</div>
+        <div className="votingBannerInput">
+          <input
+            type="text"
+            placeholder="6자리 설문 코드를 입력하고 응답에 참여하세요!"
+            value={vtingCode}
+            onChange={(e) => setVtingCode(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter")
+                window.open(`${process.env.REACT_APP_CLIENT_URL}/${vtingCode}`);
+            }}
+          ></input>
+        </div>
+        <a
+          href={`${process.env.REACT_APP_CLIENT_URL}/${vtingCode}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button>코드로 접속하기</button>
+        </a>
+      </div>
+    </div>
+  );
+}
 export default Navbar;
