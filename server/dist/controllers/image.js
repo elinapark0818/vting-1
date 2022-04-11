@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ImageController = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const __1 = require("..");
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -38,6 +37,7 @@ exports.ImageController = {
                         },
                     });
                     res.status(200).json({
+                        data: req.file.location,
                         message: "Image successfully updated ",
                     });
                 }
@@ -47,34 +47,4 @@ exports.ImageController = {
             }
         }),
     },
-    // userInfo: {
-    // post: async (req: Request, res: Response) => {
-    // console.log(req);
-    // const image = req.file.path;
-    // console.log(req.file);
-    // if (image === undefined) {
-    //   return res.status(400).send(util.fail(400, "no image"));
-    // }
-    // res.status(200).send(util.success(200, "image exists", image));
-    //   console.log(req.file);
-    //   const image = (req.file as Express.Multer.File).location;
-    //   if (image === undefined) {
-    //     return res
-    //       .status(400)
-    //       .send(util.fail(400, "이미지가 존재하지 않습니다."));
-    //   }
-    //   res.status(200).send(util.success(200, "요청 성공 〰️ ", image));
-    // },
-    // uploadImages: async (req: Request, res: Response) => {
-    //   const image = req.files;
-    //   const path = (image as Express.Multer.File[]).map((img) => img.location);
-    //   if (image === undefined) {
-    //     return res
-    //       .status(400)
-    //       .send(util.fail(400, "이미지가 존재하지 않습니다."));
-    //   }
-    //   res.status(200).send(util.success(200, "요청 성공 〰️ ", path));
-    // },
-    // },
-    // },
 };

@@ -12,6 +12,7 @@ const vote_1 = __importDefault(require("./routes/vote"));
 const voter_1 = __importDefault(require("./routes/voter"));
 const image_1 = __importDefault(require("./routes/image"));
 const allvotes_1 = __importDefault(require("./routes/allvotes"));
+const oauth_1 = __importDefault(require("./routes/oauth"));
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
@@ -37,6 +38,7 @@ app.use("/vting", vote_1.default);
 app.use("/voter", voter_1.default);
 app.use("/image", image_1.default);
 app.use("/allvotes", allvotes_1.default);
+app.use("/oauth", oauth_1.default);
 //db 연결 -> 되면 포트 열기
 exports.MongoClient = require("mongodb").MongoClient;
 // const url = "mongodb://127.0.0.1:27017";

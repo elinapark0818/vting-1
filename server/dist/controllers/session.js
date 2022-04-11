@@ -17,22 +17,6 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const bcrypt = require("bcrypt");
-//평문과 hash 된 password 비교  -> 로그인 기능에 사용하기 좋음.
-// bcrypt.compare(
-//   plaintextPassword,
-//   hash,
-//   function (err: Error, res: Response) {
-//     if (err) {
-//       console.log("bcrypt.compare() error : ", err.message);
-//     } else {
-//       if (res) {
-//         console.log("plaintextPassword === hashedPassword");
-//       } else {
-//         console.log("plaintextPassword !== hashedPassword");
-//       }
-//     }
-//   }
-// );
 exports.SessionController = {
     signIn: {
         post: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -43,9 +27,7 @@ exports.SessionController = {
                     .collection("user")
                     .findOne({ user_id: user_id });
                 if (findUser) {
-                    console.log(findUser);
                     var check = yield bcrypt.compare(password, findUser.password);
-                    console.log(check);
                     if (check) {
                         const accessToken = jsonwebtoken_1.default.sign({ user_id }, process.env.ACCESS_SECRET, { expiresIn: 60 * 60 * 60 });
                         return res.status(200).json({
@@ -86,9 +68,7 @@ exports.SessionController = {
                 try {
                     const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET, (err) => {
                         return res.status(400);
-                        console.log(err);
                     });
-                    console.log(decoded);
                     if (decoded) {
                         return res.status(200).json({
                             data: { accessToken: "" },

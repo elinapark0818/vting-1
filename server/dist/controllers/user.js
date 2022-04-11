@@ -29,7 +29,6 @@ exports.UserController = {
                     const findUserWithId = yield __1.db
                         .collection("user")
                         .findOne({ user_id: user_id });
-                    console.log(findUserWithId);
                     if (!findUserWithId) {
                         return res.status(200).json({
                             message: "It doesn't match",
@@ -52,7 +51,6 @@ exports.UserController = {
                                 .collection("user")
                                 .findOne({ user_id: decoded.user_id });
                             var check = yield bcrypt.compare(password, findUserWithPw.password);
-                            console.log("check", check);
                             if (!check) {
                                 return res.status(200).json({
                                     message: "It doesn't match",
@@ -85,9 +83,7 @@ exports.UserController = {
                             console.log("genSalt Error: " + err);
                         }
                         else {
-                            console.log("salt", salt);
                             bcrypt.hash(password, salt, function (err, hash) {
-                                console.log("hash", hash);
                                 __1.db.collection("user").insertOne({
                                     user_id: req.body.user_id,
                                     nickname: req.body.nickname,
@@ -101,7 +97,6 @@ exports.UserController = {
                                     let findUserId = yield __1.db
                                         .collection("user")
                                         .findOne({ user_id: req.body.user_id });
-                                    console.log(findUserId._id);
                                     return res.status(201).json({
                                         data: {
                                             user_data: {
@@ -175,13 +170,10 @@ exports.UserController = {
                         const findUser = yield __1.db
                             .collection("user")
                             .findOne({ user_id: decoded.user_id });
-                        // console.log("decoded", decoded);
-                        // console.log("finduser", findUser);
                         const countUserVote = yield __1.db
                             .collection("vote")
                             .find({ user_id: decoded.user_id })
                             .count();
-                        // console.log(countUserVote);
                         return res.status(200).json({
                             data: {
                                 _id: findUser._id,
@@ -189,6 +181,7 @@ exports.UserController = {
                                 user_id: findUser.user_id,
                                 image: findUser.image,
                                 voteCount: countUserVote,
+                                provider: findUser.provider,
                             },
                         });
                     }
@@ -198,12 +191,18 @@ exports.UserController = {
                             .collection("vote")
                             .find({ user_id: decoded.user_id })
                             .toArray();
-                        // console.log("findUserVote", findUserVote);
                         var voteInfo = [];
-                        //q=1 일때 0~9까지 q=2일때 10~19까지 q=3일때 20~29까지 q=10일때 90~99까지 q=100일때 990~999까지
-                        for (let i = (q - 1) * 10; i < q * 10; i++) {
+                        const countUserVote = yield __1.db
+                            .collection("vote")
+                            .find({ user_id: decoded.user_id })
+                            .count();
+                        // countUserVote가 예를 들면 32이면
+                        // q=4 일때 0~1까지 q=3일때 2~11까지 q=2일때 12~21(20뺀거~11뺀거)까지 q=1일때 22~31(10뺀거~1뺀거)
+                        // countUserVote가 예를 들면 15이면
+                        //  q=2일때 0~4(20뺀거~11뺀거)까지 q=1일때 5~14(10뺀거~1뺀거)
+                        for (let i = countUserVote - 10 * q; i <= countUserVote - 10 * q + 9; i++) {
                             if (findUserVote[i] === undefined)
-                                break;
+                                continue;
                             const vote = {
                                 title: findUserVote[i].title,
                                 format: findUserVote[i].format,
@@ -214,8 +213,9 @@ exports.UserController = {
                             };
                             voteInfo.push(vote);
                         }
+                        const reverseVote = voteInfo.reverse();
                         return res.status(200).json({
-                            vote: voteInfo,
+                            vote: reverseVote,
                         });
                     }
                     else {
@@ -243,9 +243,7 @@ exports.UserController = {
                             console.log("genSalt Error: " + err);
                         }
                         else {
-                            // console.log("salt", salt);
                             bcrypt.hash(req.body.password, salt, function (err, hash) {
-                                // console.log("hash", hash);
                                 __1.db.collection("user").updateOne({ user_id: decoded.user_id }, {
                                     $set: {
                                         nickname: req.body.nickname || findUser.nickname,

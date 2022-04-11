@@ -27,53 +27,38 @@ exports.VoterController = {
     // 보낼 데이터 => nickname(user_id), profile(user data), title, items or response
     show_vote: {
         get: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            const memberVoteData = yield __1.db
-                .collection("vote")
-                .findOne({ url: Number(req.params.accessCode) });
-            if (memberVoteData) {
-                const userData = yield __1.db
-                    .collection("user")
-                    .findOne({ user_id: memberVoteData.user_id });
-                if (memberVoteData.format !== "open") {
-                    let sumCount = 0;
-                    for (let el of memberVoteData.items) {
-                        sumCount += el.count;
-                    }
-                    return res
-                        .status(200)
-                        .json({ vote_data: memberVoteData, user_data: userData, sumCount });
-                }
-                else {
+            try {
+                const memberVoteData = yield __1.db
+                    .collection("vote")
+                    .findOne({ url: Number(req.params.accessCode) });
+                if (memberVoteData) {
+                    const userData = yield __1.db
+                        .collection("user")
+                        .findOne({ user_id: memberVoteData.user_id });
                     return res
                         .status(200)
                         .json({ vote_data: memberVoteData, user_data: userData });
                 }
-            }
-            else if (!memberVoteData) {
-                const nonmemberVoteData = yield __1.db
-                    .collection("non-member")
-                    .findOne({ url: Number(req.params.accessCode) });
-                // 남은시간(분) 계산해서 보내주기
-                let overtime = (new Date(nonmemberVoteData.created_at.toString()).getTime() -
-                    new Date().getTime()) /
-                    (1000 * 60) +
-                    60;
-                overtime = Math.round(overtime);
-                if (nonmemberVoteData.format !== "open") {
-                    let sumCount = 0;
-                    for (let el of nonmemberVoteData.items) {
-                        sumCount += el.count;
-                    }
-                    return res
-                        .status(200)
-                        .json({ vote_data: nonmemberVoteData, sumCount, overtime });
-                }
-                else {
+                else if (!memberVoteData) {
+                    const nonmemberVoteData = yield __1.db
+                        .collection("non-member")
+                        .findOne({ url: Number(req.params.accessCode) });
+                    // 남은시간(분) 계산해서 보내주기
+                    let overtime = (new Date(nonmemberVoteData.created_at.toString()).getTime() -
+                        new Date().getTime()) /
+                        (1000 * 60) +
+                        60;
+                    overtime = Math.round(overtime);
                     return res
                         .status(200)
                         .json({ vote_data: nonmemberVoteData, overtime });
                 }
-                // return res.status(200).json({ vote_data: nonmemberVoteData, overtime });
+                else {
+                    return res.status(400).json({ message: "Bad Request" });
+                }
+            }
+            catch (_a) {
+                return res.status(400).json({ message: "Bad Request" });
             }
         }),
     },
@@ -81,13 +66,24 @@ exports.VoterController = {
     // bar => 해당 idx countup
     vote: {
         patch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-            const { idx, content } = req.body;
-            console.log();
+            let { idx, content } = req.body;
+            console.log("content", content);
+            let viewContent = "";
+            if (content) {
+                for (let el of content) {
+                    if (el === " ") {
+                        continue;
+                    }
+                    else {
+                        viewContent += el.toLowerCase();
+                    }
+                }
+            }
             try {
                 const findMemberVote = yield __1.db
                     .collection("vote")
                     .findOne({ url: Number(req.params.accessCode) });
-                // 회원인지 비회원인지,  확인
+                // 회원인지 비회원인지 확인
                 if (findMemberVote !== null) {
                     // format이 'bar', 'versus' 일때
                     if (findMemberVote.format === "bar" ||
@@ -101,6 +97,36 @@ exports.VoterController = {
                                 }, { $inc: { "items.$.count": 1 } });
                             }
                         }
+                        // sumCount update
+                        const updatedMemberVote = yield __1.db
+                            .collection("vote")
+                            .findOne({ url: Number(req.params.accessCode) });
+                        let sumCount = 0;
+                        for (let el of updatedMemberVote.items) {
+                            sumCount += el.count;
+                        }
+                        yield __1.db
+                            .collection("vote")
+                            .updateOne({ url: Number(req.params.accessCode) }, { $set: { sumCount } });
+                        // voterCount update +1
+                        yield __1.db
+                            .collection("vote")
+                            .updateOne({ url: Number(req.params.accessCode) }, { $inc: { voterCount: 1 } });
+                        // variance update
+                        let total = 0;
+                        for (let el of findMemberVote.items) {
+                            total += el.count;
+                        }
+                        let average = total / findMemberVote.items.length;
+                        total = 0;
+                        for (let i = 0; i < findMemberVote.items.length; i++) {
+                            let deviation = findMemberVote.items[i].count - average;
+                            total += deviation * deviation;
+                        }
+                        let variance = total / (findMemberVote.items.length - 1);
+                        yield __1.db
+                            .collection("vote")
+                            .updateOne({ url: Number(req.params.accessCode) }, { $set: { variance } });
                         return res.status(200).json({ message: "Successfully reflected" });
                         // FIXME: format이 'open' 일때 => response 추가
                         // 현재 갖고있는 response의 갯수를 기반으로 idx가 작성됨
@@ -115,35 +141,88 @@ exports.VoterController = {
                                 },
                             },
                         });
+                        // voterCount update +1
+                        yield __1.db
+                            .collection("vote")
+                            .updateOne({ url: Number(req.params.accessCode) }, { $inc: { voterCount: 1 } });
                         return res.status(200).json({ message: "Successfully reflected" });
-                        // FIXME: format이 'open' 일때 => items에 추가 또는 data가 있을때 items.idx count +1
+                        // FIXME: format이 'word' 일때 => items에 추가 또는 data가 있을때 items.idx count +1
                     }
                     else if (findMemberVote.format === "word") {
                         const findContent = yield __1.db.collection("vote").findOne({
                             url: Number(req.params.accessCode),
-                            "items.content": content,
+                            "items.content": viewContent,
                         });
                         // 작성된 content와 동일한 content가 있을때 => count up
                         if (findContent) {
                             yield __1.db.collection("vote").updateOne({
                                 url: Number(req.params.accessCode),
-                                "items.content": content,
+                                "items.content": viewContent,
                             }, { $inc: { "items.$.count": 1 } });
+                            // sumCount update
+                            const updatedMemberVote = yield __1.db
+                                .collection("vote")
+                                .findOne({ url: Number(req.params.accessCode) });
+                            let sumCount = 0;
+                            for (let el of updatedMemberVote.items) {
+                                sumCount += el.count;
+                            }
+                            yield __1.db
+                                .collection("vote")
+                                .updateOne({ url: Number(req.params.accessCode) }, { $set: { sumCount } });
+                            // voterCount update +1
+                            yield __1.db
+                                .collection("vote")
+                                .updateOne({ url: Number(req.params.accessCode) }, { $inc: { voterCount: 1 } });
+                            // variance update
+                            let total = 0;
+                            for (let el of findMemberVote.items) {
+                                total += el.count;
+                            }
+                            let average = total / findMemberVote.items.length;
+                            total = 0;
+                            for (let i = 0; i < findMemberVote.items.length; i++) {
+                                let deviation = findMemberVote.items[i].count - average;
+                                total += deviation * deviation;
+                            }
+                            let variance = total / (findMemberVote.items.length - 1);
+                            yield __1.db
+                                .collection("vote")
+                                .updateOne({ url: Number(req.params.accessCode) }, { $set: { variance } });
                             return res
                                 .status(200)
                                 .json({ message: "Successfully reflected" });
-                            // 작성된 content와 동일한 content가 없을때 => push content
+                            // format: 'open'작성된 content와 동일한 content가 없을때 => push content
                         }
                         else {
                             yield __1.db.collection("vote").updateOne({ url: Number(req.params.accessCode) }, {
                                 $push: {
                                     items: {
                                         idx: findMemberVote.items.length,
-                                        content,
+                                        content: viewContent,
                                         count: 0,
                                     },
                                 },
                             });
+                            // voterCount update +1
+                            yield __1.db
+                                .collection("vote")
+                                .updateOne({ url: Number(req.params.accessCode) }, { $inc: { voterCount: 1 } });
+                            // variance update
+                            let total = 0;
+                            for (let el of findMemberVote.items) {
+                                total += el.count;
+                            }
+                            let average = total / findMemberVote.items.length;
+                            total = 0;
+                            for (let i = 0; i < findMemberVote.items.length; i++) {
+                                let deviation = findMemberVote.items[i].count - average;
+                                total += deviation * deviation;
+                            }
+                            let variance = total / (findMemberVote.items.length - 1);
+                            yield __1.db
+                                .collection("vote")
+                                .updateOne({ url: Number(req.params.accessCode) }, { $set: { variance } });
                             return res
                                 .status(200)
                                 .json({ message: "Successfully reflected" });
@@ -172,6 +251,17 @@ exports.VoterController = {
                                 }, { $inc: { "items.$.count": 1 } });
                             }
                         }
+                        // sumCount update
+                        const updatedNonMemberVote = yield __1.db
+                            .collection("non-member")
+                            .findOne({ url: Number(req.params.accessCode) });
+                        let sumCount = 0;
+                        for (let el of updatedNonMemberVote.items) {
+                            sumCount += el.count;
+                        }
+                        yield __1.db
+                            .collection("non-member")
+                            .updateOne({ url: Number(req.params.accessCode) }, { $set: { sumCount } });
                         return res.status(200).json({ message: "Successfully reflected" });
                         // format이 'open' 일때 => response 추가
                         // 현재 갖고있는 response의 갯수를 기반으로 idx가 작성됨
@@ -192,14 +282,25 @@ exports.VoterController = {
                     else if (findNonMemberVote.format === "word") {
                         const findContent = yield __1.db.collection("non-member").findOne({
                             url: Number(req.params.accessCode),
-                            "items.content": content,
+                            "items.content": viewContent,
                         });
                         // 작성된 content와 동일한 content가 있을때 => count up
                         if (findContent) {
-                            yield __1.db.collection("non-member").updateOne({
+                            yield __1.db.collection("vote").updateOne({
                                 url: Number(req.params.accessCode),
-                                "items.content": content,
+                                "items.content": viewContent,
                             }, { $inc: { "items.$.count": 1 } });
+                            // sumCount update
+                            const updatedNonMemberVote = yield __1.db
+                                .collection("non-member")
+                                .findOne({ url: Number(req.params.accessCode) });
+                            let sumCount = 0;
+                            for (let el of updatedNonMemberVote.items) {
+                                sumCount += el.count;
+                            }
+                            yield __1.db
+                                .collection("non-member")
+                                .updateOne({ url: Number(req.params.accessCode) }, { $set: { sumCount } });
                             return res
                                 .status(200)
                                 .json({ message: "Successfully reflected" });
@@ -210,7 +311,7 @@ exports.VoterController = {
                                 $push: {
                                     items: {
                                         idx: findNonMemberVote.items.length,
-                                        content,
+                                        content: viewContent,
                                         count: 0,
                                     },
                                 },
@@ -228,7 +329,7 @@ exports.VoterController = {
                     return res.status(400).json({ message: "Bad Request" });
                 }
             }
-            catch (_a) {
+            catch (_b) {
                 return res.status(400).json({ message: "Bad Request" });
             }
         }),
