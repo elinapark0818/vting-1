@@ -63,187 +63,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    // 여기부터 실시간 응답보기 관련 css
-    .realTimeCon {
-      overflow-y: auto;
-      width: 100%;
-      height: 400px;
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      background-color: $vting-gray;
-      .openendIcon {
-        min-width: 100px;
-        padding: 15px;
-        margin: 10px;
-        background-color: #f7f7f7;
-        border: 1px solid black;
-      }
-      .border1 {
-        border: 1px solid $vting-orange;
-      }
-      .border2 {
-        border: 1px solid $vting-blue;
-      }
-      .border3 {
-        border: 1px solid $vting-green;
-      }
-      .border4 {
-        border: 1px solid $vting-yellow;
-      }
-      .votePreviewBack {
-        width: 100%;
-        height: 100%;
-        padding: 20px;
-        // min-height: 250px;
-        background-color: $vting-gray;
-
-        .votePreview-barVer-con {
-          padding: 30px;
-          height: 100%;
-          width: 100%;
-          display: flex;
-          flex-direction: row;
-          justify-content: flex-start;
-          overflow-x: auto;
-        }
-        #votePreview-barVer-bar {
-          margin: 0 10px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          align-items: center;
-          .barVer-itemBar {
-            width: 50px;
-            animation-name: barVerAnimation;
-            animation-duration: 1s;
-            background-color: $vting-blue;
-            position: relative;
-            display: block;
-            .tooltiptext {
-              display: flex;
-              visibility: hidden;
-              height: 100%;
-              width: 50px;
-              font-size: 20px;
-              color: white;
-              position: absolute;
-              z-index: 1;
-              justify-content: center;
-              align-items: center;
-            }
-          }
-          .barVer-itemBar:hover {
-            .tooltiptext {
-              visibility: visible;
-            }
-          }
-          .barVer-itemNameCon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            .barVer-itemName {
-              text-align: center;
-              background-color: $vting-orange;
-              color: white;
-              padding: 10px 0;
-              border-radius: 20px;
-              // margin-bottom: 10px;
-              width: 100px;
-              display: inline-block;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              overflow: hidden;
-            }
-            .triangle {
-              width: 0px;
-              height: 0px;
-              border-top: calc(10px * 1.732) solid $vting-orange;
-              border-left: 8px solid transparent;
-              border-right: 8px solid transparent;
-            }
-          }
-          @keyframes barVerAnimation {
-            0% {
-              height: 0;
-            }
-          }
-        }
-
-        .votePreview-barHor-con {
-          width: 100%;
-          height: 100%;
-          padding: 30px;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-          overflow-y: auto;
-        }
-        #votePreview-barHor-bar {
-          margin: 10px 0;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-          .barHor-itemBar {
-            height: 50px;
-            animation-name: barAnimation;
-            animation-duration: 1s;
-            background-color: $vting-blue;
-            position: relative;
-            display: block;
-            .tooltiptext {
-              visibility: hidden;
-              width: 100%;
-              font-size: 20px;
-              color: white;
-              text-align: center;
-              position: absolute;
-              z-index: 1;
-              line-height: 50px;
-            }
-          }
-          .barHor-itemBar:hover {
-            .tooltiptext {
-              visibility: visible;
-            }
-          }
-          .barHor-itemNameCon {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            .barHor-itemName {
-              text-align: center;
-              background-color: $vting-orange;
-              color: white;
-              padding: 10px 0;
-              border-radius: 20px;
-              // margin-bottom: 10px;
-              width: 100px;
-              display: inline-block;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              overflow: hidden;
-            }
-            .triangle {
-              width: 0px;
-              height: 0px;
-              margin-left: -2px;
-              border-left: calc(10px * 1.732) solid $vting-orange;
-              border-top: 8px solid transparent;
-              border-bottom: 8px solid transparent;
-            }
-          }
-          @keyframes barAnimation {
-            0% {
-              width: 0;
-            }
-          }
-        }
-      }
-    }
   }
   .votingHeader {
     display: flex;
@@ -697,6 +516,17 @@
     min-height: 100vh;
     padding-top: 0;
     padding-bottom: 70px;
+    .votingHeader {
+      flex-direction: column;
+      align-items: center;
+      .votingProfile {
+        padding: 10px;
+        margin-bottom: 10px;
+        width: 100%;
+        border-bottom: 2px solid $vting-orange;
+        border-top: 2px solid $vting-orange;
+      }
+    }
     .voteCodePage {
       width: 100%;
       overflow: hidden;
@@ -717,6 +547,187 @@
         }
         .votePreview-barHor-con {
           padding: 10px;
+        }
+      }
+    }
+  }
+}
+// 여기부터 실시간 응답보기 관련 css
+.realTimeCon {
+  overflow-y: auto;
+  width: 100%;
+  height: 400px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  background-color: $vting-gray;
+  .openendIcon {
+    min-width: 100px;
+    padding: 15px;
+    margin: 10px;
+    background-color: #f7f7f7;
+    border: 1px solid black;
+  }
+  .border1 {
+    border: 1px solid $vting-orange;
+  }
+  .border2 {
+    border: 1px solid $vting-blue;
+  }
+  .border3 {
+    border: 1px solid $vting-green;
+  }
+  .border4 {
+    border: 1px solid $vting-yellow;
+  }
+  .votePreviewBack {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    // min-height: 250px;
+    background-color: $vting-gray;
+
+    .votePreview-barVer-con {
+      padding: 30px;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      overflow-x: auto;
+    }
+    #votePreview-barVer-bar {
+      margin: 0 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      .barVer-itemBar {
+        width: 50px;
+        animation-name: barVerAnimation;
+        animation-duration: 1s;
+        background-color: $vting-blue;
+        position: relative;
+        display: block;
+        .tooltiptext {
+          display: flex;
+          visibility: hidden;
+          height: 100%;
+          width: 50px;
+          font-size: 20px;
+          color: white;
+          position: absolute;
+          z-index: 1;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+      .barVer-itemBar:hover {
+        .tooltiptext {
+          visibility: visible;
+        }
+      }
+      .barVer-itemNameCon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .barVer-itemName {
+          text-align: center;
+          background-color: $vting-orange;
+          color: white;
+          padding: 10px 0;
+          border-radius: 20px;
+          // margin-bottom: 10px;
+          width: 100px;
+          display: inline-block;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+        .triangle {
+          width: 0px;
+          height: 0px;
+          border-top: calc(10px * 1.732) solid $vting-orange;
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+        }
+      }
+      @keyframes barVerAnimation {
+        0% {
+          height: 0;
+        }
+      }
+    }
+
+    .votePreview-barHor-con {
+      width: 100%;
+      height: 100%;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow-y: auto;
+    }
+    #votePreview-barHor-bar {
+      margin: 10px 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .barHor-itemBar {
+        height: 50px;
+        animation-name: barAnimation;
+        animation-duration: 1s;
+        background-color: $vting-blue;
+        position: relative;
+        display: block;
+        .tooltiptext {
+          visibility: hidden;
+          width: 100%;
+          font-size: 20px;
+          color: white;
+          text-align: center;
+          position: absolute;
+          z-index: 1;
+          line-height: 50px;
+        }
+      }
+      .barHor-itemBar:hover {
+        .tooltiptext {
+          visibility: visible;
+        }
+      }
+      .barHor-itemNameCon {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .barHor-itemName {
+          text-align: center;
+          background-color: $vting-orange;
+          color: white;
+          padding: 10px 0;
+          border-radius: 20px;
+          // margin-bottom: 10px;
+          width: 100px;
+          display: inline-block;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+        .triangle {
+          width: 0px;
+          height: 0px;
+          margin-left: -2px;
+          border-left: calc(10px * 1.732) solid $vting-orange;
+          border-top: 8px solid transparent;
+          border-bottom: 8px solid transparent;
+        }
+      }
+      @keyframes barAnimation {
+        0% {
+          width: 0;
         }
       }
     }

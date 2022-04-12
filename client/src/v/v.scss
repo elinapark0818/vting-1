@@ -20,6 +20,9 @@
       font-weight: 400;
       box-sizing: border-box;
     }
+    .realTimeCon {
+      height: 100%;
+    }
   }
   .voteResultContent {
     height: 520px;
@@ -130,223 +133,6 @@
         box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
       }
     }
-
-    // 여기부터 실시간 응답보기 관련 css
-    .realTimeCon {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      overflow-y: auto;
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      .openEndCon {
-        height: 100%;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-content: flex-start;
-        overflow-y: auto;
-      }
-      .openendIcon {
-        min-width: 100px;
-        padding: 15px;
-        margin: 10px;
-        background-color: #f7f7f7;
-        border: 1px solid black;
-      }
-      .border1 {
-        border: 1px solid $vting-orange;
-      }
-      .border2 {
-        border: 1px solid $vting-blue;
-      }
-      .border3 {
-        border: 1px solid $vting-green;
-      }
-      .border4 {
-        border: 1px solid $vting-yellow;
-      }
-      .votePreviewBack {
-        width: 100%;
-        height: 100%;
-        padding: 20px 0;
-        min-height: 250px;
-        background-color: $vting-gray;
-
-        .votePreview-barVer-con {
-          padding: 30px;
-          height: 100%;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-around;
-          // justify-content: center;
-          overflow-x: auto;
-        }
-        #votePreview-barVer-bar {
-          margin: 0 10px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          align-items: center;
-          .barVer-itemBar {
-            width: 50px;
-            // padding-top: 10px;
-            animation-name: barVerAnimation;
-            animation-duration: 1s;
-            background-color: $vting-blue;
-          }
-          .barVer-itemNameCon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            .barVer-itemName {
-              text-align: center;
-              background-color: $vting-orange;
-              color: white;
-              padding: 10px 0;
-              border-radius: 20px;
-              // margin-bottom: 10px;
-              width: 100px;
-              display: inline-block;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              overflow: hidden;
-            }
-            .triangle {
-              width: 0px;
-              height: 0px;
-              border-top: calc(10px * 1.732) solid $vting-orange;
-              border-left: 8px solid transparent;
-              border-right: 8px solid transparent;
-            }
-          }
-
-          @keyframes barVerAnimation {
-            0% {
-              height: 0;
-            }
-          }
-        }
-
-        .votePreview-barHor-con {
-          padding: 30px 100px;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-around;
-          overflow-y: auto;
-        }
-        #votePreview-barHor-bar {
-          margin: 10px 0;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-          .barHor-itemBar {
-            height: 50px;
-            animation-name: barAnimation;
-            animation-duration: 1s;
-            background-color: $vting-blue;
-          }
-          .barHor-itemNameCon {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            .barHor-itemName {
-              text-align: center;
-              background-color: $vting-orange;
-              color: white;
-              padding: 10px 0;
-              border-radius: 20px;
-              // margin-bottom: 10px;
-              width: 100px;
-              display: inline-block;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              overflow: hidden;
-            }
-            .triangle {
-              width: 0px;
-              height: 0px;
-              margin-left: -2px;
-              border-left: calc(10px * 1.732) solid $vting-orange;
-              border-top: 8px solid transparent;
-              border-bottom: 8px solid transparent;
-            }
-          }
-          @keyframes barAnimation {
-            0% {
-              width: 0;
-            }
-          }
-        }
-      }
-    }
-    .imgCon {
-      width: 200px;
-      img {
-        width: 100%;
-      }
-    }
-  }
-  .voteResultFooter {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    .modeChange {
-      display: flex;
-      flex-direction: row;
-      .modebtn {
-        cursor: pointer;
-        padding: 10px 20px;
-        background-color: $vting-orange;
-        color: white;
-      }
-      .gray {
-        background-color: $vting-gray;
-        color: black;
-      }
-    }
-    .options {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      .toggleBtn {
-        margin-left: 10px;
-        background-color: $vting-gray;
-        width: 85px;
-        height: 30px;
-        border-radius: 30px;
-        border: none;
-        cursor: pointer;
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: all 0.5s ease-in-out;
-      }
-      .toggleCircle {
-        background-color: $vting-orange;
-        width: 38px;
-        height: 38px;
-        border-radius: 50px;
-        position: absolute;
-        left: 5%;
-        transition: all 0.5s ease-in-out;
-        color: white;
-        text-align: center;
-        line-height: 38px;
-        font-size: 12px;
-      }
-      .toggleOn {
-        background-color: #e2e2e2;
-        color: black;
-        transform: translate(38px, 0);
-        transition: all 0.5s ease-in-out;
-      }
-    }
   }
 }
 
@@ -380,11 +166,13 @@
   font-family: Arial;
   box-sizing: border-box;
   text-align: center;
-  margin-top: -150px;
+  margin-top: -150px !important;
   img {
-    width: 250px;
+    width: 300px;
   }
   .imgAlertBtn {
+    margin-top: 20px;
+    cursor: pointer;
     border: none;
     font-size: 20px;
     font-weight: 400;
