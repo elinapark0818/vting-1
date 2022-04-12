@@ -21,7 +21,7 @@ export const ImgAlertTemplate = ({
   close,
 }: AlertTemplateProps) => {
   return (
-    <div className="imgAlert">
+    <div className="imgAlert" style={style}>
       <button onClick={close} className="imgAlertBtn">
         x
       </button>

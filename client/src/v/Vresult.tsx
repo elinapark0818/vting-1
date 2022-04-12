@@ -54,28 +54,6 @@ function Vresult() {
   const serverURL = process.env.REACT_APP_SERVER_URL;
   const [words, setWords] = useState([{ text: "", value: 10 }]);
 
-  // 워드클라우드 세팅
-  useEffect(() => {
-    let newWords;
-    if (items.length) {
-      newWords = items.map((el: any) => ({
-        text: el.content ? (el.content as string) : "",
-        value: el.count ? (el.count as number) : 1,
-      }));
-    } else {
-      newWords = [{ text: "", value: 0 }];
-    }
-    setWords(newWords);
-  }, [items]);
-
-  const fontSizes = [20, 50] as MinMaxPair;
-  const rotationAngles = [0, 90] as [number, number];
-  const options = {
-    fontSizes: fontSizes,
-    rotationAngles: rotationAngles,
-    rotations: 2,
-  };
-
   // 처음 접속하면 응답 새로 받아오기
   useEffect(() => {
     async function getAnswers() {
@@ -129,6 +107,28 @@ function Vresult() {
       }
     }
   }, 5000);
+
+  // 워드클라우드 세팅
+  useEffect(() => {
+    let newWords;
+    if (items.length) {
+      newWords = items.map((el: any) => ({
+        text: el.content ? (el.content as string) : "",
+        value: el.count ? (el.count as number) : 1,
+      }));
+    } else {
+      newWords = [{ text: "", value: 0 }];
+    }
+    setWords(newWords);
+  }, [items]);
+
+  const fontSizes = [20, 50] as MinMaxPair;
+  const rotationAngles = [0, 90] as [number, number];
+  const options = {
+    fontSizes: fontSizes,
+    rotationAngles: rotationAngles,
+    rotations: 2,
+  };
 
   // versus 폰트 크기 조절 관련
   let fontSizeChange1: CSSProperties;

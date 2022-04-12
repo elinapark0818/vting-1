@@ -51,29 +51,7 @@ function VoterRealtime() {
   const type = voteData.type;
   const dispatch = useDispatch();
   const [words, setWords] = useState([{ text: "", value: 10 }]);
-  const [sum, setSum] = useState(0);
-
-  // 워드클라우드 세팅
-  useEffect(() => {
-    let newWords;
-    if (items.length) {
-      newWords = items.map((el: any) => ({
-        text: el.content ? (el.content as string) : "",
-        value: el.count ? (el.count as number) : 1,
-      }));
-    } else {
-      newWords = [{ text: "", value: 0 }];
-    }
-    setWords(newWords);
-  }, [items]);
-
-  const fontSizes = [20, 50] as MinMaxPair;
-  const rotationAngles = [0, 90] as [number, number];
-  const options = {
-    fontSizes: fontSizes,
-    rotationAngles: rotationAngles,
-    rotations: 2,
-  };
+  const [sum, setSum] = useState(1);
 
   // 처음 접속하면 응답 새로 받아오기
   useEffect(() => {
@@ -132,30 +110,39 @@ function VoterRealtime() {
     }
   }, 5000);
 
+  // 워드클라우드 세팅
+  useEffect(() => {
+    let newWords;
+    if (items.length) {
+      newWords = items.map((el: any) => ({
+        text: el.content ? (el.content as string) : "",
+        value: el.count ? (el.count as number) : 1,
+      }));
+    } else {
+      newWords = [{ text: "", value: 0 }];
+    }
+    setWords(newWords);
+  }, [items]);
+
+  const fontSizes = [20, 50] as MinMaxPair;
+  const rotationAngles = [0, 90] as [number, number];
+  const options = {
+    fontSizes: fontSizes,
+    rotationAngles: rotationAngles,
+    rotations: 2,
+  };
+
   // versus 폰트 크기 조절 관련
   let fontSizeChange1: CSSProperties;
   let fontSizeChange2: CSSProperties;
-  if (items.length) {
-    fontSizeChange1 = {
-      fontSize:
-        items[0] && items[0].count
-          ? ((items[0].count as number) / sum) * 100
-          : 30,
-    };
-    fontSizeChange2 = {
-      fontSize:
-        items[1] && items[1].count
-          ? ((items[1].count as number) / sum) * 100
-          : 30,
-    };
-  } else {
-    fontSizeChange1 = {
-      fontSize: 30,
-    };
-    fontSizeChange2 = {
-      fontSize: 30,
-    };
+  let item1Sum = 30;
+  let item2Sum = 30;
+  if (items[0] && items[0].count) {
+    item1Sum = ((items[0].count as number) / sum) * 100 || 30;
+    item2Sum = ((items[1].count as number) / sum) * 100 || 30;
   }
+  fontSizeChange1 = { fontSize: item1Sum };
+  fontSizeChange2 = { fontSize: item2Sum };
 
   switch (format) {
     case "bar":

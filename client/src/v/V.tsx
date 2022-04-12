@@ -13,11 +13,13 @@ import {
   transitions,
   positions,
   AlertOptions,
+  AlertCustomOptions,
   Provider as AlertProvider,
 } from "react-alert";
 import { AlertTemplate, ImgAlertTemplate } from "./AlertTemplate";
 import axios from "axios";
-import Vresult from "./Vresult";
+// import Vresult from "./Vresult";
+import VoterRealtime from "../Voter/VoterRealtime";
 import Counter from "../Voter/Counter";
 import vtCry from "../assets/vt_cry.png";
 import { useSelector, useDispatch } from "react-redux";
@@ -42,6 +44,7 @@ function V() {
   const [isNonUser, setIsNonUser] = useState(false);
   const [overtime, setOvertime] = useState(0);
   const [somethingWrong, setSometingWrong] = useState(false);
+  const [qrZoomOpen, setQrZoomOpen] = useState(false);
   const voteInfo = useSelector((state: RootState) => state.getVote);
   const votePass = voteInfo.password;
   const dispatch = useDispatch();
@@ -202,10 +205,10 @@ function V() {
     offset: "70px",
     transition: transitions.SCALE,
   };
-  const imgoptions: AlertOptions = {
+  const imgoptions: AlertCustomOptions = {
     position: positions.MIDDLE,
     // timeout: 3000,
-    // offset: "70px",
+    offset: "0px",
     transition: transitions.SCALE,
   };
 
@@ -260,7 +263,7 @@ function V() {
               <div className="voteResultPage">
                 <div className="voteResultTitle">{voteTitle}</div>
                 <div className="voteResultContent">
-                  {isRealTime ? <Vresult /> : <Howto />}
+                  {isRealTime ? <VoterRealtime /> : <Howto />}
                 </div>
               </div>
               <div className="voteResultFooter">
@@ -345,6 +348,7 @@ function Howto() {
   const { code } = useParams();
   const alert = useAlert();
   const imgAlert = useAlert(imgAlertContext);
+  const [isQrZoomOpen, setQrZoomOpen] = useState(false);
 
   let codeString = "";
   if (code) codeString = code.toString();
@@ -397,12 +401,11 @@ function Howto() {
 
   // qr코드 클릭 시 확대
   function zoomQr() {
-    const qrimgDiv = <img src={imgUrl} alt={shortUrl} />;
-    imgAlert.show(qrimgDiv, {
-      close: () => {
-        alert.remove(imgAlert);
-      },
-    });
+    setQrZoomOpen(!isQrZoomOpen);
+    if (isQrZoomOpen) {
+      const qrimgDiv = <img src={imgUrl} alt={shortUrl} />;
+      imgAlert.show(qrimgDiv);
+    }
   }
 
   // 카카오톡 공유하기
